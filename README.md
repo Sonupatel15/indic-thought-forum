@@ -132,11 +132,17 @@ npm run assets:prepare
 
 Prepared images are already included; do not make downloads part of the production build. Heritage hero artwork is described as artwork, not a documentary photograph. The seven supplied event posters live in their named event folders under `public/images`, with descriptive topic-and-date filenames. Their dates, speakers, times, and venues come from the posters; the owner confirmed all seven years as **2026** on 9 November 2026. Home shows the latest three event dates, including upcoming events, with complete, uncropped posters. The Updates archive remains past-only until its separate revision checkpoint. Each card displays the actual venue and its current IST date-based status, not an implied registration offer.
 
-The five confirmed Sankrant Sanu photographs are stored in `public/images/sankrant-sanu/event-photos`; all gallery and About references use those paths. The owner approved removing the deleted sixth photograph's gallery record. The original gallery layouts and captions are retained. The legacy `assets:prepare` script targets the renamed photo paths, but does not manage the seven supplied PNG posters; do not run it blindly to replace user-supplied assets or restore unrelated deleted legacy artwork.
+The five confirmed Sankrant Sanu photographs are stored in `public/images/sankrant-sanu/event-photos`; all gallery references use those paths. The photo was removed from About in checkpoint 3, while its Home/Updates gallery use is retained. The owner approved removing the deleted sixth photograph's gallery record. The original gallery layouts and captions are retained. The legacy `assets:prepare` script targets the renamed photo paths, but does not manage the seven supplied PNG posters; do not run it blindly to replace user-supplied assets or restore unrelated deleted legacy artwork.
 
 Event cards use a local WebP `previewImage` with the same full 1587x2245 dimensions and a **256 KiB maximum**; original PNGs are preserved and loaded only when opening a poster viewer. Generate previews from the local originals with `npm run assets:posters` after adding event data. The command checks declared dimensions and fails explicitly for invalid paths or an oversized result; it makes no network requests.
 
 Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics. Their structured data is `homeStatistics` in `src/lib/site.ts`: 500+ members, 10+ events, and 30+ Sankalpas. Sankalpa categories are contribution ideas, not claims of currently operating programs. See [the revision checkpoints](./WEBSITE_REVISION_CHECKPOINTS.md) for verified scope, asset moves, and review follow-ups.
+
+### About and Philosophy
+
+About retains the shared text-based `PageIntro` hero, breadcrumb, original heading/description, and `/about/` canonical metadata. `/philosophy/` continues to render the same combined content. The thought section is now a photo-free reading column; its original wording, principles, following editorial content, journey, and membership links remain.
+
+`PageIntro` and `CommunityCTA` accept `showOrnament={false}` for About, removing both intro and CTA sparkles without changing decorations on other pages. Shared principles are now unnumbered on both Home and About; journey-step numbers remain. The guiding belief retains its centered serif quotation, label, and explanation within an inset white panel with an orange accent, rather than a full-width dark band resembling the page's end.
 
 ### Podcasts and social publishing
 

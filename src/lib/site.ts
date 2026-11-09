@@ -31,9 +31,9 @@ export const navigation = [
 ] as const;
 
 export const principles = [
-  { number: "01", title: "Awareness", outcome: "Accountability", description: "Awareness must lead to responsibility and conscious action.", icon: "sun" },
-  { number: "02", title: "Dialogue", outcome: "Direction", description: "Meaningful conversations must guide us towards clarity and purpose.", icon: "messages" },
-  { number: "03", title: "Sankalpa", outcome: "Action", description: "Strong intent must translate into real, impactful change.", icon: "flame" },
+  { title: "Awareness", outcome: "Accountability", description: "Awareness must lead to responsibility and conscious action.", icon: "sun" },
+  { title: "Dialogue", outcome: "Direction", description: "Meaningful conversations must guide us towards clarity and purpose.", icon: "messages" },
+  { title: "Sankalpa", outcome: "Action", description: "Strong intent must translate into real, impactful change.", icon: "flame" },
 ] as const;
 
 export const steps = [

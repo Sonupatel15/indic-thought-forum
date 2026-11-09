@@ -100,7 +100,6 @@ main:focus { outline: none; }
 .principle-card { padding: 30px; border: 1px solid #d5d7cf; border-radius: var(--radius); background: #f7f5ef65; }
 .card-top { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 29px; }
 .icon-box { width: 55px; height: 55px; background: #f2e7d8; color: var(--orange-dark); display: inline-flex; align-items: center; justify-content: center; border-radius: var(--radius); flex-shrink: 0; }
-.card-number { color: var(--muted); font-size: 11px; letter-spacing: .05em; }
 .principle-card h3 { font-size: 25px; }
 .principle-card h3 > span { display: flex; gap: 10px; align-items: center; color: var(--orange-dark); margin-top: 10px; font-size: 18px; font-weight: 500; letter-spacing: -.02em; }
 .principle-card p { margin-top: 22px; max-width: 300px; font-size: 14px; }
@@ -197,21 +196,16 @@ main:focus { outline: none; }
 .page-intro p { margin-top: 23px; max-width: 650px; font-size: 15px; }
 .intro-ornament { position: absolute; bottom: -190px; right: -35px; font-size: 420px; line-height: 1; color: #d7cbb940; pointer-events: none; }
 .page-intro h1, .page-intro p, .page-intro .eyebrow { position: relative; z-index: 1; }
-.split-section { display: grid; grid-template-columns: 1fr 1fr; align-items: center; gap: 70px; }
-.editorial-image img { width: 100%; height: 440px; object-fit: cover; border-radius: var(--radius); }
-.split-section h2 { margin-bottom: 23px; }
-.split-section p { font-size: 13px; }
-.split-section .lead { font-size: 17px; margin-bottom: 18px; }
 .three-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
 .simple-card { border: 1px solid #d8d9d0; background: #f7f5ef; padding: 34px; border-radius: var(--radius); }
 .simple-card h3 { font-size: 23px; margin-bottom: 18px; }
 .simple-card p { font-size: 13px; }
 .simple-card .icon-box { margin-bottom: 25px; }
 .simple-card > .text-link { margin-top: 25px; }
-.quote-section { background: var(--navy); text-align: center; padding-block: 75px; }
-.quote-section .eyebrow { color: #ffb77a; }
-.quote-section blockquote { color: white; font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.45; margin: 20px 0; letter-spacing: -.03em; }
-.quote-section p { color: #bdc9cc; font-size: 13px; }
+.quote-section { background: var(--white); text-align: center; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px); border: 1px solid var(--line); border-inline-start: 4px solid var(--orange); border-radius: var(--radius); }
+.quote-section .eyebrow { color: var(--orange-dark); }
+.quote-section blockquote { color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.45; margin: 20px 0; letter-spacing: -.03em; text-wrap: balance; }
+.quote-section p { color: var(--muted); font-size: 14px; }
 .reading-width { max-width: 780px; }
 .reading-width h2 { margin-bottom: 27px; }
 .reading-width h3 { margin-top: 35px; margin-bottom: 18px; }
@@ -519,8 +513,6 @@ main:focus { outline: none; }
   .community-cta .button { font-size: 11px; padding-inline: 18px; }
   .footer-main { grid-template-columns: 1.4fr 1fr 1fr; }
   .footer-note { display: none; }
-  .split-section { gap: 40px; }
-  .editorial-image img { height: 420px; }
   .simple-card { padding: 25px; }
   .simple-card h3 { font-size: 21px; }
   .sankalpa-grid { grid-template-columns: repeat(2, 1fr); }
@@ -623,13 +615,8 @@ main:focus { outline: none; }
   .page-intro h1 { font-size: clamp(36px, 7vw, 48px); }
   .page-intro p { font-size: 13px; margin-top: 20px; }
   .intro-ornament { font-size: 320px; bottom: -140px; right: -130px; }
-  .split-section { grid-template-columns: 1fr; gap: 35px; }
-  .editorial-image img { height: 330px; }
-  .split-section p { font-size: 14px; }
   .three-grid { grid-template-columns: 1fr; gap: 18px; }
   .simple-card { padding: 28px; }
-  .quote-section { padding-block: 55px; }
-  .quote-section p { font-size: 12px; }
   .sankalpa-grid { gap: 17px; }
   .sankalpa-card { padding: 23px; }
   .sankalpa-card h2 { font-size: 22px; }

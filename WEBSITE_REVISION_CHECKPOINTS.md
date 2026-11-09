@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, and **2 - Footer**.
-Next checkpoint: **3 - About Page**, awaiting user confirmation.
-H-1 through H-12 and F-1 through F-3 are verified complete. C-3 and U-8 are also complete through shared data/components; other later-checkpoint requirements remain deferred.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, and **3 - About Page**.
+Next checkpoint: **4 - Sankalpas Page**, awaiting user confirmation.
+H-1 through H-12, F-1 through F-3, and A-1 through A-5 are verified complete. C-3 and U-8 are also complete through shared data/components; other later-checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -53,11 +53,11 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 3 - About Page
 
-- [ ] **A-1 | Not started** - Recommend and implement a hero treatment consistent with other pages, taking the existing shared `PageIntro` into account.
-- [ ] **A-2 | Not started** - Remove the Gemini-like sparkle ornament from this page.
-- [ ] **A-3 | Not started** - Remove the image beside "The Thought Behind the Forum".
-- [ ] **A-4 | Not started** - Remove numbers 01, 02, and 03 from "Principles We Practice".
-- [ ] **A-5 | Not started** - Preserve the guiding-belief section's format while changing its treatment so it no longer resembles the end of the page.
+- [x] **A-1 | Done** - Retain and refine the existing shared text-based hero; preserve its original title, description, breadcrumb, and shared layout instead of introducing a duplicate or photo hero.
+- [x] **A-2 | Done** - Remove both intro and CTA sparkles on About and its Philosophy compatibility route only; keep other pages unchanged until their checkpoints.
+- [x] **A-3 | Done** - Remove the image beside "The Thought Behind the Forum" and use the existing reading-width layout without an empty image column.
+- [x] **A-4 | Done** - Remove numbers 01, 02, and 03 from "Principles We Practice"; preserve the principle content/icons and journey-step numbers.
+- [x] **A-5 | Done** - Preserve the centered guiding-belief quotation, label, and explanation in an inset light content panel rather than a full-width dark ending-like band.
 
 ### Checkpoint 4 - Sankalpas Page
 
@@ -448,7 +448,48 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 - The original official logo and all existing footer wording/navigation remain intact. Only the footer logo rendition, brand formatting, and requested social-link additions changed.
 - Review the footer on any page; checkpoint 3 (About) awaits confirmation. Keep its previously confirmed sparkle-removal scope and other About requirements for that next checkpoint.
 
-### Checkpoints 3-9 and final review
+### Checkpoint 3 - Completed implementation record
+
+- A-1 through A-5 are implemented and verified Done. Stop before Sankalpas.
+- Hero recommendation: About already has the shared text-based `PageIntro` used by the other interior pages. Keep that consistent structure and original copy, remove its ornament, and avoid a duplicate hero or an unrequested background image.
+- Added backward-compatible `showOrnament` flags to `PageIntro` and `CommunityCTA`, defaulting to true. About disables both, including through `/philosophy/`; unmentioned pages retain their existing decorations.
+- Removed the thought-section photo and its empty split layout. Reused the existing 780px reading-width helper and retained every paragraph/heading.
+- Removed principle numbers from the shared component/data. Home and About are the only consumers, and Home already hid the numbers; simplified its now-unnecessary prop without a visual Home change. Journey numbers remain untouched.
+- Restyled guiding belief as a contained white panel with the shared radius/border, orange leading accent, navy serif quotation, and readable muted explanation. Preserved its wording/order and all following editorial/journey/CTA content.
+- Removed only directly orphaned split-image/card-number styles and breakpoint overrides; leave unrelated cleanup for checkpoint 9.
+- Changed: `src/app/about/page.tsx`, `src/components/sections.tsx`, `src/app/page.tsx` (Principles call only), `src/lib/site.ts` (principle number fields only), `src/app/globals.css`, `README.md`, and this document.
+- Created: `tests/about.spec.ts`. Deleted files: none. Asset moves/renames: none; all five Sankrant Sanu photographs remain available to the gallery.
+- Review note: canonical `/about/` and compatibility `/philosophy/` must stay synchronized, including metadata, navigation, and `#philosophy` links.
+- Review note: the other four named pages' ornament removals remain deferred to their respective checkpoints, in accordance with the confirmed page-specific scope.
+- Visual review: balanced the quotation's soft-wrapped lines on phones to avoid isolating "build,"; retained the original explicit line break and wording. This rule affects only the About quote panel, not other pages' headings.
+- Commit subject: `Checkpoint 3: About page updates`.
+
+#### Validation
+
+- `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**. All 17 static pages/endpoints generated; 13 Windows route-segment files normalized.
+- Restored the two build-generated imports in `next-env.d.ts` to their pre-checkpoint state rather than committing generated configuration changes.
+- Desktop regression command:
+  `npm exec -- playwright test about.spec.ts website.spec.ts home.spec.ts --project=desktop --grep "About|every public page|key pages|combined sections|affected navigation|short section labels|layouts fit|Home has real-text" --workers=3 --timeout=90000 --reporter=list`: **10 passed**.
+- Additional browser/device command before the final wrap refinement:
+  `npm exec -- playwright test about.spec.ts --project=mobile --project=firefox --project=webkit --project=ios --project=tablet --workers=3 --timeout=90000 --reporter=list`: **10 passed, 5 intentional skips**.
+- After visual review, added quote-only balanced wrapping, rebuilt/linted/type-checked, and ran the final complete About selector:
+  `npm exec -- playwright test about.spec.ts --workers=3 --timeout=90000 --reporter=list`: **13 passed, 5 intentional skips**, no failures.
+  The five skips avoid repeating the full other-page ornament sweep outside desktop; About content/layout are checked on all six configured profiles.
+- Both `/about/` and `/philosophy/` were checked at **320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS-pixel widths**. Heights were 900px below 2560px and 2160px for the largest widths.
+- Verified one shared hero/h1, original title/description and thought-section paragraphs, correct canonical metadata/navigation, no About images or sparkles, three unnumbered principle cards with unchanged content/icons, five numbered journey steps, intact contribution/membership links, and retained gallery image availability/use on Home.
+- Verified the 780px reading column, inset quote width up to 1200px, at least 16px viewport inset, white panel distinct from the footer, 4px accent, centered Georgia quotation, balanced wrapping, explanation at least 14px, unclipped content, no horizontal overflow, and immediate continuation into the original heritage section.
+- All 11 other public-page surfaces retain their existing ornament counts. All 13 public routes pass existing runtime/console/HTTP/image checks and automated WCAG A/AA checks; combined content, navigation labels, compatibility fragments, multi-page responsive checks, and completed Home behavior pass.
+- Visually inspected the desktop hero/thought section at **1440x1000**, desktop quote with following content, and the final balanced phone quote/continuation at **393x851**. Temporary inspection screenshots were removed after review.
+- Reused the user's existing `127.0.0.1:4173` export preview after verifying HTTP 200. No preview/dev server was started or stopped; no dependencies were installed.
+- No physical-device certification or live external-provider check is claimed.
+
+#### Review handoff
+
+- No checkpoint-3 item remains blocked.
+- The heading/copy, quote wording, journey, CTA actions, footer, and gallery assets are preserved. About's two decorative sparkles and thought photo are intentionally removed; the same About content remains accessible via `/philosophy/`.
+- Review About, then confirm checkpoint 4 (Sankalpas). Its existing hero can reuse the same pattern; its own sparkle removal, DJ-name replacement, and contribution-block alignment remain unstarted.
+
+### Checkpoints 4-9 and final review
 
 Not started except the already verified shared-data/component items C-3 and U-8. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 2 and do not begin checkpoint 3 until the user confirms.
+Stop after checkpoint 3 and do not begin checkpoint 4 until the user confirms.
