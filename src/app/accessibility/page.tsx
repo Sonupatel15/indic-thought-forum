@@ -1,0 +1,9 @@
+import Link from "next/link";
+import { PageIntro } from "@/components/sections";
+import { pageMetadata } from "@/lib/metadata";
+
+export const metadata = pageMetadata("Accessibility", "Accessibility features and support for the Indic Thought Forum website.", "/accessibility/");
+
+export default function Accessibility() {
+  return <><PageIntro eyebrow="Accessibility" title="A space for everyone." description="We aim to make the ITF website understandable, navigable, and welcoming." /><article className="section container legal-copy"><h2>Using this website</h2><p>The website includes semantic page structure, keyboard-accessible navigation, visible focus indicators, form labels, a skip-to-content link, and text alternatives for images. Layouts adapt to mobile screens and browser zoom.</p><h2>Image viewer controls</h2><p>Open gallery images and event posters using Enter or Space. In the image viewer, use the left and right arrow keys to browse images, Tab to move between controls, and Escape to close. Focus returns to the control that opened the viewer.</p><h2>Motion preferences</h2><p>The site respects your device&apos;s reduced-motion preference. Essential interactions do not require animation.</p><h2>Known limitations</h2><p>Original archive posters contain text inside images, including regional-language text. Event titles, speakers, dates, and venues are provided as text on the event cards, but the complete poster contents may not have a full transcription. Accessibility support is an ongoing process, not a claim of certified conformance.</p><h2>Report a barrier</h2><p>If you encounter difficulty, please use the <Link href="/contact-us/">contact page</Link> when messaging is available. Include the page, the issue, and any assistive technology involved, without sharing sensitive information.</p></article></>;
+}
