@@ -51,7 +51,7 @@ export const socialPosts = [
     title: "A conversation around Queen Tara",
     description: "Revisit the original community announcement for our conversation with Medha Deshmukh Bhaskaran.",
     url: "https://www.youtube.com/post/UgkxmzQetNNgUKlGLNtj0L_1yj-ISRBlz9fm",
-    image: "/images/medha-bhaskaran/event-poster/queen-tara-2026-06-06.png",
+    image: "/images/medha-bhaskaran/event-poster/queen-tara-2026-06-06.webp",
     type: "Event announcement",
   },
   {

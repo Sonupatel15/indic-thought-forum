@@ -340,6 +340,16 @@ No unresolved content decision blocks checkpoint 1. The original questions above
 | `gathering-4.webp` | `sankrant-sanu/event-photos/speaker-and-participants.webp` |
 | `gathering-5.webp` | `sankrant-sanu/event-photos/community-connections.webp` |
 
+Generated previews (new files, not moves; the original PNGs above remain unchanged):
+
+- `public/images/bijeet-prasantha/event-poster/hindumisia-2026-04-02.webp`
+- `public/images/ganeshaiah/event-poster/pepper-potato-mould-and-gold-2026-11-29.webp`
+- `public/images/manjunath-ajjampura/event-poster/places-of-worship-act-2026-07-11.webp`
+- `public/images/medha-bhaskaran/event-poster/queen-tara-2026-06-06.webp`
+- `public/images/ram-mohan/event-poster/vedanga-jyotisha-2026-10-25.webp`
+- `public/images/sankrant-sanu/event-poster/are-we-independent-2026-02-20.webp`
+- `public/images/shiv-sastry/event-poster/pakistan-failed-state-2026-05-09.webp`
+
 #### Files and review notes
 
 - Created: `tests/home.spec.ts` with explicit Home-content, ordering/status, intrinsic-image, responsive-aspect-ratio, dialog, and media-error/focus requirements.
@@ -348,8 +358,11 @@ No unresolved content decision blocks checkpoint 1. The original questions above
 - Review note: legacy generic event WebPs are deliberately not deleted until checkpoint 9's unused-asset review. The unrelated pre-existing `community.webp` deletion and supplied `itf-assets` folder remain outside this checkpoint's commit.
 - Review note: retained category filters/past-only listing on Updates until checkpoint 5. All-event catalog loading and Instagram/YouTube inventory are not claimed complete.
 - Review note: no physical-device certification or live external YouTube playback is implied by mocked-player tests.
+- Poster-size review: the supplied original PNGs are 4.6-5.8 MB each. Preserve all originals for the viewer, but use full-dimension local WebP previews in cards and the existing poster-based post. Added `assets:posters` with explicit path/dimension checks and a 256 KiB preview budget; no network downloads or replacement artwork are involved.
 - Validation follow-up: the first regression run passed 36 tests but exposed a pre-existing iframe error-handler problem. React delegates capture-phase errors but does not attach a non-delegated iframe error listener; changed the existing handler to `onErrorCapture` so a non-bubbling frame error actually surfaces the existing fallback status. The new Home test exercises this path.
 - Commit subject: `Checkpoint 1: Home page updates`.
+- Core implementation commit: `ddb26a3`. A separate checkpoint-1 performance follow-up records the seven generated `.webp` preview siblings, `scripts/prepare-event-posters.mjs`, the `package.json` command, and preview data/component/test/documentation updates; the original checkpoint commit is not amended.
+- Follow-up commit subject: `Checkpoint 1: Optimize poster previews`.
 
 #### Validation
 
@@ -357,13 +370,13 @@ No unresolved content decision blocks checkpoint 1. The original questions above
 - `npm run lint`: **Passed**, zero warnings.
 - `npm run typecheck`: **Passed**; build-generated `next-env.d.ts` imports restored to their pre-checkpoint state rather than committed.
 - `node --check scripts/prepare-assets.mjs`: **Passed**. The download script was deliberately not executed against the supplied assets.
-- Final desktop regression command:
+- Core desktop regression command:
   `npm exec -- playwright test home.spec.ts website.spec.ts media.spec.ts schedule.spec.ts --project=desktop --workers=3 --timeout=90000 --reporter=list`.
   Result: **37 passed, 1 intentionally skipped** (the existing mobile-only menu test in a desktop project), no failures.
 - Additional Home command:
   `npm exec -- playwright test home.spec.ts --project=mobile --project=firefox --project=webkit --project=ios --project=tablet --workers=3 --timeout=90000 --reporter=list`.
   Result: **25 passed**, no failures.
-- Total final verification: **62 passed, 1 intentional skip**. Home is covered on all six configured profiles: desktop Chromium, Android/Pixel-style Chromium, desktop Firefox, desktop WebKit, iPhone-style WebKit, and iPad-style WebKit.
+- Core verification: **62 passed, 1 intentional skip**. Home is covered on all six configured profiles: desktop Chromium, Android/Pixel-style Chromium, desktop Firefox, desktop WebKit, iPhone-style WebKit, and iPad-style WebKit.
 - Home layout/poster checks on every profile cover **320, 393, 480, 768, 1024, 1440, 1920, 2560, and 3840 CSS-pixel widths**, height 900px below 2560px and 2160px for the largest sizes.
 - Verified: exactly three newest cards, upcoming/today/archive status changes at fixed IST dates, actual venues, original-poster dialogs and focus restoration, measured pixel dimensions, displayed intrinsic aspect ratio to three decimal places, `object-fit: contain`, no hover scaling, correct one/two/three-column layout, aligned poster rows, no horizontal overflow, no hero-brand overlap, and a minimum 14px philosophy footnote.
 - All seven poster URLs and five relocated photo URLs return HTTP 200. The earlier two missing-image baseline errors are resolved through the supplied replacement poster and approved gallery-record removal.
@@ -372,6 +385,18 @@ No unresolved content decision blocks checkpoint 1. The original questions above
 - Direct Playwright screenshots were visually inspected at **1440x1000** and **393x851**, plus the complete desktop event-card row. Temporary inspection screenshots were removed after review.
 - Reused the user's already-running export preview at port 4173 after confirming HTTP 200; no server was started or stopped in this checkpoint. The shared browser tab is left on Home for review.
 - No dependencies were installed. No physical-device or live external-provider certification is claimed.
+
+#### Poster-preview performance follow-up
+
+- Original poster pixels/files are preserved for full-size dialogs. Card previews retain the exact 1587x2245 dimensions and aspect ratio; no cropping or resizing is introduced.
+- `npm run assets:posters`: **Passed**. All seven previews are **193-230 KiB**, below the enforced **256 KiB** per-preview limit. The command uses only local supplied originals.
+- Measured Home's latest-three poster payload: **14,669,160 bytes -> 625,202 bytes**, a **95.74% reduction** before opening a full-size poster.
+- Re-ran `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**.
+- Final preview/Home tests: `npm exec -- playwright test home.spec.ts --workers=3 --timeout=90000 --reporter=list`: **30 passed** across all six browser/device profiles.
+- Final affected route/media checks:
+  `npm exec -- playwright test website.spec.ts media.spec.ts --project=desktop --grep "every public page|media previews|every podcast|curated event posts|responsive hero" --workers=3 --timeout=90000 --reporter=list`: **5 passed**.
+- The new network assertions verify that Home requests exactly its three WebP poster previews before a poster is opened, and that opening the viewer requests the original PNG. Asset tests check format, intrinsic dimensions, HTTP status, and actual response-body byte limits for every preview.
+- The existing native TypeScript import pattern emits Node's informational `MODULE_TYPELESS_PACKAGE_JSON` warning in the local generation command; it does not affect the successful build, types, lint, or browser checks. Project-wide module settings were intentionally not changed.
 
 #### Review handoff
 

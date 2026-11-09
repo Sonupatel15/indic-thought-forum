@@ -16,6 +16,7 @@
     "test:ui": "playwright test --ui",
     "assets:prepare": "node scripts/prepare-assets.mjs",
     "assets:media": "node scripts/prepare-media.mjs",
+    "assets:posters": "node scripts/prepare-event-posters.mjs",
     "measure:performance": "node scripts/measure-performance.mjs"
   },
   "dependencies": {

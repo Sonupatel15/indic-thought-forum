@@ -134,6 +134,8 @@ Prepared images are already included; do not make downloads part of the producti
 
 The five confirmed Sankrant Sanu photographs are stored in `public/images/sankrant-sanu/event-photos`; all gallery and About references use those paths. The owner approved removing the deleted sixth photograph's gallery record. The original gallery layouts and captions are retained. The legacy `assets:prepare` script targets the renamed photo paths, but does not manage the seven supplied PNG posters; do not run it blindly to replace user-supplied assets or restore unrelated deleted legacy artwork.
 
+Event cards use a local WebP `previewImage` with the same full 1587x2245 dimensions and a **256 KiB maximum**; original PNGs are preserved and loaded only when opening a poster viewer. Generate previews from the local originals with `npm run assets:posters` after adding event data. The command checks declared dimensions and fails explicitly for invalid paths or an oversized result; it makes no network requests.
+
 Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics. Their structured data is `homeStatistics` in `src/lib/site.ts`: 500+ members, 10+ events, and 30+ Sankalpas. Sankalpa categories are contribution ideas, not claims of currently operating programs. See [the revision checkpoints](./WEBSITE_REVISION_CHECKPOINTS.md) for verified scope, asset moves, and review follow-ups.
 
 ### Podcasts and social publishing
@@ -172,6 +174,7 @@ Each event requires:
 | `startTime` | Verified 24-hour `HH:mm` start time in India Standard Time |
 | `venue` | Confirmed venue/address, not an inferred location |
 | `image` | A locally hosted, authorized poster path |
+| `previewImage` | A local WebP card preview generated from `image`, preserving its aspect ratio; original PNG remains for the viewer |
 | `imageWidth`, `imageHeight` | The poster's measured intrinsic pixel dimensions; the supplied seven PNGs are 1587x2245 |
 
 The current start times are taken from the posters: 15:00 for October and November, 17:30 for April, May, June, and July, and 18:00 for February. End times and durations are not invented.

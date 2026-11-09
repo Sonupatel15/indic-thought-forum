@@ -26,6 +26,11 @@ test("Home has real-text branding, unnumbered sections, updated goals, and no pu
 });
 
 test("Home shows exactly the latest three events including upcoming dates with correct posters and venues", async ({ page }) => {
+  const posterRequests: string[] = [];
+  page.on("request", request => {
+    const path = new URL(request.url()).pathname;
+    if (path.includes("/event-poster/")) posterRequests.push(path);
+  });
   await page.clock.setFixedTime(new Date("2026-11-09T12:00:00Z"));
   await page.goto("/");
   const cards = page.locator(".event-card");
@@ -35,13 +40,20 @@ test("Home shows exactly the latest three events including upcoming dates with c
   ]);
   expect(await cards.locator(".event-date > span").allTextContents()).toEqual(["Upcoming", "Archive", "Archive"]);
   for (const [index, event] of events.slice(0, 3).entries()) {
-    await expect(cards.nth(index).locator("img")).toHaveAttribute("src", event.image);
+    await expect(cards.nth(index).locator("img")).toHaveAttribute("src", event.previewImage);
     await expect(cards.nth(index).locator(".event-location")).toHaveText(event.venue);
   }
+  for (const image of await cards.locator("img").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toHaveJSProperty("complete", true);
+  }
+  expect([...new Set(posterRequests)].sort()).toEqual(events.slice(0, 3).map(event => event.previewImage).sort());
   const poster = cards.first().getByRole("button", { name: `View poster for ${events[0].title}`, exact: true });
   await poster.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[0].image);
+  await expect(page.getByRole("dialog").locator("img")).toHaveJSProperty("complete", true);
+  expect(posterRequests).toContain(events[0].image);
   await page.keyboard.press("ArrowRight");
   await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[1].image);
   await page.keyboard.press("Escape");
@@ -64,6 +76,14 @@ test("every supplied poster has correct intrinsic dimensions and all event photo
     expect(metadata.height).toBe(event.imageHeight);
     expect(metadata.format).toBe("png");
     expect((await request.get(event.image)).status()).toBe(200);
+    expect(event.previewImage).toBe(event.image.replace(/\.png$/, ".webp"));
+    const preview = await sharp(join("public", ...event.previewImage.slice(1).split("/"))).metadata();
+    expect(preview.width).toBe(event.imageWidth);
+    expect(preview.height).toBe(event.imageHeight);
+    expect(preview.format).toBe("webp");
+    const response = await request.get(event.previewImage);
+    expect(response.status()).toBe(200);
+    expect((await response.body()).byteLength).toBeLessThanOrEqual(256 * 1024);
   }
   for (const photo of gallery) {
     expect(photo.src).toMatch(/^\/images\/sankrant-sanu\/event-photos\/[a-z-]+\.webp$/);
