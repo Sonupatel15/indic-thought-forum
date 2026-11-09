@@ -3,10 +3,10 @@ import { ArrowUpRight, Camera, MessagesSquare, Play, Radio } from "lucide-react"
 import { podcasts, socialPosts, socialProfiles } from "@/lib/media";
 import { YouTubePlayer } from "./youtube-player";
 
-export function FeaturedPodcast() {
+export function FeaturedPodcast({ showPreviewDetails = true }: { showPreviewDetails?: boolean }) {
   const episode = podcasts[0];
   return <article className="featured-podcast">
-    <YouTubePlayer episode={episode} />
+    <YouTubePlayer episode={episode} showPreviewDetails={showPreviewDetails} />
     <div className="podcast-editorial"><span className="eyebrow">Featured conversation</span><h3>{episode.title}</h3><p className="podcast-guest">With {episode.guest}</p><p>{episode.description}</p><div className="podcast-topics"><span>{episode.topic}</span><span>Long-form podcast</span></div><p className="media-editor-note">A little more time. A little more context.<br />Conversations worth staying with.</p></div>
   </article>;
 }

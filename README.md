@@ -130,7 +130,11 @@ The owner confirmed permission to reuse the reference site's branding, text, and
 npm run assets:prepare
 ```
 
-Prepared images are already included; do not make downloads part of the production build. Heritage hero artwork is described as artwork, not a documentary photograph. Event titles, speakers, dates, and venues are transcribed from the original posters, with 2026 determined from the reference publication context and matching weekdays. **Have the operator verify these dates and editorial text before launch.** All four events are presented as an archive, with no invented upcoming events or registration availability. Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics. Sankalpa categories are contribution ideas, not claims of currently operating programs.
+Prepared images are already included; do not make downloads part of the production build. Heritage hero artwork is described as artwork, not a documentary photograph. The seven supplied event posters live in their named event folders under `public/images`, with descriptive topic-and-date filenames. Their dates, speakers, times, and venues come from the posters; the owner confirmed all seven years as **2026** on 9 November 2026. Home shows the latest three event dates, including upcoming events, with complete, uncropped posters. The Updates archive remains past-only until its separate revision checkpoint. Each card displays the actual venue and its current IST date-based status, not an implied registration offer.
+
+The five confirmed Sankrant Sanu photographs are stored in `public/images/sankrant-sanu/event-photos`; all gallery and About references use those paths. The owner approved removing the deleted sixth photograph's gallery record. The original gallery layouts and captions are retained. The legacy `assets:prepare` script targets the renamed photo paths, but does not manage the seven supplied PNG posters; do not run it blindly to replace user-supplied assets or restore unrelated deleted legacy artwork.
+
+Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics. Their structured data is `homeStatistics` in `src/lib/site.ts`: 500+ members, 10+ events, and 30+ Sankalpas. Sankalpa categories are contribution ideas, not claims of currently operating programs. See [the revision checkpoints](./WEBSITE_REVISION_CHECKPOINTS.md) for verified scope, asset moves, and review follow-ups.
 
 ### Podcasts and social publishing
 
@@ -146,6 +150,8 @@ The channel's [About page](https://www.youtube.com/@IndicThoughtForum/about) lin
 - **Publish:** rebuild and redeploy after content changes. This is intentionally a curated selection, not an automatic or real-time feed. No social API credentials are required or exposed.
 
 Players connect to **youtube-nocookie.com only after an explicit Load action**. There are no YouTube thumbnails, API scripts, preconnects, or iframes requested before that action. The loaded frame can be closed, which removes it and restores focus. A direct YouTube link is always available, including when embedding is disabled, unavailable, or JavaScript is not used.
+
+Home intentionally omits the thumbnail's "ITF / Conversations" overlay, the privacy-preview heading, and the long pre-load disclosure. This is a presentation-only change: click-to-load, direct watch links, playback/error status, and keyboard focus restoration remain active. Updates retains its existing preview copy until checkpoint 5.
 
 YouTube's privacy-enhanced domain is **not anonymous playback or a guarantee of zero cookies/storage**. After opt-in, Google/YouTube controls its player and may process the visitor's information. The choice is not persisted across reloads. The privacy notice describes this boundary; social-platform login and post availability remain outside the site's control.
 
@@ -166,8 +172,9 @@ Each event requires:
 | `startTime` | Verified 24-hour `HH:mm` start time in India Standard Time |
 | `venue` | Confirmed venue/address, not an inferred location |
 | `image` | A locally hosted, authorized poster path |
+| `imageWidth`, `imageHeight` | The poster's measured intrinsic pixel dimensions; the supplied seven PNGs are 1587x2245 |
 
-The current start times are taken from the posters: 17:30 for the April, May, and June events, and 18:00 for the February event. End times and durations are not invented.
+The current start times are taken from the posters: 15:00 for October and November, 17:30 for April, May, June, and July, and 18:00 for February. End times and durations are not invented.
 
 - Upcoming events sort earliest first; past events sort most recent first.
 - The event date is interpreted in **Asia/Kolkata (IST, UTC+05:30)**, independently of the visitor's time zone.

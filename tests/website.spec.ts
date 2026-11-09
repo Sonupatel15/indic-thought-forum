@@ -2,6 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { sendSubmission, type Submission } from "../src/lib/forms";
 import { events, gallery, principles, steps } from "../src/lib/site";
+import { getEventSchedule } from "../src/lib/schedule";
 import { podcasts, socialPosts } from "../src/lib/media";
 
 const routes = ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/join/", "/support/", "/privacy/", "/accessibility/"];
@@ -64,7 +65,7 @@ test("mobile menu opens, navigates, and closes with Escape", async ({ page }, te
 
 test("gallery filters, image navigation, Escape, and focus restoration work", async ({ page }) => {
   await page.goto("/events/#gallery");
-  await expect(page.locator(".gallery-photo")).toHaveCount(6);
+  await expect(page.locator(".gallery-photo")).toHaveCount(gallery.length);
   await page.getByRole("button", { name: "Community", exact: true }).click();
   await expect(page.locator(".gallery-photo")).toHaveCount(3);
   const first = page.locator(".gallery-photo").first();
@@ -82,8 +83,9 @@ test("gallery filters, image navigation, Escape, and focus restoration work", as
 });
 
 test("event categories filter the archive and original posters open", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-11-09T12:00:00Z"));
   await page.goto("/events/");
-  await expect(page.locator(".event-card")).toHaveCount(4);
+  await expect(page.locator(".event-card")).toHaveCount(6);
   await page.getByRole("button", { name: "History", exact: true }).click();
   await expect(page.locator(".event-card")).toHaveCount(2);
   await page.getByRole("button", { name: /View poster for/ }).first().click();
@@ -184,7 +186,7 @@ test("combined sections preserve editorial content and all existing archive and 
   for (const step of steps) await expect(main).toContainText(step.description);
   await expect(page.locator(".principle-grid")).toHaveCount(1);
   await page.goto("/events/");
-  for (const event of events) await expect(page.locator("#events")).toContainText(event.title);
+  for (const event of getEventSchedule(events, "2026-11-01").past) await expect(page.locator("#events")).toContainText(event.title);
   for (const photo of gallery) await expect(page.locator(`#gallery img[alt="${photo.alt}"]`)).toHaveCount(1);
   for (const podcast of podcasts) await expect(page.locator("#podcasts")).toContainText(podcast.title);
   for (const post of socialPosts) await expect(page.locator("#community-posts")).toContainText(post.title);

@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoint: **0 - Audit and Setup**.
-Next checkpoint: **1 - Home Page**, awaiting user confirmation.
-Application code and assets have not been changed.
+Completed checkpoints: **0 - Audit and Setup** and **1 - Home Page**.
+Next checkpoint: **2 - Footer**, awaiting user confirmation.
+H-1 through H-12 are verified complete. Later UI checkpoints remain deferred; C-3 is complete through the shared event-data prerequisite.
 
 ## Working agreement
 
@@ -32,18 +32,18 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 1 - Home Page
 
-- [ ] **H-1 | Blocked** - Rename each event's posters consistently within its event folder, use the supplied posters, and show events latest first while preserving the existing layout. Confirm poster years before publishing added event dates (Q1).
-- [ ] **H-2 | Blocked** - Identify the requested movement-section images; move all their uses to `public/images/sankrant-sanu/event-photos`, rename descriptively, and preserve the display. Confirm the section mapping and missing sixth photo (Q2).
-- [ ] **H-3 | Not started** - Remove "Rooted in heritage. Driven by purpose." and its accompanying dot.
-- [ ] **H-4 | Not started** - Verify hero branding; use properly sized real text for "Indic Thought Forum, Bharateeya Sabhyata Sankalpa" rather than an image where applicable.
-- [ ] **H-5 | Not started** - Remove the purpose-section photo and the "01 /" prefix; keep "Our Purpose" without changing unrelated copy.
-- [ ] **H-6 | Not started** - Remove "02 /" and principle-card numbers 01, 02, and 03; size the "Because an idea finds its purpose only when it becomes action." line appropriately.
-- [ ] **H-7 | Not started** - Use subject-appropriate icons or logos in "Find Your Way"; preserve the section's content and layout.
-- [ ] **H-8 | Not started** - Remove "04 /"; keep exactly three latest event cards; match each supplied poster to its event and respect its measured intrinsic size/aspect ratio without cropping or stretching.
-- [ ] **H-9 | Not started** - Remove "05 /" from "Your Journey with ITF".
-- [ ] **H-10 | Not started** - Set Events to "10+" and Sankalpas to "30+" in "Our Shared Lakshya"; retain the unrelated members statistic.
-- [ ] **H-11 | Not started** - Remove "06 /", "ITF / Conversations" image overlays, "Privacy-first preview", and the specified pre-load YouTube/Google disclosure text; preserve working player controls and truthful error states.
-- [ ] **H-12 | Not started** - Remove "07 /" from the homepage moments/gallery section.
+- [x] **H-1 | Done** - Rename each event's posters consistently within its event folder, use the supplied posters, and show events latest first while preserving the existing layout. All seven years confirmed as 2026 (Q1).
+- [x] **H-2 | Done** - Move the five confirmed movement-gallery photos and all their uses to `public/images/sankrant-sanu/event-photos`, rename descriptively, preserve the display, and remove the approved missing sixth gallery record (Q2).
+- [x] **H-3 | Done** - Remove "Rooted in heritage. Driven by purpose." and its accompanying dot.
+- [x] **H-4 | Done** - Verify hero branding; use properly sized real text for "Indic Thought Forum, Bharateeya Sabhyata Sankalpa" rather than an image where applicable.
+- [x] **H-5 | Done** - Remove the purpose-section photo and the "01 /" prefix; keep "Our Purpose" without changing unrelated copy.
+- [x] **H-6 | Done** - Remove "02 /" and principle-card numbers 01, 02, and 03; size the "Because an idea finds its purpose only when it becomes action." line appropriately.
+- [x] **H-7 | Done** - Use subject-appropriate icons or logos in "Find Your Way"; preserve the section's content and layout; remove its "03 /" prefix as confirmed.
+- [x] **H-8 | Done** - Remove "04 /"; keep exactly three latest event cards; match each supplied poster to its event and respect its measured intrinsic size/aspect ratio without cropping or stretching.
+- [x] **H-9 | Done** - Remove "05 /" from "Your Journey with ITF".
+- [x] **H-10 | Done** - Set Events to "10+" and Sankalpas to "30+" in "Our Shared Lakshya"; retain the unrelated members statistic.
+- [x] **H-11 | Done** - Remove "06 /", "ITF / Conversations" image overlays, "Privacy-first preview", and the specified pre-load YouTube/Google disclosure text; preserve working player controls and truthful error states.
+- [x] **H-12 | Done** - Remove "07 /" from the homepage moments/gallery section.
 
 ### Checkpoint 2 - Footer (Site-wide)
 
@@ -81,12 +81,12 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 ### Checkpoint 6 - Calendar Page
 
 - [ ] **C-1 | Not started** - Remove the Gemini-like ornament.
-- [ ] **C-2 | Blocked** - Feature the November 29 upcoming event above the calendar; confirm its year before publishing (Q1).
-- [ ] **C-3 | Blocked** - Add the Ganeshaiah event to its exact poster-derived date with verified details; the supplied poster does not print a year (Q1).
+- [ ] **C-2 | Not started** - Feature the confirmed November 29, 2026 upcoming event above the calendar; shared event data is a prerequisite, but the featured UI remains checkpoint 6.
+- [x] **C-3 | Done** - Add the Ganeshaiah event to November 29, 2026 with verified poster details. Completed as H-1's shared-data prerequisite; calendar tests verify its date marker, speaker, 3:00 PM IST timing, and Alliance Francaise venue.
 - [ ] **C-4 | Not started** - Keep month view visible when selecting a date and show that date's events beside the calendar, or below it on small screens.
 - [ ] **C-5 | Not started** - Review and correct calendar month/year labels, weekday headers, controls, and date-cell sizes.
 - [ ] **C-6 | Not started** - Remove the specified confirmed-events heading, lengthy IST explanation, empty-month sentence, and registration-note block.
-- [ ] **C-7 | Blocked** - Confirm whether to implement the suggested interactive Bengaluru event map; if approved, support pan, zoom, event details, and directions below the calendar (Q3).
+- [ ] **C-7 | Not started** - Implement the approved attributed OpenStreetMap-based Bengaluru event map with verified venue pins, pan, zoom, event details, and directions below the calendar in checkpoint 6.
 
 ### Checkpoint 7 - Contact Page
 
@@ -259,7 +259,16 @@ Do not run the legacy asset-preparation script blindly: it fetches external hist
 - **Q4 - Home event selection and section prefixes (H-1, H-7, H-8, G-5):** Should the three Home events include the newest upcoming poster (Ganeshaiah), or remain a past-event archive? Also confirm whether "03 /" should be removed from Find Your Way: other prefixes are explicitly requested, while H-7 itself only specifies icons.
 - **Q5 - Sparkle scope (A-2, S-2, U-1, C-1, CT-1):** Remove the shared intro ornament only on the five named pages, or everywhere `PageIntro` is used? Should the separate repeated CommunityCTA sparkle remain? This affects otherwise unmentioned pages and must not be assumed.
 
-No answers have been assumed. Date-dependent asset wiring, the unidentified/missing photo, and the optional map remain blocked as noted.
+### Confirmed decisions - 2026-11-09
+
+- **Workflow:** user selected "Checkpoint 1 only, then stop for review".
+- **Q1 resolved:** all seven event years are 2026, including the Ganeshaiah poster's November 29, 3:00 PM IST event at Alliance Francaise de Bangalore.
+- **Q2 resolved:** user confirmed the movement-gallery mapping and Sankrant Sanu photo ownership. In a separate clarification, selected "Remove the missing photo's gallery entry; keep the five supplied photos". Do not restore or substitute the sixth image.
+- **Q3 resolved:** user approved an attributed OpenStreetMap-based map with verified venue pins. Implementation and coordinate verification remain checkpoint 6.
+- **Q4 resolved:** Home must include upcoming events, newest date first, and remove the Find Your Way "03 /" prefix.
+- **Q5 resolved:** remove all sparkles on the five named pages only, including their CTA decorations; preserve decorations on other pages. Apply this in each page's respective checkpoint, not during the Home revision.
+
+No unresolved content decision blocks checkpoint 1. The original questions above are retained as audit history, not unanswered requests.
 
 ## Checkpoint 0 validation record
 
@@ -299,7 +308,79 @@ No answers have been assumed. Date-dependent asset wiring, the unidentified/miss
 - Follow-ups: resolve Q1-Q5 and approve checkpoint 1; keep pre-existing user asset changes separate from this documentation commit.
 - Commit subject: `Checkpoint 0: Audit and setup` (documentation only).
 
-### Checkpoints 1-9 and final review
+### Checkpoint 1 - Completed implementation record
+
+- H-1 through H-12 are implemented and verified Done. C-3 is also verified Done through the required shared event-data update.
+- Home keeps the original title, body copy, event grid, four-photo gallery preview, journey steps, and featured-podcast layout except for the explicit requested changes.
+- Full hero branding is DOM text. Existing desktop/mobile hero artwork contains no OCR-detectable branding text; no replacement background or stock image was introduced.
+- The purpose section becomes a single readable text column after removing its photograph. Obsolete Home image/eyebrow styles and their breakpoint overrides were removed.
+- Commitment and calendar pathways use Lucide ListChecks and CalendarDays icons.
+- All seven confirmed events use their supplied posters and measured 1587x2245 dimensions. Poster cards no longer crop, stretch, add a gradient over, or zoom into the poster.
+- Home shows November 29, October 25, and July 11 initially, newest first; status and actual venue derive from each event and the current IST date.
+- Shared data adds the three missing events to the existing calendar/schedule as a necessary H-1 dependency; this also implements C-3's data requirement. Calendar featured-event/panel/map UI remains deferred.
+- All five photo references, including About and legacy preparation output paths, use the Sankrant Sanu directory. The supplied photo pixels and existing captions/layout remain unchanged.
+- Scope gates: Home hides principle numbers and preview-only YouTube copy through backward-compatible shared-component props. About numbers, Updates preview copy, footer branding/social links, and all page sparkles remain for their authorized checkpoints.
+- Error/loaded status, click-to-load, direct YouTube links, close controls, and focus restoration are preserved; no automatic provider connection was added.
+- Structured `homeStatistics` keeps 500+ members and sets 10+ events and 30+ Sankalpas.
+
+#### Asset moves
+
+| Old path (under `public/images`) | New path (under `public/images`) |
+| --- | --- |
+| `bijeet-prasantha/event-poster/12.png` | `bijeet-prasantha/event-poster/hindumisia-2026-04-02.png` |
+| `ganeshaiah/event-poster/1.png` | `ganeshaiah/event-poster/pepper-potato-mould-and-gold-2026-11-29.png` |
+| `manjunath-ajjampura/event-poster/8.png` | `manjunath-ajjampura/event-poster/places-of-worship-act-2026-07-11.png` |
+| `medha-bhaskaran/event-poster/6.png` | `medha-bhaskaran/event-poster/queen-tara-2026-06-06.png` |
+| `ram-mohan/event-poster/3.png` | `ram-mohan/event-poster/vedanga-jyotisha-2026-10-25.png` |
+| `sankrant-sanu/event-poster/15.png` | `sankrant-sanu/event-poster/are-we-independent-2026-02-20.png` |
+| `shiv-sastry/event-poster/10.png` | `shiv-sastry/event-poster/pakistan-failed-state-2026-05-09.png` |
+| `gathering-1.webp` | `sankrant-sanu/event-photos/community-gathering.webp` |
+| `gathering-2.webp` | `sankrant-sanu/event-photos/community-conversation.webp` |
+| `gathering-3.webp` | `sankrant-sanu/event-photos/audience-participation.webp` |
+| `gathering-4.webp` | `sankrant-sanu/event-photos/speaker-and-participants.webp` |
+| `gathering-5.webp` | `sankrant-sanu/event-photos/community-connections.webp` |
+
+#### Files and review notes
+
+- Created: `tests/home.spec.ts` with explicit Home-content, ordering/status, intrinsic-image, responsive-aspect-ratio, dialog, and media-error/focus requirements.
+- Changed: `src/app/page.tsx`, `src/app/globals.css`, `src/lib/site.ts`, `src/lib/media.ts`, `src/components/sections.tsx`, `src/components/event-list.tsx`, `src/components/media-content.tsx`, `src/components/youtube-player.tsx`, `src/app/about/page.tsx` (renamed photo reference/dimensions only), `scripts/prepare-assets.mjs`, `tests/website.spec.ts`, `tests/schedule.spec.ts`, `README.md`, and this document.
+- Removed from published content: the missing sixth gallery record. The previously deleted old Sanu poster is replaced by the supplied named poster. Asset deletions recorded with this replacement/cleanup: `public/images/event-1.webp` and `public/images/gathering-6.webp`; both were already absent at audit and neither was restored.
+- Review note: legacy generic event WebPs are deliberately not deleted until checkpoint 9's unused-asset review. The unrelated pre-existing `community.webp` deletion and supplied `itf-assets` folder remain outside this checkpoint's commit.
+- Review note: retained category filters/past-only listing on Updates until checkpoint 5. All-event catalog loading and Instagram/YouTube inventory are not claimed complete.
+- Review note: no physical-device certification or live external YouTube playback is implied by mocked-player tests.
+- Validation follow-up: the first regression run passed 36 tests but exposed a pre-existing iframe error-handler problem. React delegates capture-phase errors but does not attach a non-delegated iframe error listener; changed the existing handler to `onErrorCapture` so a non-bubbling frame error actually surfaces the existing fallback status. The new Home test exercises this path.
+- Commit subject: `Checkpoint 1: Home page updates`.
+
+#### Validation
+
+- `npm run build`: **Passed**, all 17 static pages/endpoints generated; 13 Windows routing-segment files normalized.
+- `npm run lint`: **Passed**, zero warnings.
+- `npm run typecheck`: **Passed**; build-generated `next-env.d.ts` imports restored to their pre-checkpoint state rather than committed.
+- `node --check scripts/prepare-assets.mjs`: **Passed**. The download script was deliberately not executed against the supplied assets.
+- Final desktop regression command:
+  `npm exec -- playwright test home.spec.ts website.spec.ts media.spec.ts schedule.spec.ts --project=desktop --workers=3 --timeout=90000 --reporter=list`.
+  Result: **37 passed, 1 intentionally skipped** (the existing mobile-only menu test in a desktop project), no failures.
+- Additional Home command:
+  `npm exec -- playwright test home.spec.ts --project=mobile --project=firefox --project=webkit --project=ios --project=tablet --workers=3 --timeout=90000 --reporter=list`.
+  Result: **25 passed**, no failures.
+- Total final verification: **62 passed, 1 intentional skip**. Home is covered on all six configured profiles: desktop Chromium, Android/Pixel-style Chromium, desktop Firefox, desktop WebKit, iPhone-style WebKit, and iPad-style WebKit.
+- Home layout/poster checks on every profile cover **320, 393, 480, 768, 1024, 1440, 1920, 2560, and 3840 CSS-pixel widths**, height 900px below 2560px and 2160px for the largest sizes.
+- Verified: exactly three newest cards, upcoming/today/archive status changes at fixed IST dates, actual venues, original-poster dialogs and focus restoration, measured pixel dimensions, displayed intrinsic aspect ratio to three decimal places, `object-fit: contain`, no hover scaling, correct one/two/three-column layout, aligned poster rows, no horizontal overflow, no hero-brand overlap, and a minimum 14px philosophy footnote.
+- All seven poster URLs and five relocated photo URLs return HTTP 200. The earlier two missing-image baseline errors are resolved through the supplied replacement poster and approved gallery-record removal.
+- Existing all-public-route tests pass for 13 routes with no recorded runtime/console/HTTP errors or broken loaded images. Internal links, SEO endpoints, compatibility routes/fragments, and automated WCAG A/AA checks also pass.
+- Verified zero external media requests before opt-in. Mocked-player tests cover keyboard opt-in, capture-phase error status, direct YouTube links, closing, and restored focus.
+- Direct Playwright screenshots were visually inspected at **1440x1000** and **393x851**, plus the complete desktop event-card row. Temporary inspection screenshots were removed after review.
+- Reused the user's already-running export preview at port 4173 after confirming HTTP 200; no server was started or stopped in this checkpoint. The shared browser tab is left on Home for review.
+- No dependencies were installed. No physical-device or live external-provider certification is claimed.
+
+#### Review handoff
+
+- No checkpoint-1 requirement remains blocked.
+- Review Home first; then confirm checkpoint 2 for the official footer logo, brand formatting, and X/WhatsApp links.
+- Resolved map/sparkle decisions are recorded above for their later checkpoints; their implementation is not claimed complete.
+- The legacy preview-port configuration discrepancy remains a documented later tooling follow-up; it did not prevent production-export validation using the existing 4173 listener.
+
+### Checkpoints 2-9 and final review
 
 Not started. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Do not begin checkpoint 1 until the user confirms after the checkpoint-0 summary.
+Stop after checkpoint 1 and do not begin checkpoint 2 until the user confirms.

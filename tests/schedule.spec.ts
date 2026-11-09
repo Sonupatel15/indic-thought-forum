@@ -2,27 +2,30 @@ import { test, expect } from "@playwright/test";
 import { events } from "../src/lib/site";
 import { formatEventTime, getEventSchedule, getEventStart, getIndiaDateKey } from "../src/lib/schedule";
 
+const queenTara = events.find(event => event.id === "queen-tara");
+if (!queenTara) throw new Error("The confirmed Queen Tara event is required by the schedule fixtures.");
+
 test("calendar shows a date-ordered archive with times, venues, and working filters", async ({ page }) => {
-  await page.clock.setFixedTime(new Date("2026-10-30T12:00:00Z"));
+  await page.clock.setFixedTime(new Date("2026-12-01T12:00:00Z"));
   await page.goto("/calendar/");
   const archive = page.getByRole("region", { name: "Complete event schedule" });
   await expect(page.getByRole("heading", { name: "No upcoming dates announced yet." })).toBeVisible();
-  await expect(page.locator(".schedule-item")).toHaveCount(4);
+  await expect(page.locator(".schedule-item")).toHaveCount(7);
   expect(await page.locator(".schedule-date").evaluateAll(items => items.map(item => item.getAttribute("datetime")))).toEqual([
-    "2026-06-06", "2026-05-09", "2026-04-02", "2026-02-20",
+    "2026-11-29", "2026-10-25", "2026-07-11", "2026-06-06", "2026-05-09", "2026-04-02", "2026-02-20",
   ]);
-  await expect(page.locator(".schedule-item").first()).toContainText(/5:30\s?pm IST/i);
+  await expect(page.locator(".schedule-item").first()).toContainText(/3:00\s?pm IST/i);
   await expect(page.locator(".schedule-item").last()).toContainText(/6:00\s?pm IST/i);
-  await expect(page.locator(".schedule-item").first()).toContainText("Suchitra Cinema & Cultural Academy, Banashankari, Bengaluru");
+  await expect(page.locator(".schedule-item").first()).toContainText("Alliance Francaise de Bangalore, Vasanth Nagar, Bengaluru");
   await page.getByRole("button", { name: "Upcoming", exact: true }).click();
   await expect(page.locator(".schedule-item")).toHaveCount(0);
   await expect(archive.getByRole("status")).toHaveText("0 events");
   await page.getByRole("button", { name: "Past events", exact: true }).click();
-  await expect(page.locator(".schedule-item")).toHaveCount(4);
+  await expect(page.locator(".schedule-item")).toHaveCount(7);
   const poster = page.getByRole("button", { name: "View poster for Queen Tara: Kali of the Deccan" });
   await poster.click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByRole("dialog")).toContainText("1 of 4");
+  await expect(page.getByRole("dialog")).toContainText("4 of 7");
   await page.keyboard.press("Escape");
   await expect(poster).toBeFocused();
 });
@@ -32,9 +35,9 @@ test("upcoming dates sort earliest first and are not incorrectly labeled as arch
   await page.goto("/calendar/");
   const archive = page.getByRole("region", { name: "Complete event schedule" });
   await page.getByRole("button", { name: "Upcoming", exact: true }).click();
-  await expect(archive.locator(".schedule-item")).toHaveCount(3);
+  await expect(archive.locator(".schedule-item")).toHaveCount(6);
   expect(await archive.locator(".schedule-date").evaluateAll(items => items.map(item => item.getAttribute("datetime")))).toEqual([
-    "2026-04-02", "2026-05-09", "2026-06-06",
+    "2026-04-02", "2026-05-09", "2026-06-06", "2026-07-11", "2026-10-25", "2026-11-29",
   ]);
   await expect(archive.locator(".schedule-status").first()).toHaveText("Today");
   await page.goto("/events/");
@@ -43,7 +46,7 @@ test("upcoming dates sort earliest first and are not incorrectly labeled as arch
 });
 
 test("schedule rolls an event into the archive after midnight in India without rebuilding", async ({ page }) => {
-  await page.clock.install({ time: new Date("2026-06-06T18:29:00Z") });
+  await page.clock.install({ time: new Date("2026-11-29T18:29:00Z") });
   await page.goto("/calendar/");
   const archive = page.getByRole("region", { name: "Complete event schedule" });
   await page.getByRole("button", { name: "Upcoming", exact: true }).click();
@@ -53,7 +56,7 @@ test("schedule rolls an event into the archive after midnight in India without r
   await expect(archive.locator(".schedule-item")).toHaveCount(0);
   await expect(page.getByRole("heading", { name: "No upcoming dates announced yet." })).toBeVisible();
   await page.getByRole("button", { name: "Past events", exact: true }).click();
-  await expect(archive.locator(".schedule-item")).toHaveCount(4);
+  await expect(archive.locator(".schedule-item")).toHaveCount(7);
 });
 
 test("calendar defaults to the complete current IST month, day, and year", async ({ page }) => {
@@ -64,6 +67,11 @@ test("calendar defaults to the complete current IST month, day, and year", async
   await expect(calendar.getByLabel("Month", { exact: true })).toHaveValue("10");
   await expect(calendar.getByLabel("Year", { exact: true })).toHaveValue("2026");
   await expect(calendar.locator(".calendar-day")).toHaveCount(30);
+  await expect(calendar.getByRole("button", { name: "Sunday, 29 November 2026. 1 confirmed event", exact: true })).toBeVisible();
+  await expect(calendar.locator(".calendar-details .schedule-item")).toHaveCount(1);
+  await expect(calendar.locator(".calendar-details .schedule-item")).toContainText("K. N. Ganeshaiah");
+  await expect(calendar.locator(".calendar-details .schedule-item")).toContainText(/3:00\s?pm IST/i);
+  await expect(calendar.locator(".calendar-details .schedule-item")).toContainText("Alliance Francaise de Bangalore, Vasanth Nagar, Bengaluru");
   await expect(calendar.locator('.calendar-day[aria-current="date"] time')).toHaveAttribute("datetime", "2026-11-01");
   const dates = await calendar.locator(".calendar-day time").evaluateAll(items => items.map(item => item.getAttribute("datetime")));
   expect(dates).toEqual(Array.from({ length: 30 }, (_, index) => `2026-11-${String(index + 1).padStart(2, "0")}`));
@@ -123,9 +131,9 @@ test("calendar date selection shows original event details and day navigation cr
   await calendar.getByRole("button", { name: "Saturday, 6 June 2026. 1 confirmed event", exact: true }).click();
   await expect(calendar.locator(".calendar-period")).toContainText("6 June 2026");
   await expect(calendar.locator(".schedule-item")).toHaveCount(1);
-  await expect(calendar.locator(".schedule-item")).toContainText(events[0].title);
-  await expect(calendar.locator(".schedule-item")).toContainText(events[0].venue);
-  const poster = calendar.getByRole("button", { name: `View poster for ${events[0].title}`, exact: true });
+  await expect(calendar.locator(".schedule-item")).toContainText(queenTara.title);
+  await expect(calendar.locator(".schedule-item")).toContainText(queenTara.venue);
+  const poster = calendar.getByRole("button", { name: `View poster for ${queenTara.title}`, exact: true });
   await poster.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.keyboard.press("Escape");
@@ -168,14 +176,14 @@ test("India date boundaries are independent of the visitor's time zone", () => {
   expect(getIndiaDateKey(new Date("2026-06-05T18:29:59.999Z"))).toBe("2026-06-05");
   expect(getIndiaDateKey(new Date("2026-06-05T18:30:00Z"))).toBe("2026-06-06");
   expect(getIndiaDateKey(new Date("2026-12-31T18:30:00Z"))).toBe("2027-01-01");
-  expect(getEventStart(events[0]).toISOString()).toBe("2026-06-06T12:00:00.000Z");
-  expect(formatEventTime(events[0])).toMatch(/5:30\s?pm/i);
+  expect(getEventStart(queenTara).toISOString()).toBe("2026-06-06T12:00:00.000Z");
+  expect(formatEventTime(queenTara)).toMatch(/5:30\s?pm/i);
 });
 
 test("schedule sorts both groups without mutating the shared event data", () => {
   const original = events.map(event => event.id);
-  const schedule = getEventSchedule([events[3], events[1], events[0], events[2]], "2026-04-02");
-  expect(schedule.upcoming.map(event => event.id)).toEqual(["hindumisia", "pakistan", "queen-tara"]);
+  const schedule = getEventSchedule([...events].reverse(), "2026-04-02");
+  expect(schedule.upcoming.map(event => event.id)).toEqual(["hindumisia", "pakistan", "queen-tara", "places-of-worship", "vedanga-jyotisha", "ganeshaiah"]);
   expect(schedule.past.map(event => event.id)).toEqual(["independent"]);
   expect(events.map(event => event.id)).toEqual(original);
   expect(getEventSchedule([], "2026-10-30")).toEqual({ upcoming: [], past: [] });

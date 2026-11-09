@@ -62,23 +62,35 @@ export interface ForumEvent {
   startTime: string;
   venue: string;
   image: string;
+  imageWidth: number;
+  imageHeight: number;
   category: "History" | "Ideas & dialogue";
 }
 
 const eventVenue = "Suchitra Cinema & Cultural Academy, Banashankari, Bengaluru";
+const allianceVenue = "Alliance Francaise de Bangalore, Vasanth Nagar, Bengaluru";
+const eventPosterSize = { imageWidth: 1587, imageHeight: 2245 };
 
 export const events: ForumEvent[] = [
-  { id: "queen-tara", title: "Queen Tara: Kali of the Deccan", speaker: "Medha Deshmukh Bhaskaran", date: "2026-06-06", displayDate: "06 June 2026", startTime: "17:30", venue: eventVenue, image: "/images/event-3.webp", category: "History" },
-  { id: "pakistan", title: "Pakistan: Failed State & Its Effect on India", speaker: "Dr. Shiv Sastry", date: "2026-05-09", displayDate: "09 May 2026", startTime: "17:30", venue: eventVenue, image: "/images/event-4.webp", category: "Ideas & dialogue" },
-  { id: "hindumisia", title: "Hindumisia: Revisiting Forgotten History", speaker: "Sri Chakravarti Sulibele & Dr. Bijeet Prasantha", date: "2026-04-02", displayDate: "02 April 2026", startTime: "17:30", venue: eventVenue, image: "/images/event-2.webp", category: "History" },
-  { id: "independent", title: "Are We Independent? The Battle for India's Mind", speaker: "Sri Sankrant Sanu", date: "2026-02-20", displayDate: "20 February 2026", startTime: "18:00", venue: eventVenue, image: "/images/event-1.webp", category: "Ideas & dialogue" },
+  { id: "ganeshaiah", title: "Pepper, Potato, Mould and Gold: How They Shaped Human History", speaker: "K. N. Ganeshaiah", date: "2026-11-29", displayDate: "29 November 2026", startTime: "15:00", venue: allianceVenue, image: "/images/ganeshaiah/event-poster/pepper-potato-mould-and-gold-2026-11-29.png", ...eventPosterSize, category: "History" },
+  { id: "vedanga-jyotisha", title: "Vedanga Jyotisha: Exploring the Foundations of Indian Astronomy", speaker: "Shri Ram Mohan", date: "2026-10-25", displayDate: "25 October 2026", startTime: "15:00", venue: allianceVenue, image: "/images/ram-mohan/event-poster/vedanga-jyotisha-2026-10-25.png", ...eventPosterSize, category: "Ideas & dialogue" },
+  { id: "places-of-worship", title: "Places of Worship Act, 1991", speaker: "Sri Manjunatha Ajjampura", date: "2026-07-11", displayDate: "11 July 2026", startTime: "17:30", venue: eventVenue, image: "/images/manjunath-ajjampura/event-poster/places-of-worship-act-2026-07-11.png", ...eventPosterSize, category: "Ideas & dialogue" },
+  { id: "queen-tara", title: "Queen Tara: Kali of the Deccan", speaker: "Medha Deshmukh Bhaskaran", date: "2026-06-06", displayDate: "06 June 2026", startTime: "17:30", venue: eventVenue, image: "/images/medha-bhaskaran/event-poster/queen-tara-2026-06-06.png", ...eventPosterSize, category: "History" },
+  { id: "pakistan", title: "Pakistan: Failed State & Its Effect on India", speaker: "Dr. Shiv Sastry", date: "2026-05-09", displayDate: "09 May 2026", startTime: "17:30", venue: eventVenue, image: "/images/shiv-sastry/event-poster/pakistan-failed-state-2026-05-09.png", ...eventPosterSize, category: "Ideas & dialogue" },
+  { id: "hindumisia", title: "Hindumisia: Revisiting Forgotten History", speaker: "Sri Chakravarti Sulibele & Dr. Bijeet Prasantha", date: "2026-04-02", displayDate: "02 April 2026", startTime: "17:30", venue: eventVenue, image: "/images/bijeet-prasantha/event-poster/hindumisia-2026-04-02.png", ...eventPosterSize, category: "History" },
+  { id: "independent", title: "Are We Independent? The Battle for India's Mind", speaker: "Sri Sankrant Sanu", date: "2026-02-20", displayDate: "20 February 2026", startTime: "18:00", venue: eventVenue, image: "/images/sankrant-sanu/event-poster/are-we-independent-2026-02-20.png", ...eventPosterSize, category: "Ideas & dialogue" },
 ];
 
 export const gallery = [
-  { src: "/images/gathering-1.webp", title: "A community brought together by ideas", category: "Community", alt: "Participants gathered at an Indic Thought Forum event" },
-  { src: "/images/gathering-2.webp", title: "Making room for meaningful conversations", category: "Conversations", alt: "A moment from an ITF community conversation" },
-  { src: "/images/gathering-3.webp", title: "Learning, listening, and connecting", category: "Community", alt: "Community members taking part in an ITF gathering" },
-  { src: "/images/gathering-4.webp", title: "Perspectives that bring us closer", category: "Conversations", alt: "A speaker and participants at an ITF event" },
-  { src: "/images/gathering-5.webp", title: "Shared purpose. Lasting connections.", category: "Community", alt: "A photograph from the Indic Thought Forum community archive" },
-  { src: "/images/gathering-6.webp", title: "From thought to a collective Sankalpa", category: "Conversations", alt: "People connecting during an Indic Thought Forum program" },
+  { src: "/images/sankrant-sanu/event-photos/community-gathering.webp", title: "A community brought together by ideas", category: "Community", alt: "Participants gathered at an Indic Thought Forum event" },
+  { src: "/images/sankrant-sanu/event-photos/community-conversation.webp", title: "Making room for meaningful conversations", category: "Conversations", alt: "A moment from an ITF community conversation" },
+  { src: "/images/sankrant-sanu/event-photos/audience-participation.webp", title: "Learning, listening, and connecting", category: "Community", alt: "Community members taking part in an ITF gathering" },
+  { src: "/images/sankrant-sanu/event-photos/speaker-and-participants.webp", title: "Perspectives that bring us closer", category: "Conversations", alt: "A speaker and participants at an ITF event" },
+  { src: "/images/sankrant-sanu/event-photos/community-connections.webp", title: "Shared purpose. Lasting connections.", category: "Community", alt: "A photograph from the Indic Thought Forum community archive" },
 ];
+
+export const homeStatistics = [
+  { value: 500, label: "Members to bring together" },
+  { value: 10, label: "Events to inspire dialogue" },
+  { value: 30, label: "Sankalpas to turn into action" },
+] as const;
