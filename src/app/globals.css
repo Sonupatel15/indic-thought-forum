@@ -169,9 +169,12 @@ main:focus { outline: none; }
 
 .site-footer { background: #eeeae1; border-top: 1px solid #e6e3d8; }
 .footer-main { display: grid; grid-template-columns: 1.5fr 1fr 1.1fr 1.3fr; gap: 50px; padding-block: 65px 50px; }
-.brand--footer img { width: 45px; height: 45px; }
-.brand--footer strong { font-size: 16px; }
-.brand--footer small { font-size: 6px; }
+.footer-about { min-width: 0; }
+.site-footer .brand { gap: 12px; max-width: 100%; }
+.site-footer .brand img { width: 56px; height: 56px; flex-shrink: 0; }
+.site-footer .brand > span { min-width: 0; }
+.site-footer .brand strong { font-size: clamp(18px, 1.4vw, 20px); line-height: 1.35; }
+.site-footer .brand small { font-size: 12px; line-height: 1.6; text-transform: none; letter-spacing: .015em; margin-top: 3px; }
 .footer-about > p { margin-top: 20px; font-size: 13px; line-height: 1.9; }
 .footer-location { display: block; margin-top: 16px; color: #6b6053; font-size: 9px; }
 .footer-main h2 { font-size: 12px; font-weight: 800; letter-spacing: 0; line-height: 1.6; margin-bottom: 20px; }

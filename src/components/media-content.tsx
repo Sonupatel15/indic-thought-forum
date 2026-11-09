@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { ArrowUpRight, Camera, MessagesSquare, Play, Radio } from "lucide-react";
+import { ArrowUpRight, Camera, MessageCircle, MessagesSquare, Play, Radio, X } from "lucide-react";
 import { podcasts, socialPosts, socialProfiles } from "@/lib/media";
 import { YouTubePlayer } from "./youtube-player";
 
@@ -25,7 +25,7 @@ export function SocialPosts() {
 }
 
 export function SocialChannels({ compact = false }: { compact?: boolean }) {
-  const icons = { YouTube: Play, Instagram: Camera, Facebook: MessagesSquare };
+  const icons = { YouTube: Play, Instagram: Camera, Facebook: MessagesSquare, "X (Twitter)": X, WhatsApp: MessageCircle };
   return <div className={compact ? "social-channel-links" : "social-channel-grid"}>{socialProfiles.map(profile => {
     const Icon = icons[profile.platform];
     return <a className={compact ? "social-channel-link" : "social-channel-card"} key={profile.platform} href={profile.url} target="_blank" rel="noopener noreferrer">

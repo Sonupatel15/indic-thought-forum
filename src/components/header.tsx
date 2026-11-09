@@ -10,8 +10,8 @@ import { navigation, site } from "@/lib/site";
 export function Brand({ footer = false }: { footer?: boolean }) {
   return (
     <Link href="/" prefetch={false} className={`brand${footer ? " brand--footer" : ""}`} aria-label={`${site.name} home`}>
-      <Image src="/images/logo-mark.png" width={58} height={58} alt="" priority={!footer} />
-      <span><strong>Indic Thought Forum</strong><small>Bharateeya Sabhyata Sankalpa</small></span>
+      <Image src={footer ? "/images/itf-assets/itf-logo-footer.webp" : "/images/logo-mark.png"} width={footer ? 56 : 58} height={footer ? 56 : 58} alt="" priority={!footer} />
+      <span><strong>{site.name}</strong><small>{site.tagline}</small></span>
     </Link>
   );
 }

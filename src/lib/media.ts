@@ -19,6 +19,8 @@ export const socialProfiles = [
   { platform: "YouTube", label: "Watch & listen", handle: "@IndicThoughtForum", url: "https://www.youtube.com/@IndicThoughtForum", description: "Long-form podcasts, talks, and community conversations." },
   { platform: "Instagram", label: "In the moment", handle: "@indicthoughtforum", url: "https://www.instagram.com/indicthoughtforum/", description: "Event announcements, short perspectives, and moments from the forum." },
   { platform: "Facebook", label: "Stay connected", handle: "Indic Thought Forum", url: "https://www.facebook.com/indicthoughtforum", description: "Follow the forum and discover updates on Facebook." },
+  { platform: "X (Twitter)", label: "Follow the conversation", handle: "@IndicthoughtFor", url: "https://x.com/IndicthoughtFor", description: "Follow Indic Thought Forum on X." },
+  { platform: "WhatsApp", label: "Join the conversation", handle: "ITF WhatsApp group", url: "https://chat.whatsapp.com/Lr7Bu6azh5JBJmZpETf7Jf", description: "Stay in touch with the ITF community on WhatsApp." },
 ] as const;
 
 export const podcasts: PodcastEpisode[] = [

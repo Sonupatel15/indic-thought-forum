@@ -142,7 +142,7 @@ Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics.
 
 The Media page and homepage feature curated content from the official ITF channel. The supplied episode, `lFzOmGN2o5A`, was verified through YouTube oEmbed as **India, Pakistan and the future of the subcontinent | Dr. Shiv Sastry**, authored by **Indic Thought Forum**. Two further episodes and two community posts were selected from the same channel.
 
-The channel's [About page](https://www.youtube.com/@IndicThoughtForum/about) links back to the reference website and identifies [Instagram](https://www.instagram.com/indicthoughtforum/) and [Facebook](https://www.facebook.com/indicthoughtforum). This is the provenance for the displayed accounts, checked on 31 October 2026; it is not a claim about a platform verification badge. Unverified LinkedIn or X accounts have not been invented.
+The channel's [About page](https://www.youtube.com/@IndicThoughtForum/about) links back to the reference website and identifies [Instagram](https://www.instagram.com/indicthoughtforum/) and [Facebook](https://www.facebook.com/indicthoughtforum). This is the provenance for those accounts, checked on 31 October 2026; it is not a claim about a platform verification badge. The X and WhatsApp URLs were supplied directly by the owner for the footer revision. No LinkedIn account or unrestricted WhatsApp group access is implied.
 
 - **Podcasts:** edit `podcasts` in `src/lib/media.ts` with a stable ID, the 11-character YouTube video ID, approved title/guest/description, topic, and a local thumbnail path.
 - **Community posts:** edit `socialPosts` with the original public post URL and accurate copy. Use an authorized local image or the neutral text treatment, not a misleading event photograph.
@@ -156,6 +156,14 @@ Players connect to **youtube-nocookie.com only after an explicit Load action**. 
 Home intentionally omits the thumbnail's "ITF / Conversations" overlay, the privacy-preview heading, and the long pre-load disclosure. This is a presentation-only change: click-to-load, direct watch links, playback/error status, and keyboard focus restoration remain active. Updates retains its existing preview copy until checkpoint 5.
 
 YouTube's privacy-enhanced domain is **not anonymous playback or a guarantee of zero cookies/storage**. After opt-in, Google/YouTube controls its player and may process the visitor's information. The choice is not persisted across reloads. The privacy notice describes this boundary; social-platform login and post availability remain outside the site's control.
+
+### Footer branding
+
+The shared footer uses the official `public/images/itf-assets/ITF-Logo.png` emblem with the real-text name/tagline from `site`. Header branding and metadata icons are unchanged. The footer displays a 56px square, contain-fitted logo with 18-20px brand text and a 12px tagline that can wrap naturally.
+
+Run `npm run assets:branding` to regenerate the local `itf-logo-footer.webp` from the official source. This preserves transparency, uses lossless WebP at 168x168 for 3x-density display, checks a 32 KiB budget, and leaves the original PNG untouched. No external download is involved.
+
+Footer, Home, and Updates social links share `socialProfiles` in `src/lib/media.ts`. The five profiles include the supplied X and WhatsApp links with visible labels, accessible new-tab notices, and `noopener noreferrer`. Merely rendering a link does not connect to either provider or join the group.
 
 ### Maintaining the event calendar
 

@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup** and **1 - Home Page**.
-Next checkpoint: **2 - Footer**, awaiting user confirmation.
-H-1 through H-12 are verified complete. Later UI checkpoints remain deferred; C-3 is complete through the shared event-data prerequisite.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, and **2 - Footer**.
+Next checkpoint: **3 - About Page**, awaiting user confirmation.
+H-1 through H-12 and F-1 through F-3 are verified complete. C-3 and U-8 are also complete through shared data/components; other later-checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -47,9 +47,9 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 2 - Footer (Site-wide)
 
-- [ ] **F-1 | Not started** - Use and correctly size the official ITF logo. Actual source confirmed as `public/images/itf-assets/ITF-Logo.png`, not the approximate path in the notes.
-- [ ] **F-2 | Not started** - Ensure the full brand name and tagline are aligned, properly formatted real text.
-- [ ] **F-3 | Not started** - Add X and WhatsApp beside the existing social links, using the exact supplied URLs.
+- [x] **F-1 | Done** - Use and correctly size the official ITF logo. Source: `public/images/itf-assets/ITF-Logo.png`; use a lossless, size-bounded local display rendition without changing the original.
+- [x] **F-2 | Done** - Ensure the full brand name and tagline are aligned, properly formatted real text.
+- [x] **F-3 | Done** - Add X and WhatsApp beside the existing social links, using the exact supplied URLs.
 
 ### Checkpoint 3 - About Page
 
@@ -75,7 +75,7 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 - [ ] **U-5 | Not started** - Place "Plan Your Next Conversation" immediately after Events.
 - [ ] **U-6 | Not started** - Rename Community Posts to Posts; remove the existing event announcement; use embeds or Instagram-linked cards for all five supplied posts, initially three with "Load more" for the remainder.
 - [ ] **U-7 | Not started** - Show one gallery without Community/Conversation category splits.
-- [ ] **U-8 | Not started** - Include the supplied X and WhatsApp links in social channels.
+- [x] **U-8 | Done** - Include the supplied X and WhatsApp links in social channels. Completed through F-3's shared data/component update; Updates cards and responsive layout are verified.
 - [ ] **U-9 | Not started** - Remove the specified curated-feed text and pre-load YouTube/Google disclosure text.
 
 ### Checkpoint 6 - Calendar Page
@@ -405,7 +405,50 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 - Resolved map/sparkle decisions are recorded above for their later checkpoints; their implementation is not claimed complete.
 - The legacy preview-port configuration discrepancy remains a documented later tooling follow-up; it did not prevent production-export validation using the existing 4173 listener.
 
-### Checkpoints 2-9 and final review
+### Checkpoint 2 - Completed implementation record
 
-Not started. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 1 and do not begin checkpoint 2 until the user confirms.
+- F-1 through F-3 are implemented and verified Done. U-8 is also verified Done through the shared social component. No About-page changes or later UI redesign were made.
+- Original official logo: `public/images/itf-assets/ITF-Logo.png`, 1024x1024 RGBA, 661,124 bytes. It is an emblem without image-baked brand text.
+- Preserved the original and generated `public/images/itf-assets/itf-logo-footer.webp`: lossless, transparent, 168x168 for 56px display at up to 3x density; actual size **23,334 bytes**, within the 32 KiB limit.
+- Keep the header logo, favicon, Apple icon, and all non-footer branding treatments unchanged.
+- Reuse `Brand footer` and `site.name`/`site.tagline`; use readable 18-20px name and 12px tagline typography, contain-fit the logo, and allow natural text/social-link wrapping.
+- Add the exact supplied X and WhatsApp URLs once in `socialProfiles`; expand the typed icon lookup using existing Lucide icons and preserve new-tab notices and `noopener noreferrer`.
+- Shared-component effect: Footer, Home's compact links, and Updates' social-channel cards all receive the two links. U-8 is complete through this reuse; other checkpoint-5 items remain deferred.
+- New files: `scripts/prepare-branding.mjs`, `public/images/itf-assets/itf-logo-footer.webp`, and `tests/footer.spec.ts`.
+- Changed files: `src/components/header.tsx` (footer branch of Brand and shared text data only), `src/components/media-content.tsx`, `src/lib/media.ts`, `src/app/globals.css`, `package.json` (local asset command only), `README.md`, and this document.
+- Files deleted: none. Asset moves/renames: none. No dependencies or third-party assets are added.
+- Review note: destination URLs are owner-supplied; platform availability, login requirements, and WhatsApp admission are controlled by those platforms. Testing must not join the group or imply a verification badge.
+- Test review: Sharp can reorder flatten/resize operations in one pipeline. The fidelity oracle now materializes the resized source before compositing, rather than weakening a failed tolerance. The generated WebP matches all 84,672 visible RGB channel values exactly on the footer background.
+- Commit subject: `Checkpoint 2: Footer branding and social links`.
+
+#### Validation
+
+- `npm run assets:branding`: **Passed**. Reads only the existing official PNG and writes the derived local WebP; no network downloads or source-asset changes.
+- `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**. All 17 pages/endpoints generated; 13 Windows route-segment files normalized. Restored build-generated `next-env.d.ts` imports to their pre-checkpoint state rather than committing them.
+- Desktop selection:
+  `npm exec -- playwright test footer.spec.ts media.spec.ts website.spec.ts --project=desktop --grep "footer|media previews|verified social channels|every public page|key pages|layouts fit|mobile menu" --workers=3 --timeout=90000 --reporter=list`.
+  The eight other checks passed, with one intentional desktop skip for the mobile-only menu case. The first fidelity assertion exposed the test-oracle ordering issue described above, not a logo mismatch.
+- Corrected fidelity case:
+  `npm exec -- playwright test footer.spec.ts --project=desktop --grep "faithful lightweight" --workers=1 --timeout=90000 --reporter=list`: **1 passed**. No tolerance was widened; the visible RGB comparison is exact.
+- Additional browser/device command:
+  `npm exec -- playwright test footer.spec.ts website.spec.ts --project=mobile --project=firefox --project=webkit --project=ios --project=tablet --grep "footer uses|footer logo|all public footers|mobile menu" --workers=3 --timeout=90000 --reporter=list`: **13 passed, 7 intentional skips**, no failures.
+  Five skips avoid duplicating the full-route sweep outside desktop; two skip mobile-menu tests in desktop Firefox/WebKit profiles.
+- Effective final selected checks: **22 passed, 8 intentional profile-specific skips**. All previously failing assertions were corrected and rerun successfully.
+- Footer and shared Updates cards were checked on Home and Updates at **320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS-pixel widths** across all six configured profiles. Heights were 900px below 2560px and 2160px for the largest widths.
+- Verified 56x56 contain-fit logo dimensions, faithful official-source pixels/transparency, unchanged header asset, 18px minimum name size, 12px minimum tagline size, left alignment/vertical centering, no clipped copy or horizontal overflow, five footer links with at least 44px height, and five nonoverflowing Updates cards.
+- All 13 public routes have the expected logo, real-text branding, retained YouTube/Instagram/Facebook profiles, exact X/WhatsApp destinations, new-tab notices, and safe link attributes. Home/Updates shared links are also verified.
+- Existing all-route runtime/image checks, automated WCAG A/AA checks, multi-page responsive checks, navigation labels, zero-external-request media behavior, and mobile-menu/focus behavior pass.
+- Direct desktop **1440x1000** and phone **393x851** footer screenshots were visually inspected; temporary inspection files were removed after review.
+- Reused the user's already-running `127.0.0.1:4173` export preview after verifying HTTP 200. No preview/dev server was started or stopped. No dependencies were installed.
+- External destinations were not opened, no WhatsApp group was joined, and no physical-device certification or platform-availability guarantee is claimed.
+
+#### Review handoff
+
+- No checkpoint-2 item remains blocked.
+- The original official logo and all existing footer wording/navigation remain intact. Only the footer logo rendition, brand formatting, and requested social-link additions changed.
+- Review the footer on any page; checkpoint 3 (About) awaits confirmation. Keep its previously confirmed sparkle-removal scope and other About requirements for that next checkpoint.
+
+### Checkpoints 3-9 and final review
+
+Not started except the already verified shared-data/component items C-3 and U-8. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
+Stop after checkpoint 2 and do not begin checkpoint 3 until the user confirms.

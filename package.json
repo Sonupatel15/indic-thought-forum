@@ -17,6 +17,7 @@
     "assets:prepare": "node scripts/prepare-assets.mjs",
     "assets:media": "node scripts/prepare-media.mjs",
     "assets:posters": "node scripts/prepare-event-posters.mjs",
+    "assets:branding": "node scripts/prepare-branding.mjs",
     "measure:performance": "node scripts/measure-performance.mjs"
   },
   "dependencies": {
