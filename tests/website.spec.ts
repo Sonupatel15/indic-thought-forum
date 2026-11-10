@@ -2,7 +2,6 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { sendSubmission, type Submission } from "../src/lib/forms";
 import { events, gallery, principles, steps } from "../src/lib/site";
-import { getEventSchedule } from "../src/lib/schedule";
 import { podcasts, socialPosts } from "../src/lib/media";
 
 const routes = ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/join/", "/support/", "/privacy/", "/accessibility/"];
@@ -63,31 +62,39 @@ test("mobile menu opens, navigates, and closes with Escape", async ({ page }, te
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
 });
 
-test("gallery filters, image navigation, Escape, and focus restoration work", async ({ page }) => {
+test("Updates has one gallery, image navigation, Escape, and focus restoration work", async ({ page }) => {
   await page.goto("/events/#gallery");
+  await expect(page.locator("#gallery .filter-bar")).toHaveCount(0);
   await expect(page.locator(".gallery-photo")).toHaveCount(gallery.length);
-  await page.getByRole("button", { name: "Community", exact: true }).click();
-  await expect(page.locator(".gallery-photo")).toHaveCount(3);
   const first = page.locator(".gallery-photo").first();
   await first.click();
   const dialog = page.getByRole("dialog");
   await expect(dialog).toBeVisible();
-  await expect(dialog).toContainText("1 of 3");
+  await expect(dialog).toContainText(`1 of ${gallery.length}`);
   await page.keyboard.press("ArrowRight");
-  await expect(dialog).toContainText("2 of 3");
+  await expect(dialog).toContainText(`2 of ${gallery.length}`);
   await page.keyboard.press("ArrowLeft");
-  await expect(dialog).toContainText("1 of 3");
+  await expect(dialog).toContainText(`1 of ${gallery.length}`);
   await page.keyboard.press("Escape");
   await expect(dialog).not.toBeVisible();
   await expect(first).toBeFocused();
 });
 
-test("event categories filter the archive and original posters open", async ({ page }) => {
+test("event archive loads every event newest first without category filters", async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-11-09T12:00:00Z"));
   await page.goto("/events/");
+  await expect(page.locator(".event-card")).toHaveCount(3);
+  await expect(page.locator("#events .filter-bar, #events .event-tag")).toHaveCount(0);
+  for (const category of ["History", "Ideas & dialogue"]) {
+    await expect(page.locator("#events").getByRole("button", { name: category, exact: true })).toHaveCount(0);
+  }
+  await page.getByRole("button", { name: "Load more events" }).click();
   await expect(page.locator(".event-card")).toHaveCount(6);
-  await page.getByRole("button", { name: "History", exact: true }).click();
-  await expect(page.locator(".event-card")).toHaveCount(2);
+  await page.getByRole("button", { name: "Load more events" }).click();
+  await expect(page.locator(".event-card")).toHaveCount(events.length);
+  await expect(page.getByRole("button", { name: "Load more events" })).toHaveCount(0);
+  const dates = await page.locator(".event-card time").evaluateAll(items => items.map(item => item.getAttribute("datetime")));
+  expect(dates).toEqual([...dates].sort((a, b) => b!.localeCompare(a!)));
   await page.getByRole("button", { name: /View poster for/ }).first().click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await page.getByRole("button", { name: "Close image viewer" }).click();
@@ -186,10 +193,17 @@ test("combined sections preserve editorial content and all existing archive and 
   for (const step of steps) await expect(main).toContainText(step.description);
   await expect(page.locator(".principle-grid")).toHaveCount(1);
   await page.goto("/events/");
-  for (const event of getEventSchedule(events, "2026-11-01").past) await expect(page.locator("#events")).toContainText(event.title);
+  await expect(page.locator("#events .event-card")).toHaveCount(3);
+  await page.getByRole("button", { name: "Load more events" }).click();
+  await page.getByRole("button", { name: "Load more events" }).click();
+  for (const event of events) await expect(page.locator("#events")).toContainText(event.title);
   for (const photo of gallery) await expect(page.locator(`#gallery img[alt="${photo.alt}"]`)).toHaveCount(1);
+  while (await page.getByRole("button", { name: "Load more podcasts" }).count()) {
+    await page.getByRole("button", { name: "Load more podcasts" }).click();
+  }
   for (const podcast of podcasts) await expect(page.locator("#podcasts")).toContainText(podcast.title);
-  for (const post of socialPosts) await expect(page.locator("#community-posts")).toContainText(post.title);
+  await page.getByRole("button", { name: "Load more posts" }).click();
+  for (const post of socialPosts) await expect(page.locator("#posts")).toContainText(post.title);
   await expect(page.locator("main")).not.toContainText("Blogs");
 });
 
@@ -214,7 +228,7 @@ test("affected navigation links and fragments resolve, including legacy URLs", a
   }
   await page.goto("/events/");
   const localNavigation = page.getByRole("navigation", { name: "Explore updates" });
-  for (const id of ["events", "gallery", "podcasts", "community-posts", "social-channels"]) {
+  for (const id of ["podcasts", "events", "plan-conversation", "posts", "gallery", "social-channels"]) {
     await localNavigation.locator(`a[href="#${id}"]`).click();
     await expect(page).toHaveURL(new RegExp(`#${id}$`));
     await expect(page.locator(`#${id}`)).toBeInViewport();

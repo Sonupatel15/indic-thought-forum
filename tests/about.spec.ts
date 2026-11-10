@@ -45,11 +45,11 @@ test("About and Philosophy retain the shared hero and original content without p
   await expect(page.locator(`.gallery-grid--preview img[src="${gallery[0].src}"]`)).toHaveCount(1);
 });
 
-test("About ornament removal preserves every other page's existing decorations and Home principles", async ({ page }, testInfo) => {
+test("page-specific ornament removal preserves the intended scope and Home principles", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "The full ornament-scope sweep runs once; About is checked in every profile.");
   for (const [route, intro, cta] of [
-    ["/", 0, 1], ["/sankalpas/", 1, 1], ["/events/", 1, 1], ["/calendar/", 1, 1],
-    ["/gallery/", 1, 1], ["/media/", 1, 1], ["/contact-us/", 1, 0], ["/join/", 1, 0],
+    ["/", 0, 1], ["/sankalpas/", 0, 0], ["/events/", 0, 0], ["/calendar/", 1, 1],
+    ["/gallery/", 0, 0], ["/media/", 0, 0], ["/contact-us/", 1, 0], ["/join/", 1, 0],
     ["/support/", 1, 0], ["/privacy/", 1, 0], ["/accessibility/", 1, 0],
   ] as const) {
     await page.goto(route);

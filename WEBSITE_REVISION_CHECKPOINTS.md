@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, and **4 - Sankalpas Page**.
-Next checkpoint: **5 - Updates Page**, awaiting user confirmation.
-H-1 through H-12, F-1 through F-3, A-1 through A-5, and S-1 through S-4 are verified complete. C-3 and U-8 are also complete through shared data/components; other later-checkpoint requirements remain deferred.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, and **5 - Updates Page**.
+Next checkpoint: **6 - Calendar Page**, awaiting user confirmation.
+H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, and U-1 through U-9 are verified complete. C-3 is also complete through shared event data; other later-checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -68,15 +68,15 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 5 - Updates Page
 
-- [ ] **U-1 | Not started** - Remove the Gemini-like ornament.
-- [ ] **U-2 | Not started** - Order the main sections Podcasts -> Events -> Plan Your Next Conversation -> Posts -> Gallery; keep relevant section navigation in sync.
-- [ ] **U-3 | Not started** - Verify and include every podcast from the official YouTube channel, newest first; show three initially and three more per "Load more" click; preserve the current podcast layout.
-- [ ] **U-4 | Not started** - Include all events newest first, show three initially, and reveal three more per click until exhausted; remove History/Ideas & Dialogue and similar event filters/categories from this section.
-- [ ] **U-5 | Not started** - Place "Plan Your Next Conversation" immediately after Events.
-- [ ] **U-6 | Not started** - Rename Community Posts to Posts; remove the existing event announcement; use embeds or Instagram-linked cards for all five supplied posts, initially three with "Load more" for the remainder.
-- [ ] **U-7 | Not started** - Show one gallery without Community/Conversation category splits.
+- [x] **U-1 | Done** - Remove the Gemini-like ornament.
+- [x] **U-2 | Done** - Order the main sections Podcasts -> Events -> Plan Your Next Conversation -> Posts -> Gallery; keep relevant section navigation in sync.
+- [x] **U-3 | Done** - Verify and include every podcast from the official YouTube channel, newest first; show three initially and three more per "Load more" click; preserve the current podcast layout.
+- [x] **U-4 | Done** - Include all events newest first, show three initially, and reveal three more per click until exhausted; remove History/Ideas & Dialogue and similar event filters/categories from this section.
+- [x] **U-5 | Done** - Place "Plan Your Next Conversation" immediately after Events.
+- [x] **U-6 | Done** - Rename Community Posts to Posts; remove the existing event announcement; use embeds or Instagram-linked cards for all five supplied posts, initially three with "Load more" for the remainder.
+- [x] **U-7 | Done** - Show one gallery without Community/Conversation category splits.
 - [x] **U-8 | Done** - Include the supplied X and WhatsApp links in social channels. Completed through F-3's shared data/component update; Updates cards and responsive layout are verified.
-- [ ] **U-9 | Not started** - Remove the specified curated-feed text and pre-load YouTube/Google disclosure text.
+- [x] **U-9 | Done** - Remove the specified curated-feed text and pre-load YouTube/Google disclosure text.
 
 ### Checkpoint 6 - Calendar Page
 
@@ -514,7 +514,33 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 - No checkpoint-4 item remains blocked. The existing hero and pathway cards are preserved; only Sankalpas' two ornaments, full-name references, and pathway-heading wrapping/alignment changed.
 - Review Sankalpas, then confirm checkpoint 5 (Updates). Do not begin it until confirmed.
 
-### Checkpoints 5-9 and final review
+### Checkpoint 5 - Completed implementation record
 
-Not started except the already verified shared-data/component items C-3 and U-8. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 4 and do not begin checkpoint 5 until the user confirms.
+- U-1 through U-9 are implemented and verified Done. U-8 remains complete through the shared social data/component work from checkpoint 2.
+- Removed the intro and CTA ornaments on Updates only. Reordered the page and fragment navigation to Podcasts -> Events -> Plan Your Next Conversation -> Posts -> Gallery, followed by Social Channels.
+- Verified the official channel's uploads playlist and checked the ten included long-form podcast/conversation titles and channel attribution. The list follows playlist order, newest first; shorts and a separately titled lecture were excluded. No unavailable publication dates were inferred. Preserved the previous Shiv Sastry Home feature independently of the Updates ordering.
+- Kept the featured-plus-list podcast layout and click-to-load player. Updates initially shows three podcast players and loads the next three per click. Events list all seven confirmed entries newest first, initially three and then three per click, without category filters. Posts link to all five supplied Instagram URLs, initially three and then the remaining two; Instagram captions and dates are not reproduced because they were not reliably available without login. The gallery is a single unfiltered collection.
+- Removed the curated-feed notice and pre-load YouTube/Google disclosure from Updates while retaining click-to-load behavior, direct watch links, and post-opt-in player status/error states.
+- Changed: `src/app/events/page.tsx`, `src/app/globals.css`, `src/components/event-list.tsx`, `src/components/gallery-grid.tsx`, `src/components/media-content.tsx`, `src/lib/media.ts`, `tests/about.spec.ts`, `tests/home.spec.ts`, `tests/media.spec.ts`, `tests/website.spec.ts`, `README.md`, and this document.
+- Created seven local podcast thumbnails: `public/images/podcast-cjp-protest.webp`, `public/images/podcast-hindu-genocides.webp`, `public/images/podcast-indian-history-kannada.webp`, `public/images/podcast-medha-bhaskaran.webp`, `public/images/podcast-northeast-india.webp`, `public/images/podcast-pakistan-failed-state.webp`, and `public/images/podcast-places-of-worship.webp`. No files were deleted or moved.
+- Commit subject: `Checkpoint 5: Updates page changes`.
+
+#### Validation
+
+- `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**. Restored build-generated `next-env.d.ts` to its committed baseline.
+- `npm exec -- playwright test media.spec.ts --workers=3 --timeout=90000 --reporter=list`: **48 passed** across all six configured browser/device profiles.
+- Desktop selector checks in `website.spec.ts`, `home.spec.ts`, and `about.spec.ts`: **8 passed**. The corrected event-category assertion and unified gallery check also passed separately.
+- Responsive Updates tests covered **320–3840 CSS-pixel widths** across all six configured browser/device profiles. Tests also cover section order/navigation, podcast/event/post pagination and links, gallery behavior, player privacy behavior, and preservation of the Home feature.
+- `git diff --check`: **Passed**. Visually inspected the Updates intro/navigation, podcast feature, event archive, and Instagram-linked post cards in the existing local preview at `127.0.0.1:4173`.
+- No physical-device certification or live Instagram/YouTube content verification is claimed.
+
+#### Review handoff
+
+- No checkpoint-5 item remains blocked. Review the podcast inclusion criterion (ten long-form conversations from the official uploads playlist) and neutral Instagram-linked cards; no captions or dates were invented.
+- The Home feature remains pinned to its previous episode. Updates player previews still require an explicit user click before loading YouTube.
+- Checkpoint 6 (Calendar) is next. Stop here and wait for explicit user confirmation before starting it.
+
+### Checkpoints 6-9 and final review
+
+Not started except the already verified shared-data/component item C-3. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
+Stop after checkpoint 5 and do not begin checkpoint 6 until the user confirms.

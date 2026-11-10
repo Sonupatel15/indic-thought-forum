@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test, expect } from "@playwright/test";
-import { getYouTubeEmbedUrl, podcasts, socialPosts, socialProfiles } from "../src/lib/media";
+import { getYouTubeEmbedUrl, homeFeaturedPodcast, podcasts, socialPosts, socialProfiles } from "../src/lib/media";
 
 test("media previews make no external requests before a visitor opts in", async ({ page }) => {
   const external: string[] = [];
@@ -45,25 +45,78 @@ test("keyboard opt-in loads only the selected privacy-enhanced player and closin
 
 test("every podcast retains a usable YouTube link even when embedding is unavailable", async ({ page }) => {
   await page.goto("/events/#podcasts");
+  expect(podcasts.map(episode => episode.videoId)).toEqual([
+    "UX37BufManw", "CP8G3DXbzgw", "9zZnYfYLTsE", "v-0RB4e5SNo", "trB-R1Mf3PI",
+    "lFzOmGN2o5A", "za2JjGqiP28", "3f_nS6Z3lhE", "teN5_eTt0cs", "02Z4CCbVsRg",
+  ]);
+  expect(homeFeaturedPodcast.id).toBe("shiv-sastry");
+  await expect(page.locator("#podcasts .youtube-player")).toHaveCount(3);
+  await page.getByRole("button", { name: "Load more podcasts" }).click();
+  await expect(page.locator("#podcasts .youtube-player")).toHaveCount(6);
+  await page.getByRole("button", { name: "Load more podcasts" }).click();
+  await expect(page.locator("#podcasts .youtube-player")).toHaveCount(9);
+  await page.getByRole("button", { name: "Load more podcasts" }).click();
+  await expect(page.locator("#podcasts .youtube-player")).toHaveCount(podcasts.length);
+  await expect(page.getByRole("button", { name: "Load more podcasts" })).toHaveCount(0);
   for (const episode of podcasts) {
     const link = page.locator(`.youtube-controls a[href="https://www.youtube.com/watch?v=${episode.videoId}"]`);
     await expect(link).toHaveAttribute("target", "_blank");
     await expect(link).toHaveAttribute("rel", "noopener noreferrer");
   }
-  await expect(page.locator(".youtube-disclosure").first()).toContainText("No player connects before you choose");
+  await expect(page.locator("#podcasts .youtube-disclosure")).toHaveCount(0);
+  await expect(page.locator("#podcasts")).not.toContainText("Privacy-first preview");
+  await expect(page.locator("#podcasts")).not.toContainText("Choosing Load connects to YouTube/Google");
 });
 
-test("verified social channels and curated event posts link to their original source", async ({ page }) => {
-  await page.goto("/events/#social-channels");
+test("verified social channels and five Instagram posts link to their original source", async ({ page }) => {
+  await page.goto("/events/#posts");
+  await expect(page.locator("#posts .social-post")).toHaveCount(3);
+  await expect(page.locator("#posts a[href*='instagram.com']")).toHaveCount(3);
+  await page.getByRole("button", { name: "Load more posts" }).click();
+  await expect(page.locator("#posts .social-post")).toHaveCount(5);
+  await expect(page.locator("#posts a[href*='instagram.com']")).toHaveCount(5);
+  await expect(page.locator("#posts")).not.toContainText("Queen Tara");
+  await expect(page.locator("#posts a[href*='youtube.com']")).toHaveCount(0);
+  await page.locator("#social-channels").scrollIntoViewIfNeeded();
   for (const profile of socialProfiles) {
     await expect(page.locator(`.social-channel-grid a[href="${profile.url}"]`)).toHaveCount(1);
   }
   for (const post of socialPosts) {
-    const link = page.locator(`.social-post a[href="${post.url}"]`);
+    const link = page.locator(`#posts .social-post a[href="${post.url}"]`);
     await expect(link).toHaveCount(1);
     await expect(link).toHaveAttribute("rel", "noopener noreferrer");
   }
-  await expect(page.locator(".media-privacy-note")).toContainText("not an automatic live feed");
+  await expect(page.locator(".media-privacy-note")).toHaveCount(0);
+});
+
+test("Updates orders sections and navigation, removes ornaments, and omits pre-load feed disclosures", async ({ page }) => {
+  await page.goto("/events/");
+  await expect(page.locator(".page-intro")).toHaveCount(1);
+  await expect(page.locator(".page-intro .intro-ornament, .community-cta .cta-decoration")).toHaveCount(0);
+  const orderedSections = await page.locator("main > section[id]").evaluateAll(sections => sections.map(section => section.id));
+  const requestedOrder = ["podcasts", "events", "plan-conversation", "posts", "gallery"];
+  expect(orderedSections.filter(id => requestedOrder.includes(id))).toEqual(requestedOrder);
+  await expect(page.getByRole("navigation", { name: "Explore updates" }).getByRole("link")).toHaveText([
+    "Podcasts", "Events", "Plan your next conversation", "Posts", "Gallery", "Social channels",
+  ]);
+  await expect(page.locator("#podcasts .youtube-disclosure")).toHaveCount(0);
+  await expect(page.locator("#podcasts")).not.toContainText("Privacy-first preview");
+  await expect(page.locator("#podcasts")).not.toContainText("A curated selection");
+  await expect(page.locator("#posts .filter-bar, #gallery .filter-bar")).toHaveCount(0);
+});
+
+test("Updates keeps the initial media cards and load-more controls within narrow and large viewports", async ({ page }) => {
+  for (const width of [320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840]) {
+    await page.setViewportSize({ width, height: width >= 2560 ? 2160 : 900 });
+    await page.goto("/events/");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Updates at ${width}px`).toBe(true);
+    await expect(page.locator("#podcasts .youtube-player")).toHaveCount(3);
+    await expect(page.locator("#events .event-card")).toHaveCount(3);
+    await expect(page.locator("#posts .social-post")).toHaveCount(3);
+    await expect(page.getByRole("button", { name: "Load more podcasts" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Load more events" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Load more posts" })).toBeVisible();
+  }
 });
 
 test("responsive hero loads a single correctly sized image and uses the variable font", async ({ page }) => {

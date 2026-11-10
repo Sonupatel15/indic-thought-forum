@@ -1,27 +1,36 @@
-import Image from "next/image";
+"use client";
+
 import { ArrowUpRight, Camera, MessageCircle, MessagesSquare, Play, Radio, X } from "lucide-react";
-import { podcasts, socialPosts, socialProfiles } from "@/lib/media";
+import { useState } from "react";
+import { homeFeaturedPodcast, podcasts, socialPosts, socialProfiles, type PodcastEpisode } from "@/lib/media";
 import { YouTubePlayer } from "./youtube-player";
 
-export function FeaturedPodcast({ showPreviewDetails = true }: { showPreviewDetails?: boolean }) {
-  const episode = podcasts[0];
+export function FeaturedPodcast({ episode = homeFeaturedPodcast, showPreviewDetails = true }: { episode?: PodcastEpisode; showPreviewDetails?: boolean }) {
   return <article className="featured-podcast">
     <YouTubePlayer episode={episode} showPreviewDetails={showPreviewDetails} />
-    <div className="podcast-editorial"><span className="eyebrow">Featured conversation</span><h3>{episode.title}</h3><p className="podcast-guest">With {episode.guest}</p><p>{episode.description}</p><div className="podcast-topics"><span>{episode.topic}</span><span>Long-form podcast</span></div><p className="media-editor-note">A little more time. A little more context.<br />Conversations worth staying with.</p></div>
+    <div className="podcast-editorial"><span className="eyebrow">Featured conversation</span><h3>{episode.title}</h3>{episode.guest && <p className="podcast-guest">With {episode.guest}</p>}{episode.description && <p>{episode.description}</p>}<div className="podcast-topics"><span>{episode.topic}</span><span>Long-form podcast</span></div><p className="media-editor-note">A little more time. A little more context.<br />Conversations worth staying with.</p></div>
   </article>;
 }
 
-export function MorePodcasts() {
-  return <div className="podcast-grid">{podcasts.slice(1).map(episode => <article className="podcast-card" key={episode.id}><YouTubePlayer episode={episode} /><div className="podcast-card-copy"><span className="eyebrow">{episode.topic}</span><h3>{episode.title}</h3><p className="podcast-guest">{episode.guest}</p><p>{episode.description}</p></div></article>)}</div>;
+export function MorePodcasts({ episodes = podcasts.slice(1), showPreviewDetails = true }: { episodes?: readonly PodcastEpisode[]; showPreviewDetails?: boolean }) {
+  const [visibleCount, setVisibleCount] = useState(2);
+  const visible = episodes.slice(0, visibleCount);
+  return <>
+    <div className="podcast-grid" id="podcast-archive">{visible.map(episode => <article className="podcast-card" key={episode.id}><YouTubePlayer episode={episode} showPreviewDetails={showPreviewDetails} /><div className="podcast-card-copy"><span className="eyebrow">{episode.topic}</span><h3>{episode.title}</h3>{episode.guest && <p className="podcast-guest">{episode.guest}</p>}{episode.description && <p>{episode.description}</p>}</div></article>)}</div>
+    {visible.length < episodes.length && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="podcast-archive" onClick={() => setVisibleCount(count => Math.min(count + 3, episodes.length))}>Load more podcasts</button></div>}
+  </>;
 }
 
 export function SocialPosts() {
-  return <div className="social-post-grid">{socialPosts.map(post => <article className="social-post" key={post.id}>
-    <div className={`social-post-visual${post.image ? "" : " social-post-visual--text"}`}>
-      {post.image ? <Image src={post.image} alt="Original Queen Tara event poster" fill sizes="(max-width: 760px) 90vw, 45vw" /> : <><MessagesSquare size={45} strokeWidth={1} aria-hidden="true" /><span>Ideas shared.<br />Conversations continued.</span><small>Indic Thought Forum</small></>}
-    </div>
-    <div className="social-post-copy"><span className="eyebrow">{post.type}</span><h3>{post.title}</h3><p>{post.description}</p><a className="text-link" href={post.url} target="_blank" rel="noopener noreferrer">Read original YouTube post <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a></div>
-  </article>)}</div>;
+  const [visibleCount, setVisibleCount] = useState(3);
+  const visible = socialPosts.slice(0, visibleCount);
+  return <>
+    <div className="social-post-grid" id="instagram-posts">{visible.map(post => <article className="social-post" key={post.id}>
+      <div className="social-post-visual social-post-visual--text"><Camera size={45} strokeWidth={1} aria-hidden="true" /><span>Instagram</span><small>Indic Thought Forum</small></div>
+      <div className="social-post-copy"><span className="eyebrow">Instagram</span><h3>{post.title}</h3><p>View the original post from Indic Thought Forum on Instagram.</p><a className="text-link" href={post.url} target="_blank" rel="noopener noreferrer" aria-label={`View ${post.title} on Instagram (opens in a new tab)`}>View on Instagram <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a></div>
+    </article>)}</div>
+    {visible.length < socialPosts.length && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="instagram-posts" onClick={() => setVisibleCount(count => Math.min(count + 3, socialPosts.length))}>Load more posts</button></div>}
+  </>;
 }
 
 export function SocialChannels({ compact = false }: { compact?: boolean }) {

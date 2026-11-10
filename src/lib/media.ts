@@ -2,8 +2,8 @@ export interface PodcastEpisode {
   id: string;
   videoId: string;
   title: string;
-  guest: string;
-  description: string;
+  guest?: string;
+  description?: string;
   topic: string;
   thumbnail: string;
 }
@@ -23,45 +23,109 @@ export const socialProfiles = [
   { platform: "WhatsApp", label: "Join the conversation", handle: "ITF WhatsApp group", url: "https://chat.whatsapp.com/Lr7Bu6azh5JBJmZpETf7Jf", description: "Stay in touch with the ITF community on WhatsApp." },
 ] as const;
 
-export const podcasts: PodcastEpisode[] = [
-  {
-    id: "shiv-sastry", videoId: "lFzOmGN2o5A",
-    title: "India, Pakistan and the future of the subcontinent",
-    guest: "Dr. Shiv Sastry", topic: "Ideas & dialogue",
-    description: "A long-form conversation with Dr. Shiv Sastry on India, Pakistan, and the questions shaping the subcontinent.",
-    thumbnail: "/images/podcast-shiv-sastry.webp",
-  },
+const shivSastry: PodcastEpisode = {
+  id: "shiv-sastry", videoId: "lFzOmGN2o5A",
+  title: "India, Pakistan and the future of the subcontinent",
+  guest: "Dr. Shiv Sastry", topic: "Ideas & dialogue",
+  description: "A long-form conversation with Dr. Shiv Sastry on India, Pakistan, and the questions shaping the subcontinent.",
+  thumbnail: "/images/podcast-shiv-sastry.webp",
+};
+
+export const podcasts: readonly PodcastEpisode[] = [
   {
     id: "queen-tara", videoId: "UX37BufManw",
-    title: "Queen Tara: The Unbreakable Queen Who Stood Against Aurangzeb",
+    title: "Queen Tara: The Unbreakable Queen Who Stood Against Aurangzeb | Medha Bhaskaran | Ep. 7",
     guest: "Medha Bhaskaran", topic: "History",
     description: "Explore the story of Queen Tara with author Medha Bhaskaran in the seventh episode of the ITF podcast.",
     thumbnail: "/images/podcast-queen-tara.webp",
   },
   {
     id: "sustainable-choices", videoId: "CP8G3DXbzgw",
-    title: "Plastic Is Everywhere, But Where?",
+    title: "Plastic Is Everywhere, But Where? | Plastic, Biodegradable & Sustainable Choices | ITF Podcast Ep. 6",
     guest: "ITF Podcast, Episode 6", topic: "Sustainability",
     description: "A conversation about plastic, biodegradable alternatives, and the choices behind a more sustainable everyday life.",
     thumbnail: "/images/podcast-sustainability.webp",
   },
+  {
+    id: "indian-history-kannada", videoId: "9zZnYfYLTsE",
+    title: "ಭಾರತದ ಇತಿಹಾಸವನ್ನು ನಾವು ತಪ್ಪಾಗಿ ಕಲಿತಿದ್ದೇವೇ? | Manjunatha Ajjampura | ITF Podcast #05",
+    guest: "Manjunatha Ajjampura", topic: "History",
+    description: "The Kannada-language ITF Podcast episode with Manjunatha Ajjampura.",
+    thumbnail: "/images/podcast-indian-history-kannada.webp",
+  },
+  {
+    id: "northeast-india", videoId: "v-0RB4e5SNo",
+    title: "The Hidden Reality of Northeast India: Demographics, Permits & Article 371 | Pankaj Saxena",
+    guest: "Pankaj Saxena", topic: "Northeast India",
+    description: "A long-form conversation with Pankaj Saxena on Northeast India.",
+    thumbnail: "/images/podcast-northeast-india.webp",
+  },
+  {
+    id: "medha-bhaskaran", videoId: "trB-R1Mf3PI",
+    title: "Medha Deshmukh Bhaskaran on Queen Tara, Maratha History, and Her Journey | ITF & Medha Bhaskaran",
+    guest: "Medha Deshmukh Bhaskaran", topic: "History",
+    description: "A long-form conversation on Queen Tara, Maratha history, and Medha Bhaskaran's journey.",
+    thumbnail: "/images/podcast-medha-bhaskaran.webp",
+  },
+  {
+    ...shivSastry,
+  },
+  {
+    id: "cjp-protest", videoId: "za2JjGqiP28",
+    title: "The Truth Behind the CJP Protest | NEET, Dharmendra Pradhan & The Bigger Picture | ITF Podcast Ep.2",
+    topic: "ITF Podcast",
+    description: "An ITF Podcast episode on the CJP protest, NEET, and Dharmendra Pradhan.",
+    thumbnail: "/images/podcast-cjp-protest.webp",
+  },
+  {
+    id: "pakistan-failed-state", videoId: "3f_nS6Z3lhE",
+    title: "Pakistan Failed State And Its Effect On India | ITF - 3 | Dr. Shiv Shastry",
+    guest: "Dr. Shiv Shastry", topic: "Ideas & dialogue",
+    description: "A long-form conversation with Dr. Shiv Shastry about Pakistan and its effect on India.",
+    thumbnail: "/images/podcast-pakistan-failed-state.webp",
+  },
+  {
+    id: "places-of-worship-podcast", videoId: "teN5_eTt0cs",
+    title: "Places of Worship Act, 1991 | Religious Freedom | Legal Implications | ITF - 5 | Manjunath Ajjampura",
+    guest: "Manjunath Ajjampura", topic: "Law & society",
+    description: "An ITF episode on the Places of Worship Act, religious freedom, and its legal implications.",
+    thumbnail: "/images/podcast-places-of-worship.webp",
+  },
+  {
+    id: "hindu-genocides", videoId: "02Z4CCbVsRg",
+    title: "What happens when Gen Z questions an author on Hindu Genocides | Bijeet Prasantha | ITF Podcast Ep.1",
+    guest: "Bijeet Prasantha", topic: "History",
+    description: "The first ITF Podcast episode, featuring a conversation with author Bijeet Prasantha.",
+    thumbnail: "/images/podcast-hindu-genocides.webp",
+  },
 ];
+
+export const homeFeaturedPodcast = shivSastry;
 
 export const socialPosts = [
   {
-    id: "queen-tara-announcement",
-    title: "A conversation around Queen Tara",
-    description: "Revisit the original community announcement for our conversation with Medha Deshmukh Bhaskaran.",
-    url: "https://www.youtube.com/post/UgkxmzQetNNgUKlGLNtj0L_1yj-ISRBlz9fm",
-    image: "/images/medha-bhaskaran/event-poster/queen-tara-2026-06-06.webp",
-    type: "Event announcement",
+    id: "instagram-dfcL3sFiMKi",
+    title: "Instagram post 1",
+    url: "https://www.instagram.com/indicthoughtforum/p/DfcL3sFiMKi/",
   },
   {
-    id: "places-of-worship",
-    title: "Talk #05: Places of Worship Act, 1991",
-    description: "An ITF community recap of a discussion with Sri Manjunatha Ajjampura about the Act and its historical and constitutional context.",
-    url: "https://www.youtube.com/post/UgkxumPIs7-TmRNqR4Ocf599dJBcAIXGNz-0",
-    image: null,
-    type: "Community recap",
+    id: "instagram-DaxmfnmE2o3",
+    title: "Instagram post 2",
+    url: "https://www.instagram.com/indicthoughtforum/p/DaxmfnmE2o3/",
+  },
+  {
+    id: "instagram-DZ27VeuCC4k",
+    title: "Instagram post 3",
+    url: "https://www.instagram.com/indicthoughtforum/p/DZ27VeuCC4k/",
+  },
+  {
+    id: "instagram-DZu3_bzGajl",
+    title: "Instagram post 4",
+    url: "https://www.instagram.com/indicthoughtforum/p/DZu3_bzGajl/",
+  },
+  {
+    id: "instagram-DW5XbcbmapO",
+    title: "Instagram post 5",
+    url: "https://www.instagram.com/indicthoughtforum/p/DW5XbcbmapO/",
   },
 ] as const;

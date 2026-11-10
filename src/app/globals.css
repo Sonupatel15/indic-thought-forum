@@ -387,6 +387,8 @@ main:focus { outline: none; }
 .social-post-copy h3 { font-size: 25px; }
 .social-post-copy p { font-size: 14px; margin-top: 17px; }
 .social-post-copy .text-link { font-size: 13px; margin-top: 23px; }
+.load-more-control { display: flex; justify-content: center; margin-top: 32px; }
+.load-more-control .button { min-width: 160px; }
 .media-privacy-note { display: flex; align-items: flex-start; gap: 10px; border-top: 1px solid var(--line); margin-top: 35px; padding-top: 23px; font-size: 12px; max-width: 880px; }
 .media-privacy-note > svg { margin-top: 4px; }
 

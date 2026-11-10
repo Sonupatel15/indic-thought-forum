@@ -3,7 +3,7 @@ import { join } from "node:path";
 import sharp from "sharp";
 import { test, expect } from "@playwright/test";
 import { events, gallery, site } from "../src/lib/site";
-import { getYouTubeEmbedUrl, podcasts } from "../src/lib/media";
+import { getYouTubeEmbedUrl, homeFeaturedPodcast } from "../src/lib/media";
 
 test("Home has real-text branding, unnumbered sections, updated goals, and no purpose photo", async ({ page }) => {
   await page.goto("/");
@@ -129,7 +129,7 @@ test("Home posters stay uncropped and aligned with readable copy from phones thr
 });
 
 test("Home keeps keyboard opt-in, playback errors, direct watch links, and focus restoration without preview clutter", async ({ page }) => {
-  const episode = podcasts[0];
+  const episode = homeFeaturedPodcast;
   await page.route("https://www.youtube-nocookie.com/embed/**", route => route.fulfill({
     contentType: "text/html",
     body: "<!doctype html><html lang='en'><title>Mock video</title><button>Play video</button></html>",

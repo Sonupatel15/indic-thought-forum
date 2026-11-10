@@ -148,12 +148,12 @@ About retains the shared text-based `PageIntro` hero, breadcrumb, original headi
 
 ### Podcasts and social publishing
 
-The Media page and homepage feature curated content from the official ITF channel. The supplied episode, `lFzOmGN2o5A`, was verified through YouTube oEmbed as **India, Pakistan and the future of the subcontinent | Dr. Shiv Sastry**, authored by **Indic Thought Forum**. Two further episodes and two community posts were selected from the same channel.
+The Updates page lists ten long-form podcasts from the official ITF channel in newest-first uploads-playlist order. Each video title and channel author was checked through YouTube oEmbed; short promotional clips and the separately titled lecture are not listed as podcasts. Updates shows three total episodes initially and reveals three more per click. The homepage retains its existing Shiv Sastry featured episode. The Updates page also links to the five Instagram posts supplied in the revision brief; post dates and captions are not reproduced.
 
 The channel's [About page](https://www.youtube.com/@IndicThoughtForum/about) links back to the reference website and identifies [Instagram](https://www.instagram.com/indicthoughtforum/) and [Facebook](https://www.facebook.com/indicthoughtforum). This is the provenance for those accounts, checked on 31 October 2026; it is not a claim about a platform verification badge. The X and WhatsApp URLs were supplied directly by the owner for the footer revision. No LinkedIn account or unrestricted WhatsApp group access is implied.
 
-- **Podcasts:** edit `podcasts` in `src/lib/media.ts` with a stable ID, the 11-character YouTube video ID, approved title/guest/description, topic, and a local thumbnail path.
-- **Community posts:** edit `socialPosts` with the original public post URL and accurate copy. Use an authorized local image or the neutral text treatment, not a misleading event photograph.
+- **Podcasts:** edit `podcasts` in `src/lib/media.ts` in newest-first order with a stable ID, the 11-character YouTube video ID, verified title/guest/description, topic, and a local thumbnail path. `homeFeaturedPodcast` keeps the homepage feature independent of Updates ordering.
+- **Instagram posts:** edit `socialPosts` with the original supplied post URL. The Updates cards intentionally link to Instagram without copying captions, dates, or post imagery.
 - **Channels:** edit `socialProfiles` only after confirming ownership. Social links open externally with `noopener noreferrer`.
 - **Refresh thumbnails:** run `npm run assets:media`. The script reads the same podcast data, downloads approved video thumbnails, optimizes them locally, and creates the smaller mobile hero. A failed download is an error, not a silently substituted image.
 - **Refresh reference assets:** if running `npm run assets:prepare`, follow it with `npm run assets:media` to regenerate the responsive hero.
@@ -161,7 +161,7 @@ The channel's [About page](https://www.youtube.com/@IndicThoughtForum/about) lin
 
 Players connect to **youtube-nocookie.com only after an explicit Load action**. There are no YouTube thumbnails, API scripts, preconnects, or iframes requested before that action. The loaded frame can be closed, which removes it and restores focus. A direct YouTube link is always available, including when embedding is disabled, unavailable, or JavaScript is not used.
 
-Home intentionally omits the thumbnail's "ITF / Conversations" overlay, the privacy-preview heading, and the long pre-load disclosure. This is a presentation-only change: click-to-load, direct watch links, playback/error status, and keyboard focus restoration remain active. Updates retains its existing preview copy until checkpoint 5.
+Home and Updates omit the thumbnail's "ITF / Conversations" overlay, privacy-preview heading, and pre-load disclosure. This is a presentation-only change: click-to-load, direct watch links, post-opt-in connection/error status, and keyboard focus restoration remain active. Updates also omits the curated-feed notice.
 
 YouTube's privacy-enhanced domain is **not anonymous playback or a guarantee of zero cookies/storage**. After opt-in, Google/YouTube controls its player and may process the visitor's information. The choice is not persisted across reloads. The privacy notice describes this boundary; social-platform login and post availability remain outside the site's control.
 
