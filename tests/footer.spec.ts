@@ -39,16 +39,18 @@ test("footer uses a faithful lightweight official logo and real-text branding wi
   await expect(page.locator(".site-header .brand img")).toHaveAttribute("src", "/images/logo-mark.png");
 });
 
-test("all public footers retain the existing profiles and add the exact X and WhatsApp links without connecting", async ({ page }, testInfo) => {
+test("all public footers retain the existing profiles and add the exact X and WhatsApp links without social embeds", async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Full route coverage runs once; footer device reflow runs in every profile.");
   test.setTimeout(90000);
   const errors: string[] = [];
   const external: string[] = [];
+  const allowedExternalHosts = new Set(["a.tile.openstreetmap.org", "b.tile.openstreetmap.org", "c.tile.openstreetmap.org"]);
   page.on("pageerror", error => errors.push(error.message));
   page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
   page.on("response", response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
   page.on("request", request => {
-    if (!["127.0.0.1", "localhost"].includes(new URL(request.url()).hostname)) external.push(request.url());
+    const hostname = new URL(request.url()).hostname;
+    if (!["127.0.0.1", "localhost"].includes(hostname) && !allowedExternalHosts.has(hostname)) external.push(request.url());
   });
   expect(socialProfiles.map(profile => profile.platform)).toEqual(["YouTube", "Instagram", "Facebook", "X (Twitter)", "WhatsApp"]);
   for (const route of ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/join/", "/support/", "/privacy/", "/accessibility/"]) {

@@ -2,8 +2,8 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, **6 - Calendar Page**, and **7 - Contact Page**.
-Next checkpoint: **8 - Site-wide Design Consistency and Responsiveness**, awaiting user confirmation.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, **6 - Calendar Page**, **7 - Contact Page**, and **8 - Site-wide Design Consistency and Responsiveness**.
+Next checkpoint: **9 - Code Quality and Architecture**, awaiting user confirmation.
 H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, C-1 through C-7, and CT-1 through CT-2 are verified complete. Other later-checkpoint requirements remain deferred.
 
 ## Working agreement
@@ -95,11 +95,11 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 8 - Site-wide Design Consistency and Responsiveness
 
-- [ ] **G-1 | Not started** - Define shared typography tokens once for hero titles, section headings, subheadings, body copy, captions, and labels, and use them consistently.
-- [ ] **G-2 | Not started** - Evaluate rounded versus square boxes and cards, choose one coherent corner treatment, and apply it consistently.
-- [ ] **G-3 | Not started** - Align About, Sankalpas, Updates, Calendar, and Contact hero structure, section spacing, and container widths.
-- [ ] **G-4 | Not started** - Test every page, especially heroes, on phone, tablet, laptop, desktop, and large-TV viewport sizes; fix overflow, wrapping, alignment, and image distortion.
-- [ ] **G-5 | Not started** - Verify that all requested numbered section-label prefixes are removed without residual spacing.
+- [x] **G-1 | Done** - Define shared typography tokens once for hero titles, section headings, subheadings, body copy, captions, and labels, and use them consistently.
+- [x] **G-2 | Done** - Evaluate rounded versus square boxes and cards, choose one coherent corner treatment, and apply it consistently.
+- [x] **G-3 | Done** - Align About, Sankalpas, Updates, Calendar, and Contact hero structure, section spacing, and container widths.
+- [x] **G-4 | Done** - Test every page, especially heroes, on phone, tablet, laptop, desktop, and large-TV viewport sizes; fix overflow, wrapping, alignment, and image distortion.
+- [x] **G-5 | Done** - Verify that all requested numbered section-label prefixes are removed without residual spacing.
 
 ### Checkpoint 9 - Code Quality and Architecture
 
@@ -587,9 +587,34 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 #### Review handoff
 
 - No checkpoint-7 item remains blocked. Contact's unavailable-service status and disabled submit remain; Join retains its distinct membership-registration explanation.
-- Checkpoint 8 (Site-wide Design Consistency and Responsiveness) is next. Stop here and wait for explicit user confirmation before starting it.
+- Checkpoint 8 (Site-wide Design Consistency and Responsiveness) is complete; its implementation and validation record follows.
 
-### Checkpoints 8-9 and final review
+### Checkpoint 8 - Completed implementation record
 
-Not started. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 7 and do not begin checkpoint 8 until the user confirms.
+- G-1 through G-5 are implemented and verified Done. Added shared responsive typography tokens for hero titles, section headings, subheadings, body copy, lead copy, captions, and labels. The distinct Home photo hero remains intact while using the shared hero-title scale.
+- Standardized cards, boxes, buttons, and badges on the existing 5px `--radius`; intentional circular controls and square calendar cells retain their shape.
+- About, Sankalpas, Updates, Calendar, and Contact retain their shared `PageIntro`, section spacing, and 1200px-capped container system. Responsive tests verify that shared hero and full-width content containers align while preserving About's intentionally narrow reading column.
+- Expanded responsive coverage to all 13 public routes at 320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS pixels. Tests check horizontal overflow, heading fit, image aspect ratio, shared hero/container alignment, and every section eyebrow for numbered prefixes or leftover separators.
+- Updated the footer external-request regression to allow only the expected, attributed OpenStreetMap tile hosts while still rejecting other unrequested social embeds.
+- Changed: `src/app/globals.css`, `tests/website.spec.ts`, `tests/footer.spec.ts`, `README.md`, and this document. Created/deleted files: none. Asset moves/renames: none.
+- Commit subject: `Checkpoint 8: Site-wide design consistency and responsiveness`.
+
+#### Validation
+
+- `npm run build`: **Passed**. All 17 static routes/endpoints generated; 13 Windows route-segment files normalized.
+- `npm run lint` and `npm run typecheck`: **Passed**.
+- `npm exec -- playwright test website.spec.ts --project=desktop --grep "layouts fit phone" --workers=2 --timeout=90000 --reporter=list`: **1 passed**. All 13 public routes fit at all 11 viewport widths, including image-ratio checks.
+- `npm exec -- playwright test website.spec.ts --project=desktop --grep "every public page|key pages|shared typography" --workers=2 --timeout=90000 --reporter=list`: **3 passed**, covering all-route runtime/image checks, automated WCAG A/AA, shared typography, and section-label prefixes.
+- `npm exec -- playwright test footer.spec.ts --project=desktop --grep "all public footers retain" --workers=2 --timeout=90000 --reporter=list`: **1 passed**. The external-request check allows only the three OpenStreetMap tile hosts required by the Calendar map.
+- Full desktop suite `npm exec -- playwright test --project=desktop --workers=2 --timeout=90000 --reporter=list`: **57 passed, 1 skipped**.
+- No physical-device certification is claimed.
+
+#### Review handoff
+
+- No G-1 through G-5 item remains blocked. Review the shared scale values and 5px corner choice. Automated tests use desktop Chromium viewport emulation; no physical-device certification is claimed.
+- Checkpoint 9 (Code Quality and Architecture) is next. Stop here and wait for explicit user confirmation before starting it.
+
+### Checkpoint 9 and final review
+
+Not started. Append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results, assumptions/open questions, and independent commit reference.
+Stop after checkpoint 8 and do not begin checkpoint 9.

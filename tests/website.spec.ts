@@ -144,12 +144,42 @@ test("unconfigured services never imply a successful message or take a payment",
   await expect(page.locator('input[autocomplete="cc-number"]')).toHaveCount(0);
 });
 
-test("layouts fit narrow mobile, tablet, and desktop screens", async ({ page }) => {
-  for (const width of [320, 480, 768, 1024, 1180, 1200, 1440, 2560]) {
+test("layouts fit phone through large-TV widths on every public route", async ({ page }) => {
+  test.setTimeout(240000);
+  const widths = [320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840];
+  const sharedHeroRoutes = ["/about/", "/sankalpas/", "/events/", "/calendar/", "/contact-us/"];
+  for (const width of widths) {
     await page.setViewportSize({ width, height: 900 });
-    for (const route of ["/", "/join/", "/events/", "/calendar/", "/sankalpas/", "/about/", "/contact-us/"]) {
+    for (const route of routes) {
       await page.goto(route);
-      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${route} at ${width}px`).toBe(true);
+      const layout = await page.evaluate(() => {
+        const headingsFit = [...document.querySelectorAll("main h1, main h2")].every(heading => heading.scrollWidth <= heading.clientWidth + 1);
+        const imagesAreUndistorted = [...document.images].every(image => {
+          if (!image.complete || image.naturalWidth === 0 || !image.clientWidth || !image.clientHeight) return true;
+          if (getComputedStyle(image).objectFit !== "fill") return true;
+          const naturalRatio = image.naturalWidth / image.naturalHeight;
+          const renderedRatio = image.clientWidth / image.clientHeight;
+          return Math.abs(naturalRatio - renderedRatio) / naturalRatio < 0.02;
+        });
+        return {
+          noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth,
+          headingsFit,
+          imagesAreUndistorted,
+        };
+      });
+      expect(layout.noHorizontalOverflow, `${route} has no horizontal overflow at ${width}px`).toBe(true);
+      expect(layout.headingsFit, `${route} headings fit at ${width}px`).toBe(true);
+      expect(layout.imagesAreUndistorted, `${route} images preserve their aspect ratio at ${width}px`).toBe(true);
+      if (sharedHeroRoutes.includes(route)) {
+        await expect(page.locator("main > .page-intro")).toHaveCount(1);
+        const heroContainer = await page.locator(".page-intro > .container").boundingBox();
+        const sectionContainer = await page.locator("main > section.container:not(.reading-width), main > section:not(.page-intro):not(.container) .container:not(.reading-width)").first().boundingBox();
+        expect(heroContainer, `${route} hero container at ${width}px`).not.toBeNull();
+        expect(sectionContainer, `${route} section container at ${width}px`).not.toBeNull();
+        if (!heroContainer || !sectionContainer) throw new Error(`${route} shared containers must be visible.`);
+        expect(Math.abs(heroContainer.x - sectionContainer.x), `${route} aligned container edges at ${width}px`).toBeLessThanOrEqual(1);
+        expect(Math.abs(heroContainer.width - sectionContainer.width), `${route} aligned container widths at ${width}px`).toBeLessThanOrEqual(1);
+      }
       if (route === "/calendar/") {
         if (width <= 480) {
           const selectors = page.locator(".calendar-selectors");
@@ -170,6 +200,34 @@ test("layouts fit narrow mobile, tablet, and desktop screens", async ({ page }) 
         expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Day view at ${width}px`).toBe(true);
       }
     }
+  }
+});
+
+test("shared typography tokens and section labels stay consistent", async ({ page }) => {
+  test.setTimeout(120000);
+  const widths = [320, 480, 768, 1440, 3840];
+  const sharedHeroRoutes = ["/about/", "/sankalpas/", "/events/", "/calendar/", "/contact-us/"];
+  for (const width of widths) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    const homeTypography = await page.evaluate(() => ({
+      hero: getComputedStyle(document.querySelector("main h1")!).fontSize,
+      tokens: ["--type-hero", "--type-heading", "--type-subheading", "--type-body", "--type-lead", "--type-caption", "--type-label"]
+        .map(token => getComputedStyle(document.documentElement).getPropertyValue(token).trim()),
+    }));
+    expect(homeTypography.tokens.every(Boolean), `Typography tokens at ${width}px`).toBe(true);
+
+    for (const route of sharedHeroRoutes) {
+      await page.goto(route);
+      const pageHeroSize = await page.locator("main h1").evaluate(element => getComputedStyle(element).fontSize);
+      expect(pageHeroSize, `${route} hero title at ${width}px`).toBe(homeTypography.hero);
+    }
+  }
+  for (const route of routes) {
+    await page.goto(route);
+    const labels = await page.locator("main .eyebrow").allTextContents();
+    expect(labels.filter(label => /^\s*\d+\s*\/\s*/.test(label)), `${route} numbered section labels`).toEqual([]);
+    expect(labels.filter(label => /^\s*\/\s*/.test(label)), `${route} orphaned section-label separators`).toEqual([]);
   }
 });
 
