@@ -20,7 +20,6 @@ export const metadata: Metadata = {
   description: site.description,
   applicationName: site.name,
   alternates: { canonical: "/" },
-  icons: { icon: "/images/logo-mark.png", apple: "/images/logo-mark.png" },
   openGraph: {
     type: "website", locale: "en_IN", siteName: site.name, title: site.name,
     description: site.description, url: "/",

@@ -11,7 +11,7 @@ const newProfiles = [
   { platform: "WhatsApp", url: "https://chat.whatsapp.com/Lr7Bu6azh5JBJmZpETf7Jf" },
 ] as const;
 
-test("footer uses a faithful lightweight official logo and real-text branding without changing the header", async ({ page, request }) => {
+test("header and footer share a faithful lightweight official logo and real-text branding without a tab icon", async ({ page, request }) => {
   const source = join("public", "images", "itf-assets", "ITF-Logo.png");
   const preview = join("public", "images", "itf-assets", "itf-logo-footer.webp");
   const metadata = await sharp(preview).metadata();
@@ -36,7 +36,14 @@ test("footer uses a faithful lightweight official logo and real-text branding wi
   await expect(footer.locator(".brand strong")).toHaveText(site.name);
   await expect(footer.locator(".brand small")).toHaveText(site.tagline);
   await expect(footer.locator(".brand")).toHaveAttribute("href", "/");
-  await expect(page.locator(".site-header .brand img")).toHaveAttribute("src", "/images/logo-mark.png");
+  const header = page.locator(".site-header");
+  await expect(header.locator(".brand img")).toHaveAttribute("src", logoUrl);
+  await expect(header.locator(".brand img")).toHaveJSProperty("naturalWidth", 168);
+  await expect(header.locator(".brand strong")).toHaveText(site.name);
+  await expect(header.locator(".brand small")).toHaveText(site.tagline);
+  await expect(page.locator('head link[rel~="icon"]')).toHaveCount(0);
+  await expect(page.locator('img[src*="next.svg"], img[src*="vercel.svg"]')).toHaveCount(0);
+  await expect(page.locator("nextjs-portal, [data-nextjs-dialog]")).toHaveCount(0);
 });
 
 test("all public footers retain the existing profiles and add the exact X and WhatsApp links without social embeds", async ({ page }, testInfo) => {

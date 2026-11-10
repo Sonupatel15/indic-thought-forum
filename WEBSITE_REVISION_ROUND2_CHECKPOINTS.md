@@ -2,8 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **0 - Audit complete**. Waiting for confirmation before Checkpoint 1.
-No Round 2 application changes have been made.
+Current checkpoint: **1 - Header and Global Branding complete**. Waiting for confirmation before Checkpoint 2.
 
 ## Working agreement
 
@@ -28,9 +27,9 @@ No Round 2 application changes have been made.
 
 ### Checkpoint 1 - Header and Global Branding
 
-- [ ] **R2-G-1 | Not started** - Use the footer's exact logo file in the header, appropriately sized and aligned on all screens.
-- [ ] **R2-G-2 | Not started** - Determine whether the header brand name/tagline are text or an image; retain and document existing real text, otherwise replace the image branding with suitable real text.
-- [ ] **R2-G-3 | Not started** - Remove all Next.js logos/icons, default public images, visible badges, favicon and associated metadata/references; do not introduce any replacement tab icon. Delete assets only after verifying no other uses.
+- [x] **R2-G-1 | Done** - Use the footer's exact logo file in the header, appropriately sized and aligned on all screens.
+- [x] **R2-G-2 | Done** - Determine whether the header brand name/tagline are text or an image; retain and document existing real text, otherwise replace the image branding with suitable real text.
+- [x] **R2-G-3 | Done** - Remove all Next.js logos/icons, default public images, visible badges, favicon and associated metadata/references; do not introduce any replacement tab icon. Delete assets only after verifying no other uses.
 
 ### Checkpoint 2 - Home
 
@@ -263,7 +262,24 @@ These answers resolve audit ambiguities only; they do not authorize starting the
 
 ## Checkpoint completion records
 
-No implementation checkpoint has started. Each future record must include item status, exact files/components/elements, before/after sizes/spacing/colours, screen sizes tested, open questions, validation outcomes, and its separate commit.
+Checkpoint 1 is complete. Future checkpoint records must include item status, exact files/components/elements, before/after sizes/spacing/colours, screen sizes tested, open questions, validation outcomes, and each separate commit.
+
+### Checkpoint 1 - Header and Global Branding
+
+- **R2-G-1 | Done.** In `src/components/header.tsx`, `Brand` now renders `/images/itf-assets/itf-logo-footer.webp` for both header and footer. This reuses the already optimized, faithful 168x168 WebP asset verified against `public/images/itf-assets/ITF-Logo.png`; no duplicate logo or new asset was introduced.
+- **R2-G-2 | Done.** Header brand text was already real text (`site.name` and `site.tagline`) in `src/components/header.tsx`; retained it unchanged. The audited baseline typography and alignment are unchanged.
+- **R2-G-3 | Done.** Removed `icons` metadata from `src/app/layout.tsx`. The production export has no `rel=icon` or `apple-touch-icon` metadata, no favicon/icon files, and no stale references to the old header logo or Next/Vercel images. Inspection confirmed there were no Next.js-branded images in `public` and no visible Next.js badges, so none were deleted. Retained `public/images/logo-mark.png`: it is generated from the existing heritage image by `scripts/prepare-assets.mjs` and is not a Next.js default image; the user prohibited replacing a tab icon with an ITF logo, not the existing non-Next source asset.
+- **Files/components changed:**
+  - `src/components/header.tsx`: `Brand` logo `Image` source now always matches the footer's `itf-logo-footer.webp`; intrinsic `width`/`height` attributes now both use 56px, matching the footer markup. Existing image CSS, `object-fit: contain`, and responsive alignment are unchanged.
+  - `src/app/layout.tsx`: removed only the `icons` metadata property; retained all other metadata.
+  - `tests/footer.spec.ts`: verifies header/footer share the optimized asset, preserve real-text branding, and render no tab icon, Next/Vercel image, or Next.js badge.
+  - `WEBSITE_REVISION_ROUND2_CHECKPOINTS.md`: records completion and validation.
+- **Before -> after measurements:** Header logo source `logo-mark.png` (160x160 intrinsic) -> footer-matching `itf-logo-footer.webp` (168x168 intrinsic); markup dimensions 58x58 -> 56x56. Computed on-screen header logo dimensions stayed 52x52 desktop/tablet, 46x46 at <=760px, 43x43 at <=480px, and 40x40 at <=360px; existing `object-fit: contain`, flex centering/gap, header sizes, text sizes/alignment, and all colors remained unchanged. Footer remains 56x56 CSS size using the same 168x168 asset. Explicit icon metadata and its two live icon links changed to none; no page content, spacing token, or color changed.
+- **Screen sizes tested:** Footer logo/brand/social reflow suite at 320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS px across Home and Updates. Every public route was also loaded in desktop 1440px and Pixel-style mobile profiles.
+- **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. `npx playwright test tests/footer.spec.ts`: 13 passed, 5 expected skips across desktop, mobile, Firefox, WebKit, iOS, and tablet projects. `npx playwright test tests/website.spec.ts --project=desktop --project=mobile --grep "every public page is statically available"`: 2 passed, covering all 13 routes in each profile with no runtime/console errors, HTTP errors, broken images, or overflow. Export inspection confirmed zero icon/legacy-logo references; full-suite logo checks verified the reused asset and footer behavior.
+- **Open questions or assumptions:** No blockers. No Next.js-branded public assets or visible production badges existed to remove. No new dependencies were required.
+- **Commit:** to be recorded after the Checkpoint 1-only commit.
+- **Next step:** stop and await confirmation before Checkpoint 2.
 
 ## Content proposals and approval
 
