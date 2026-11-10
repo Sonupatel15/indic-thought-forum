@@ -100,6 +100,8 @@ The frontend sends `POST` with `Content-Type: application/json`, without cookies
 
 `type` is `membership` or `contact`. `website` is a honeypot. A successful response must be a 2xx status with JSON **`{ "success": true }`**. No other response is displayed as success. Rate limits, unconfirmed responses, timeouts, and failures are surfaced to the visitor, and entered information is retained for retry. Drafts are not stored in local storage.
 
+When no endpoint is configured, Contact keeps its explicit unavailable-service status and disabled submit button without repeating the storage notice; Join retains its longer registration notice. Neither page sends or stores an unconfigured submission.
+
 Before enabling an endpoint, implement **server-side validation**, length limits, strict type/area allowlists, consent checks, honeypot rejection, rate limiting, spam protection, safe email delivery/storage, and appropriate retention. Client-side checks are not a security boundary. Only acknowledge success after the enquiry has been durably accepted. Configure CORS to allow the production origin and `POST`/`OPTIONS` with `Content-Type`; never embed API keys in the frontend.
 
 ### Donations

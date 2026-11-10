@@ -134,7 +134,11 @@ test("unconfigured services never imply a successful message or take a payment",
   await page.goto("/contact-us/");
   await expect(page.getByRole("status")).toContainText("Sending unavailable: service connection required.");
   await expect(page.locator("main")).not.toContainText("Online messaging is not available yet.");
+  await expect(page.locator("main")).not.toContainText("Details entered here are not transmitted or stored.");
   await expect(page.getByRole("button", { name: "Send message" })).toBeDisabled();
+  await expect(page.locator(".intro-ornament")).toHaveCount(0);
+  await page.goto("/join/");
+  await expect(page.locator("main")).toContainText("This form does not send or save your information until our service is connected.");
   await page.goto("/support/");
   await expect(page.getByRole("button", { name: "Online donations opening soon" })).toBeDisabled();
   await expect(page.locator('input[autocomplete="cc-number"]')).toHaveCount(0);

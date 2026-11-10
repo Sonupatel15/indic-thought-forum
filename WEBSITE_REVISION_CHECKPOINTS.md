@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, and **6 - Calendar Page**.
-Next checkpoint: **7 - Contact Page**, awaiting user confirmation.
-H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, and C-1 through C-7 are verified complete. Other later-checkpoint requirements remain deferred.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, **6 - Calendar Page**, and **7 - Contact Page**.
+Next checkpoint: **8 - Site-wide Design Consistency and Responsiveness**, awaiting user confirmation.
+H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, C-1 through C-7, and CT-1 through CT-2 are verified complete. Other later-checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -90,8 +90,8 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 7 - Contact Page
 
-- [ ] **CT-1 | Not started** - Remove the Gemini-like ornament.
-- [ ] **CT-2 | Not started** - Remove the two specified long registration/storage statements where applicable to Contact; preserve explicit unavailable-service behavior and do not silently enable a disconnected form.
+- [x] **CT-1 | Done** - Remove the Gemini-like ornament.
+- [x] **CT-2 | Done** - Remove the two specified long registration/storage statements where applicable to Contact; preserve explicit unavailable-service behavior and do not silently enable a disconnected form.
 
 ### Checkpoint 8 - Site-wide Design Consistency and Responsiveness
 
@@ -565,9 +565,31 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 
 - No checkpoint-6 item remains blocked. Review the chosen OSM venue coordinates and the one-day selected-event panel; the existing full schedule and IST date logic remain in place.
 - The map uses the public OSM tile service and includes required contributor attribution. External tile loading and OSM directions were not live-provider certified in the automated suite.
-- Checkpoint 7 (Contact) is next. Stop here and wait for explicit user confirmation before starting it.
+- Checkpoint 7 (Contact) was next. Stop here and wait for explicit user confirmation before starting it.
 
-### Checkpoints 7-9 and final review
+### Checkpoint 7 - Completed implementation record
+
+- CT-1 and CT-2 are implemented and verified Done. Removed the Contact page's intro ornament while retaining the shared hero structure and original copy.
+- The long "Online registration is not available yet..." notice already applied only to Join, not Contact. Preserved that notice and the privacy/storage wording on Join. On Contact, removed the separate "Details entered here are not transmitted or stored" statement while keeping the explicit "Sending unavailable: service connection required" status and disabled Send message button when no endpoint is configured. No submission is sent or presented as successful without a configured service.
+- The existing Contact form-validation and status behavior is unchanged when a service is configured; its concise data-use statement remains available in that case.
+- Changed: `src/components/contact-layout.tsx`, `src/components/submission-form.tsx`, `tests/about.spec.ts`, `tests/website.spec.ts`, `README.md`, and this document. Created/deleted files: none. Asset moves/renames: none. Restored build-generated `next-env.d.ts` to its committed baseline.
+- Updated the shared ornament-scope regression to reflect Calendar's completed Checkpoint 6 ornament removal while preserving the Join and other-page expectations.
+- Commit subject: `Checkpoint 7: Contact page updates`.
+
+#### Validation
+
+- `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**. All 17 static routes/endpoints generated; 13 Windows route-segment files normalized.
+- `npm exec -- playwright test about.spec.ts website.spec.ts --project=desktop --grep "every public page|key pages|layouts fit|all internal home links" --workers=2 --timeout=90000 --reporter=list`: **4 passed**, covering all-route runtime/image checks, automated WCAG A/AA, responsive layouts at **320–2560 CSS pixels**, and internal links/SEO endpoints.
+- `npm exec -- playwright test about.spec.ts website.spec.ts --project=desktop --grep "page-specific ornament removal|unconfigured services" --workers=2 --timeout=90000 --reporter=list`: **2 passed**. Verified Contact has no intro ornament or redundant storage statement; its sending status remains explicit and submit stays disabled; Join retains its registration-unavailable notice.
+- `git diff --check`: **Passed**. No live form endpoint was configured or contacted.
+- No physical-device certification is claimed.
+
+#### Review handoff
+
+- No checkpoint-7 item remains blocked. Contact's unavailable-service status and disabled submit remain; Join retains its distinct membership-registration explanation.
+- Checkpoint 8 (Site-wide Design Consistency and Responsiveness) is next. Stop here and wait for explicit user confirmation before starting it.
+
+### Checkpoints 8-9 and final review
 
 Not started. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 6 and do not begin checkpoint 7 until the user confirms.
+Stop after checkpoint 7 and do not begin checkpoint 8 until the user confirms.
