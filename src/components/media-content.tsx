@@ -13,17 +13,17 @@ export function FeaturedPodcast({ episode = homeFeaturedPodcast, showPreviewDeta
 }
 
 export function MorePodcasts({ episodes = podcasts.slice(1), showPreviewDetails = true }: { episodes?: readonly PodcastEpisode[]; showPreviewDetails?: boolean }) {
-  const { visibleItems, hasMore, showMore } = useIncrementalList(episodes, 2);
+  const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(episodes, 2, 3, true);
   return <>
-    <div className="podcast-grid" id="podcast-archive">{visibleItems.map(episode => <article className="podcast-card" key={episode.id}><YouTubePlayer episode={episode} showPreviewDetails={showPreviewDetails} /><div className="podcast-card-copy"><span className="eyebrow">{episode.topic}</span><h3>{episode.title}</h3>{episode.guest && <p className="podcast-guest">{episode.guest}</p>}{episode.description && <p>{episode.description}</p>}</div></article>)}</div>
+    <div ref={gridRef} className="podcast-grid" id="podcast-archive">{visibleItems.map(episode => <article className="podcast-card" key={episode.id}><YouTubePlayer episode={episode} showPreviewDetails={showPreviewDetails} /><div className="podcast-card-copy"><span className="eyebrow">{episode.topic}</span><h3>{episode.title}</h3>{episode.guest && <p className="podcast-guest">{episode.guest}</p>}{episode.description && <p>{episode.description}</p>}</div></article>)}</div>
     {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="podcast-archive" onClick={showMore}>Load more podcasts</button></div>}
   </>;
 }
 
 export function SocialPosts() {
-  const { visibleItems, hasMore, showMore } = useIncrementalList(socialPosts, 3);
+  const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(socialPosts, 3, 3, true);
   return <>
-    <div className="social-post-grid" id="instagram-posts">{visibleItems.map(post => <article className="social-post" key={post.id}>
+    <div ref={gridRef} className="social-post-grid" id="instagram-posts">{visibleItems.map(post => <article className="social-post" key={post.id}>
       <div className="social-post-visual social-post-visual--text"><Camera size={45} strokeWidth={1} aria-hidden="true" /><span>Instagram</span><small>Indic Thought Forum</small></div>
       <div className="social-post-copy"><span className="eyebrow">Instagram</span><h3>{post.title}</h3><p>View the original post from Indic Thought Forum on Instagram.</p><a className="text-link" href={post.url} target="_blank" rel="noopener noreferrer" aria-label={`View ${post.title} on Instagram (opens in a new tab)`}>View on Instagram <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a></div>
     </article>)}</div>
@@ -36,7 +36,7 @@ export function SocialChannels({ compact = false }: { compact?: boolean }) {
   return <div className={compact ? "social-channel-links" : "social-channel-grid"}>{socialProfiles.map(profile => {
     const Icon = icons[profile.platform];
     return <a className={compact ? "social-channel-link" : "social-channel-card"} key={profile.platform} href={profile.url} target="_blank" rel="noopener noreferrer">
-      <span className="icon-box"><Icon size={compact ? 17 : 25} aria-hidden="true" /></span>
+      <span className="icon-box"><Icon size={17} aria-hidden="true" /></span>
       {compact ? <span>{profile.platform}</span> : <div><span className="eyebrow">{profile.label}</span><h3>{profile.platform}</h3><span className="social-handle">{profile.handle}</span><p>{profile.description}</p></div>}
       <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span>
     </a>;

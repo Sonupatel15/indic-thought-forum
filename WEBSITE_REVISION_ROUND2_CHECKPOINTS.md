@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **6 - Sankalpas complete**. Waiting for confirmation before Checkpoint 7.
+Current checkpoint: **7 - Updates complete**. Waiting for confirmation before Checkpoint 8.
 
 ## Working agreement
 
@@ -60,11 +60,11 @@ Current checkpoint: **6 - Sankalpas complete**. Waiting for confirmation before 
 
 ### Checkpoint 7 - Updates
 
-- [ ] **R2-U-1 | Not started** - Preserve Round 1 initial counts and progressive loading for podcasts/events/posts where compatible with complete rows; use shared logic to fill whole responsive rows until exhausted and recalculate on resize. Approved: round up to complete rows (three becomes four for two columns), retaining the featured podcast layout.
-- [ ] **R2-U-2 | Not started** - Reduce "Ideas Worth Revisiting" poster size while preserving intrinsic aspect ratio without cropping/stretching.
-- [ ] **R2-U-3 | Not started** - Align and balance spacing around "Stay with the Conversation", "From the Archive", "Plan Your Next Conversation", before the closing CTA, and between CTA/footer using one shared section-spacing token.
-- [ ] **R2-U-4 | Not started** - Reduce Posts boxes to a balanced size consistent with neighboring cards.
-- [ ] **R2-U-5 | Not started** - Reduce "Find Us Every Day" social boxes/icons to match the footer social icon scale.
+- [x] **R2-U-1 | Done** - Shared grid-aware loading rounds initial/batch counts upward to complete responsive rows, permits only exhausted remainders, and preserves visible items/player state on resize. Featured podcast and compact Home counts are unchanged.
+- [x] **R2-U-2 | Done** - Reduced only Updates posters to 80% of card width, capped at 280px; retained intrinsic aspect ratio and full uncropped images.
+- [x] **R2-U-3 | Done** - Used the shared responsive section-spacing token for balanced Updates content gaps, the planning callout, closing CTA, and CTA-to-footer gap.
+- [x] **R2-U-4 | Done** - Reduced Posts grid/card width, visual height, gap, and padding with a centered responsive layout.
+- [x] **R2-U-5 | Done** - Matched footer social glyph/box sizes (17px/25px) and reduced Updates social cards while preserving all five profiles and accessible targets.
 
 ### Checkpoint 8 - Calendar
 
@@ -349,3 +349,19 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Validation:** `npm run lint` and `npm run typecheck` passed. Targeted Playwright verification passed on desktop and mobile: Sankalpa interest destinations/prefill, footer migration and removed-route assertions, internal Home links/SEO, affected navigation and legacy routes, and all public pages. Result: 9 passed, 1 expected mobile profile skip.
 - **Checkpoint commit subject:** `Round 2 - Checkpoint 6: Sankalpas`.
 - **Next step:** stop; wait for confirmation before Checkpoint 7.
+
+### Checkpoint 7 completion - Updates
+
+- **R2-U-1 | Done:** extended `src/lib/use-incremental-list.ts` with opt-in complete-row loading and a grid ref observed by `ResizeObserver`. Column counts come from the actual computed grid, not a duplicated JavaScript breakpoint table. Initial counts and each three-item base increment round upward to full rows, capped at real data length. Resize can reveal more cards but never hides already-visible content or remounts existing keyed players. `EventList` opts in only for the full archive; compact Home remains exactly three.
+  - Fresh navigation: podcasts remain one featured plus two archive cards at all widths; events show three in one/three columns or four in two columns; posts show three in one column or four in two columns.
+  - Podcast archive batches are 2 -> 5 -> 8 -> 9 in one column and 2 -> 6 -> 9 in two columns, plus the unchanged featured episode. Events/posts preserve newest/source order and show all seven/five records before removing their independent Load more buttons. Exhausted remainders are retained.
+- **R2-U-2 | Done:** scoped `#events .event-image` to 80% of its card width and a 280px cap (previously full card width). At 1440px the measured poster is now 280px rather than its 382px card width; smaller cards receive the same 20% reduction until the cap applies. `height: auto` and `object-fit: contain` remain; original image files, dialogs, Home images, and aspect ratios are unchanged.
+- **R2-U-3 | Done:** introduced `--section-spacing` using the existing 96px desktop, 75px <=1180px, and 58px <=760px scale. Ordinary `.section` padding is behaviorally unchanged. Updates uses half-token section edges so neighboring content is one token apart, half-token callout margins, token-based heading/archive/control spacing, and one-token gaps before the closing CTA and from CTA to footer. Removed the old accumulated double-section spacing and planning callout's independent 50px/30px top margins on Updates. Other pages retain their 40px CTA-to-footer spacing.
+- **R2-U-4 | Done:** Posts grid is centered and limited to 1040px for two columns (cards up to 508px) or 520px for one column; grid gap is 24px rather than 30px. Visuals are 230px above 760px and 200px below, down from 310px/280px. Copy/visual padding is 24px instead of 30px/35px on larger layouts. Existing post text, source links, and all five records are unchanged.
+- **R2-U-5 | Done:** Updates social glyphs changed from 25px to the footer's existing 17px, icon boxes from 55px/45px to 25px, card padding from 30px/25px/28px/23px to 20px, gaps from 26px/22px/18px to 16px, and titles from 27px to 20px. All five profiles, descriptions, labels, new-tab notices, and at-least-44px targets remain. Footer sizing/behavior is unchanged.
+- **Files and documentation:** changed the shared loading hook, `EventList`, media components, Updates page composition/classes, scoped CSS, and `tests/media.spec.ts`. Updated `README.md` to document complete-row counts, resizing, reduced presentation, and shared spacing. No labels were renamed, no data/assets or dependencies were added, and Calendar/Contact work was not started.
+- **Validation:** production build, lint, and strict typecheck passed. Media + Home suites: 34 passed across desktop/mobile. Selected website route, internal-link, archive, content-preservation, all-route responsive, and automated WCAG A/AA checks: 12 passed across desktop/mobile. Complete-row/resize/sizing/spacing tests: 16 passed across Firefox, desktop WebKit, iOS-style, and tablet profiles. The responsive matrix includes 320, 393, 480, 481, 600, 760, 761, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS px across the selected tests. Verified original ordering, exhaustion, no dropped cards, retained active playback, uncropped images, equal measured content/CTA gaps, unchanged Home counts, and matching social icon scales.
+- **Cross-page spacing regression:** the existing About/Philosophy responsive reflow test also passed (1 additional desktop test), explicitly confirming their closing CTA-to-footer gap remains 40px.
+- **Visual verification:** inspected loaded desktop posters and Posts at 1440px and social cards at 393px in the browser; content remains balanced and readable. This is browser/emulation verification, not physical-device certification.
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 7: Updates`.
+- **Next step:** stop; wait for confirmation before Checkpoint 8.

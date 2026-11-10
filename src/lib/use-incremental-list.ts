@@ -1,14 +1,35 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
-export function useIncrementalList<T>(items: readonly T[], initialCount: number, increment = 3) {
-  const [visibleCount, setVisibleCount] = useState(initialCount);
+export function useIncrementalList<T>(items: readonly T[], initialCount: number, increment = 3, completeRows = false) {
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [{ visibleCount }, setPagination] = useState({ visibleCount: initialCount, columns: 1 });
+
+  useEffect(() => {
+    if (!completeRows) return;
+    const grid = gridRef.current;
+    if (!grid) throw new Error("Complete-row loading requires a grid element.");
+    const observer = new ResizeObserver(() => {
+      const columns = getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length;
+      setPagination(previous => {
+        const visibleCount = Math.min(Math.ceil(previous.visibleCount / columns) * columns, items.length);
+        return previous.columns === columns && previous.visibleCount === visibleCount ? previous : { visibleCount, columns };
+      });
+    });
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, [completeRows, items.length]);
+
   const visibleItems = items.slice(0, visibleCount);
 
   return {
+    gridRef,
     visibleItems,
     hasMore: visibleItems.length < items.length,
-    showMore: () => setVisibleCount(count => Math.min(count + increment, items.length)),
+    showMore: () => setPagination(previous => ({
+      columns: previous.columns,
+      visibleCount: Math.min(Math.ceil((previous.visibleCount + increment) / previous.columns) * previous.columns, items.length),
+    })),
   };
 }

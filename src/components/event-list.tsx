@@ -15,12 +15,12 @@ export function EventList({ compact = false, asOfDate }: { compact?: boolean; as
   const returnFocusRef = useRef<HTMLButtonElement>(null);
   const { upcoming, past } = getEventSchedule(events, today);
   const available = compact ? [...upcoming].reverse().concat(past).slice(0, 3) : [...events].sort((a, b) => b.date.localeCompare(a.date));
-  const { visibleItems, hasMore, showMore } = useIncrementalList(available, 3);
+  const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(available, 3, 3, !compact);
   const visible = compact ? available : visibleItems;
   const media = visible.map(event => ({ src: event.image, title: event.title, alt: `Original event poster: ${event.title}, ${event.speaker}, ${event.displayDate}` }));
 
   return <>
-    <div className="event-grid" id={compact ? undefined : "event-list"}>{visible.map((event, index) => <article className="event-card" key={event.id}>
+    <div ref={gridRef} className="event-grid" id={compact ? undefined : "event-list"}>{visible.map((event, index) => <article className="event-card" key={event.id}>
       <button className="event-image" type="button" onClick={click => { returnFocusRef.current = click.currentTarget; setSelected(index); }} aria-label={`View poster for ${event.title}`}>
         <Image src={event.previewImage} alt="" width={event.imageWidth} height={event.imageHeight} sizes="(max-width: 480px) 90vw, (max-width: 760px) 45vw, 30vw" />
         <span className="image-open"><ArrowUpRight size={22} aria-hidden="true" /></span>
