@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **4 - Privacy and Accessibility complete**. Waiting for confirmation before Checkpoint 5.
+Current checkpoint: **5 - About complete**. Waiting for confirmation before Checkpoint 6.
 
 ## Working agreement
 
@@ -50,8 +50,8 @@ Current checkpoint: **4 - Privacy and Accessibility complete**. Waiting for conf
 
 ### Checkpoint 5 - About
 
-- [ ] **R2-A-1 | Not started** - Give "For those who want to build, not just debate." the same background token as "From a shared thought. To a meaningful tomorrow."; verify accessible contrast.
-- [ ] **R2-A-2 | Not started** - Remove excess space before the footer after the closing CTA, consistent with other pages. Audit finding approved by the user: the existing 40px shared gap already matches other pages; leave it unchanged and verify again in this checkpoint.
+- [x] **R2-A-1 | Done** - Set "For those who want to build, not just debate." on the same `--navy` background as "From a shared thought. To a meaningful tomorrow."; matched its text colors and verified contrast.
+- [x] **R2-A-2 | Done** - Verified the existing 40px CTA-to-footer gap across responsive widths; left it unchanged as approved.
 
 ### Checkpoint 6 - Sankalpas
 
@@ -329,4 +329,14 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Approved and applied wording:** the user approved the exact proposal above. Privacy now says the form sends submitted information to the configured enquiry service, the site code does not implement mailing-list subscription, and the operator must confirm service use/retention; it no longer asserts unverified host log practices. Privacy requests and accessibility reports now use the configured public email if present, otherwise the contact form only if its service is connected, and state when neither route is available. The Privacy last-updated date was changed to 10 November 2026 with user approval.
 - **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. Targeted Playwright tests passed on desktop and mobile for both pages’ ornament and configured-contact copy. The automated WCAG A/AA checks also passed on both profiles.
 - **Checkpoint commit subject:** `Round 2 - Checkpoint 4: Privacy and Accessibility`.
-- **Next step:** stop; wait for confirmation before Checkpoint 5.
+- **Next step:** complete; Checkpoint 5 is recorded below.
+
+### Checkpoint 5 completion - About
+
+- **R2-A-1 | Done:** `src/app/about/page.tsx` renders the quote panel at `.quote-section`; `src/app/globals.css` now gives it the existing `--navy` token used by `.community-cta`. Matched the CTA’s existing eyebrow (`#f8b57c`), heading (`#fff`), and body (`#c1ccce`) colors. Preserved quotation, alignment, padding, accent border, and other layout.
+- **Contrast:** against `--navy` (`#162d3a`), the eyebrow is 8.09:1, quotation 14.28:1, and supporting text 8.70:1. All exceed WCAG AA’s 4.5:1 normal-text threshold.
+- **R2-A-2 | Done:** no spacer or margin was changed. The actual gap from the closing `.community-cta` panel to the footer remains 40px at each tested width, matching the shared `.cta-wrap` bottom margin.
+- **Tests:** expanded `tests/about.spec.ts` to compare quote background and text colors with the CTA, calculate each text contrast ratio, and measure the CTA-to-footer gap at 320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS px on About and its `/philosophy/` compatibility route. Updated the existing ornament sweep to reflect Checkpoint 4’s removal on Privacy and Accessibility.
+- **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. `npx playwright test tests/about.spec.ts --project=desktop --project=mobile` passed: 5 passed, 1 expected desktop-only sweep skipped on mobile. Responsive, contrast, content, and route assertions passed.
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 5: About`.
+- **Next step:** stop; wait for confirmation before Checkpoint 6.

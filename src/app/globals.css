@@ -210,10 +210,10 @@ main:focus { outline: none; }
 .simple-card p { font-size: var(--type-caption); }
 .simple-card .icon-box { margin-bottom: 25px; }
 .simple-card > .text-link { margin-top: 25px; }
-.quote-section { background: var(--white); text-align: center; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px); border: 1px solid var(--line); border-inline-start: 4px solid var(--orange); border-radius: var(--radius); }
-.quote-section .eyebrow { color: var(--orange-dark); }
-.quote-section blockquote { color: var(--ink); font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.45; margin: 20px 0; letter-spacing: -.03em; text-wrap: balance; }
-.quote-section p { color: var(--muted); font-size: var(--type-caption); }
+.quote-section { background: var(--navy); text-align: center; padding: clamp(28px, 5vw, 56px) clamp(20px, 4vw, 48px); border: 1px solid var(--line); border-inline-start: 4px solid var(--orange); border-radius: var(--radius); }
+.quote-section .eyebrow { color: #f8b57c; }
+.quote-section blockquote { color: white; font-family: Georgia, "Times New Roman", serif; font-size: clamp(30px, 4vw, 50px); line-height: 1.45; margin: 20px 0; letter-spacing: -.03em; text-wrap: balance; }
+.quote-section p { color: #c1ccce; font-size: var(--type-caption); }
 .reading-width { max-width: 780px; }
 .reading-width h2 { margin-bottom: 27px; }
 .reading-width h3 { margin-top: 35px; margin-bottom: 18px; }

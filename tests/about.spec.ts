@@ -50,7 +50,7 @@ test("page-specific ornament removal preserves the intended scope and Home princ
   for (const [route, intro, cta] of [
     ["/", 0, 1], ["/sankalpas/", 0, 0], ["/events/", 0, 0], ["/calendar/", 0, 0],
     ["/gallery/", 0, 0], ["/media/", 0, 0], ["/contact-us/", 0, 0],
-    ["/support/", 1, 0], ["/privacy/", 1, 0], ["/accessibility/", 1, 0],
+    ["/support/", 1, 0], ["/privacy/", 0, 0], ["/accessibility/", 0, 0],
   ] as const) {
     await page.goto(route);
     await expect(page.locator(".intro-ornament"), route).toHaveCount(intro);
@@ -77,13 +77,37 @@ test("About heroes, reading columns and continuing quote panels reflow from phon
         const quote = document.querySelector(".quote-section");
         const quotation = quote?.querySelector("blockquote");
         const explanation = quote?.querySelector("p");
+        const quoteEyebrow = quote?.querySelector(".eyebrow");
+        const cta = document.querySelector(".community-cta");
+        const ctaEyebrow = cta?.querySelector(".eyebrow");
+        const ctaHeading = cta?.querySelector("h2");
+        const ctaDescription = cta?.querySelector("p");
         const footer = document.querySelector(".site-footer");
-        if (!(intro instanceof HTMLElement) || !(title instanceof HTMLElement) || !(thought instanceof HTMLElement) || !(quote instanceof HTMLElement) || !quotation || !explanation || !footer) {
+        if (!(intro instanceof HTMLElement) || !(title instanceof HTMLElement) || !(thought instanceof HTMLElement) || !(quote instanceof HTMLElement) || !quotation || !explanation || !(quoteEyebrow instanceof HTMLElement) || !(cta instanceof HTMLElement) || !(ctaEyebrow instanceof HTMLElement) || !(ctaHeading instanceof HTMLElement) || !(ctaDescription instanceof HTMLElement) || !footer) {
           throw new Error("About hero, thought section, quotation and actual footer must exist.");
+        }
+        function luminance(color: string) {
+          const channels = color.match(/[\d.]+/g)?.slice(0, 3).map(Number);
+          if (!channels || channels.length !== 3) throw new Error(`Unexpected computed color: ${color}`);
+          const [red, green, blue] = channels.map(value => {
+            const channel = value / 255;
+            return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
+          });
+          return .2126 * red + .7152 * green + .0722 * blue;
+        }
+        function contrast(foreground: string, background: string) {
+          const values = [luminance(foreground), luminance(background)].sort((a, b) => b - a);
+          return (values[0] + .05) / (values[1] + .05);
         }
         const introBox = intro.getBoundingClientRect();
         const titleBox = title.getBoundingClientRect();
         const box = quote.getBoundingClientRect();
+        const ctaBox = cta.getBoundingClientRect();
+        const footerBox = footer.getBoundingClientRect();
+        const background = getComputedStyle(quote).backgroundColor;
+        const eyebrowColor = getComputedStyle(quoteEyebrow).color;
+        const quoteColor = getComputedStyle(quotation).color;
+        const explanationColor = getComputedStyle(explanation).color;
         return {
           overflow: document.documentElement.scrollWidth > innerWidth,
           heroFits: titleBox.top >= introBox.top && titleBox.bottom <= introBox.bottom && title.scrollWidth <= title.clientWidth + 1,
@@ -91,8 +115,18 @@ test("About heroes, reading columns and continuing quote panels reflow from phon
           thoughtOverflow: thought.scrollWidth > thought.clientWidth + 1,
           quoteLeft: box.left, quoteRightInset: innerWidth - box.right, quoteWidth: box.width,
           quoteOverflow: quote.scrollWidth > quote.clientWidth + 1,
-          background: getComputedStyle(quote).backgroundColor,
-          footerBackground: getComputedStyle(footer).backgroundColor,
+          background,
+          ctaBackground: getComputedStyle(cta).backgroundColor,
+          eyebrowColor,
+          ctaEyebrowColor: getComputedStyle(ctaEyebrow).color,
+          quoteColor,
+          ctaHeadingColor: getComputedStyle(ctaHeading).color,
+          explanationColor,
+          ctaDescriptionColor: getComputedStyle(ctaDescription).color,
+          eyebrowContrast: contrast(eyebrowColor, background),
+          quoteContrast: contrast(quoteColor, background),
+          explanationContrast: contrast(explanationColor, background),
+          ctaFooterGap: footerBox.top - ctaBox.bottom,
           accentWidth: parseFloat(getComputedStyle(quote).borderInlineStartWidth),
           textAlign: getComputedStyle(quote).textAlign,
           quoteFont: getComputedStyle(quotation).fontFamily,
@@ -113,8 +147,14 @@ test("About heroes, reading columns and continuing quote panels reflow from phon
       expect(metrics.quoteRightInset).toBeGreaterThanOrEqual(16);
       expect(metrics.quoteWidth).toBeLessThanOrEqual(1200.5);
       expect(metrics.quoteOverflow).toBe(false);
-      expect(metrics.background).toBe("rgb(255, 255, 255)");
-      expect(metrics.background).not.toBe(metrics.footerBackground);
+      expect(metrics.background).toBe(metrics.ctaBackground);
+      expect(metrics.eyebrowColor).toBe(metrics.ctaEyebrowColor);
+      expect(metrics.quoteColor).toBe(metrics.ctaHeadingColor);
+      expect(metrics.explanationColor).toBe(metrics.ctaDescriptionColor);
+      expect(metrics.eyebrowContrast).toBeGreaterThanOrEqual(4.5);
+      expect(metrics.quoteContrast).toBeGreaterThanOrEqual(4.5);
+      expect(metrics.explanationContrast).toBeGreaterThanOrEqual(4.5);
+      expect(metrics.ctaFooterGap).toBe(40);
       expect(metrics.accentWidth).toBe(4);
       expect(metrics.textAlign).toBe("center");
       expect(metrics.quoteFont).toContain("Georgia");
