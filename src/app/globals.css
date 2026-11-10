@@ -358,17 +358,51 @@ main:focus { outline: none; }
 .event-map-popup strong { display: block; font-size: 13px; }
 .event-map-popup p { margin-block: 8px; font-size: 12px; line-height: 1.45; }
 .event-map-popup a, .event-map-links a { color: var(--orange-dark); font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
-.event-map-locations { display: grid; gap: 16px; }
-.event-map-location { min-width: 0; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: #fdfcf9; }
-.event-map-location h3 { font-size: var(--type-subheading); line-height: 1.35; }
-.event-map-location ul { display: grid; gap: 16px; padding: 0; margin: 20px 0 0; list-style: none; }
-.event-map-location li { display: grid; gap: 4px; padding-top: 14px; border-top: 1px solid var(--line); }
-.event-map-location li strong { font-size: 13px; line-height: 1.45; }
-.event-map-location li span { color: var(--muted); font-size: 11px; }
+.event-map-events { display: grid; gap: 16px; align-content: start; }
+.event-map-event { min-width: 0; padding: 20px; border: 1px solid var(--line); border-radius: var(--radius); background: #fdfcf9; }
+.event-map-event.is-selected { border-color: var(--navy); box-shadow: inset 0 0 0 1px var(--navy); }
+.event-map-select { display: grid; gap: 7px; width: 100%; min-height: 44px; padding: 0; border: 0; background: transparent; color: inherit; text-align: left; }
+.event-map-select:disabled { cursor: wait; }
+.event-map-select strong { font-size: 13px; line-height: 1.45; }
+.event-map-select time, .event-map-select span { color: var(--muted); font-size: 11px; }
+.event-map-events .load-more-control { margin-top: 0; }
+.event-map-empty { margin: 0; }
 .event-map-links { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 20px; font-size: 12px; }
 .event-map-attribution { margin-top: 14px; color: var(--muted); font-size: 11px; }
 .event-map-attribution a { text-decoration: underline; text-underline-offset: 3px; }
 .event-map-error { position: absolute; inset: auto 12px 12px; z-index: 1000; padding: 12px 14px; border-radius: var(--radius); background: white; box-shadow: 0 2px 8px #172a3526; font-size: 12px; }
+.calendar-primary-section,
+.event-map-section,
+.calendar-schedule-section { padding-block: calc(var(--section-spacing) / 2); }
+.calendar-primary-section { padding-top: var(--section-spacing); }
+.calendar-primary-section .calendar-featured-event { gap: clamp(24px, calc(var(--section-spacing) * .5), 64px); padding: clamp(22px, calc(var(--section-spacing) * .3), 28px); margin-bottom: calc(var(--section-spacing) * .65); }
+.calendar-primary-section .calendar-period-navigation { gap: calc(var(--section-spacing) * .2); margin-block: calc(var(--section-spacing) * .3); }
+.calendar-primary-section .calendar-selectors { gap: calc(var(--section-spacing) * .17); }
+.calendar-primary-section .calendar-legend { margin-block: calc(var(--section-spacing) * .23); }
+.calendar-primary-section .calendar-results--month, .event-map-section .event-map-layout { gap: calc(var(--section-spacing) * .3); }
+.calendar-primary-section .calendar-details { margin-top: calc(var(--section-spacing) * .35); }
+.calendar-primary-section .calendar-details > h3 { margin-bottom: calc(var(--section-spacing) * .2); }
+.calendar-primary-section .calendar-results--month .calendar-details { grid-column: 1 / -1; margin-top: calc(var(--section-spacing) * .2); }
+.calendar-primary-section .calendar-results--month .calendar-details--month { margin-top: calc(var(--section-spacing) * .2); }
+.calendar-primary-section .calendar-upcoming { min-width: 0; padding: calc(var(--section-spacing) * .23); border: 1px solid var(--line); border-radius: var(--radius); background: #fdfcf9; }
+.calendar-primary-section .calendar-upcoming h3 { font-size: var(--type-subheading); }
+.calendar-primary-section .calendar-upcoming-month { margin-top: 7px; font-size: 11px; }
+.calendar-primary-section .calendar-upcoming-list { display: grid; gap: calc(var(--section-spacing) * .17); padding: 0; margin: calc(var(--section-spacing) * .2) 0 0; list-style: none; }
+.calendar-primary-section .calendar-upcoming-list li { display: grid; gap: 5px; padding-top: calc(var(--section-spacing) * .15); border-top: 1px solid var(--line); }
+.calendar-primary-section .calendar-upcoming-list strong { font-size: 12px; line-height: 1.45; }
+.calendar-primary-section .calendar-upcoming-list time, .calendar-primary-section .calendar-upcoming-list span { color: var(--muted); font-size: 11px; }
+.calendar-primary-section .calendar-upcoming .load-more-control { margin-top: calc(var(--section-spacing) * .2); }
+.event-map-section .event-map-events { gap: calc(var(--section-spacing) * .17); }
+.event-map-section .event-map-event { padding: calc(var(--section-spacing) * .2); }
+.event-map-section .event-map-links { gap: calc(var(--section-spacing) * .17); margin-top: calc(var(--section-spacing) * .2); }
+.event-map-section .event-map-attribution { margin-top: calc(var(--section-spacing) * .15); }
+.calendar-schedule-section .schedule-group + .schedule-group { margin-top: calc(var(--section-spacing) * .4); }
+.calendar-schedule-section .schedule-group-heading { gap: calc(var(--section-spacing) * .17); margin-bottom: calc(var(--section-spacing) * .2); }
+.calendar-schedule-section .schedule-item { gap: calc(var(--section-spacing) * .3); padding-block: calc(var(--section-spacing) * .3); }
+.calendar-schedule-section .schedule-meta { gap: calc(var(--section-spacing) * .1) calc(var(--section-spacing) * .26); margin-top: calc(var(--section-spacing) * .15); }
+.calendar-primary-section .load-more-control, .event-map-section .load-more-control, .calendar-schedule-section .load-more-control { margin-top: calc(var(--section-spacing) * .25); }
+.calendar-support-strip { margin-block: calc(var(--section-spacing) * .2); padding-block: calc(var(--section-spacing) * .2); }
+.calendar-support-strip + .cta-wrap { margin-block: 0; padding-block: calc(var(--section-spacing) / 2); }
 
 .featured-podcast { display: grid; grid-template-columns: 1.35fr 1fr; gap: 45px; align-items: center; }
 .youtube-frame { position: relative; aspect-ratio: 16 / 9; background: var(--navy); border-radius: var(--radius); overflow: hidden; }

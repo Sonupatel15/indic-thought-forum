@@ -3,7 +3,9 @@
 import { useState, type FormEvent } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { events } from "@/lib/site";
+import { formatEventTime, getEventSchedule } from "@/lib/schedule";
 import { useEventDate } from "@/lib/use-event-date";
+import { useIncrementalList } from "@/lib/use-incremental-list";
 import { EventSchedule } from "./event-schedule";
 
 type CalendarView = "day" | "month" | "year";
@@ -22,6 +24,27 @@ function dateKey(date: Date): string {
 
 function daysInMonth(year: number, month: number): number {
   return calendarDate(year, month + 1, 0).getUTCDate();
+}
+
+function MonthUpcomingEvents({ today }: { today: string }) {
+  const monthPrefix = today.slice(0, 7);
+  const upcoming = getEventSchedule(events, today).upcoming.filter(event => event.date.startsWith(monthPrefix));
+  const { visibleItems, hasMore, showMore } = useIncrementalList(upcoming, 3);
+  const monthLabel = `${months[Number(today.slice(5, 7)) - 1]} ${today.slice(0, 4)}`;
+
+  return <aside className="calendar-upcoming" aria-label={`Upcoming events in ${monthLabel}`}>
+    <h3>Upcoming this month</h3>
+    <p className="calendar-upcoming-month">{monthLabel} · IST</p>
+    {upcoming.length === 0 ? <p className="calendar-empty" role="status">No upcoming events this month.</p> : <>
+      <ol className="calendar-upcoming-list" id="calendar-upcoming-list">{visibleItems.map(event => <li key={event.id}>
+        <strong>{event.title}</strong>
+        <time dateTime={event.date}>{event.displayDate} · {formatEventTime(event)} IST</time>
+        <span>{event.speaker}</span>
+        <span>{event.venue}</span>
+      </li>)}</ol>
+      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="calendar-upcoming-list" onClick={showMore}>Load more this month</button></div>}
+    </>}
+  </aside>;
 }
 
 export function EventCalendar({ asOfDate }: { asOfDate: string }) {
@@ -93,12 +116,13 @@ export function EventCalendar({ asOfDate }: { asOfDate: string }) {
           </button>;
         })}
       </div>}
+      {view === "month" && <MonthUpcomingEvents today={today} />}
       {view === "year" && <div className="calendar-year-grid" role="group" aria-label={`Months in ${year}`}>{months.map((name, index) => {
         const prefix = `${String(year).padStart(4, "0")}-${String(index + 1).padStart(2, "0")}`;
         const count = events.filter(event => event.date.startsWith(prefix)).length;
         return <button className="calendar-year-month" type="button" key={name} aria-label={`View ${name} ${year}, ${count} confirmed ${count === 1 ? "event" : "events"}`} onClick={() => { selectMonth(year, index); setView("month"); }}><strong>{name}</strong><span>{count} confirmed {count === 1 ? "event" : "events"}</span></button>;
       })}</div>}
-      <div className="calendar-details"><h3>{view === "year" ? `Events in ${detailLabel}` : `Events on ${detailLabel}`}</h3><EventSchedule asOfDate={asOfDate} period={{ start: detailStart, end: detailEnd, label: detailLabel }} showCalendarNotes={false} /></div>
+      <div className={`calendar-details${view === "month" ? " calendar-details--month" : ""}`}><h3>{view === "year" ? `Events in ${detailLabel}` : `Events on ${detailLabel}`}</h3><EventSchedule asOfDate={asOfDate} period={{ start: detailStart, end: detailEnd, label: detailLabel }} showCalendarNotes={false} /></div>
     </div>
   </section>;
 }

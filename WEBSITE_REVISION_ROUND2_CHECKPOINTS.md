@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **7 - Updates complete**. Waiting for confirmation before Checkpoint 8.
+Current checkpoint: **8 - Calendar complete**. Waiting for confirmation before Checkpoint 9.
 
 ## Working agreement
 
@@ -68,10 +68,10 @@ Current checkpoint: **7 - Updates complete**. Waiting for confirmation before Ch
 
 ### Checkpoint 8 - Calendar
 
-- [ ] **R2-C-1 | Not started** - Align sizes and spacing throughout the page to existing shared spacing tokens.
-- [ ] **R2-C-2 | Not started** - Beside the calendar (below it on small screens), show this month's upcoming events from real IST today, ascending, initially three or a neatly fitting count, with Load more and an empty state; never hard-code today.
-- [ ] **R2-C-3 | Not started** - Keep the current map but replace venue groups with upcoming event items only; show title/date/time/speaker/venue and both map/directions links, initially three with Load more; clicking an item selects, centers, and opens its existing-data marker popup; exclude past events everywhere in this map/list.
-- [ ] **R2-C-4 | Not started** - All events: separately show three upcoming and three past with independent Load more; Upcoming/Past tabs: three initially and Load more; reuse responsive complete-row logic.
+- [x] **R2-C-1 | Done** - Aligned Calendar section, feature, panel, map, schedule, support, and CTA spacing to the existing responsive `--section-spacing` token.
+- [x] **R2-C-2 | Done** - Added the current IST month's ascending upcoming-event list beside the month grid (below at small widths), with three-item loading, Load more, empty state, and shared live IST-date updates; calendar navigation does not change its month.
+- [x] **R2-C-3 | Done** - Replaced map venue groups with upcoming-only event cards containing title/date/time/speaker/venue and map/directions links. Cards select the existing venue marker, center the map, and open its popup. Markers and cards exclude past events; empty upcoming data shows no markers and an explicit state.
+- [x] **R2-C-4 | Done** - Added independent three-item pagination to complete-schedule upcoming and past groups and the Upcoming/Past filters. Selected-date/year details remain complete. Reused the shared incremental-list hook.
 
 ### Checkpoint 9 - Contact
 
@@ -365,3 +365,14 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Visual verification:** inspected loaded desktop posters and Posts at 1440px and social cards at 393px in the browser; content remains balanced and readable. This is browser/emulation verification, not physical-device certification.
 - **Checkpoint commit subject:** `Round 2 - Checkpoint 7: Updates`.
 - **Next step:** stop; wait for confirmation before Checkpoint 8.
+
+### Checkpoint 8 completion - Calendar
+
+- **R2-C-1 | Done:** Calendar spacing for the featured event, calendar panels, map, schedule, support strip, and closing CTA uses the existing responsive `--section-spacing` token. Kept the shared `PageIntro` as a direct child of `main` to preserve the established page structure and responsive alignment.
+- **R2-C-2 | Done:** Month view shows the current IST month's upcoming events, sorted earliest first, alongside the month grid and below it on small screens. Three are shown initially with Load more; an empty state appears when none remain. It uses `useEventDate`, so the list follows focus/minute refresh and IST midnight without hard-coded dates, and navigating the visible calendar does not alter its real-current-month scope.
+- **R2-C-3 | Done:** The map and its event list include upcoming events only. Each event card displays title, date/time, speaker, and venue with OpenStreetMap location and directions links. Selecting an event centers the map and opens the existing venue marker popup. Past-only venues produce no markers; no-upcoming state has no markers and an explicit message.
+- **R2-C-4 | Done:** Complete schedule upcoming and past groups have separate three-item pagination state; Upcoming/Past filters begin with three and expose their own Load more controls when needed. The selected-date and selected-year schedule panels remain unpaginated.
+- **Files and documentation:** updated Calendar page composition and token-based styles, month upcoming panel, upcoming-only map/list, complete-schedule pagination, schedule browser tests, this tracker, and the Calendar maintenance section in `README.md`. No events, coordinates, assets, dependencies, or labels were added or changed.
+- **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. Calendar/schedule tests passed across all six Playwright browser/device profiles (96 passed). The responsive layout matrix passed across 18 widths (320–3840px) and all public routes. Automated WCAG A/AA checks passed on desktop and mobile (2 passed). Browser verification confirmed the rendered Calendar page and upcoming-only map/list.
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 8: Calendar`.
+- **Next step:** stop; wait for confirmation before Checkpoint 9.

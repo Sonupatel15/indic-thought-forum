@@ -6,6 +6,7 @@ import { ArrowUpRight, CalendarDays, Clock3, MapPin, UserRound } from "lucide-re
 import { events, type ForumEvent } from "@/lib/site";
 import { eventTimeZone, formatEventTime, getEventSchedule, getEventStart } from "@/lib/schedule";
 import { useEventDate } from "@/lib/use-event-date";
+import { useIncrementalList } from "@/lib/use-incremental-list";
 import { MediaDialog } from "./media-dialog";
 
 type ScheduleFilter = "all" | "upcoming" | "past";
@@ -24,17 +25,22 @@ export function EventSchedule({ asOfDate, period, showCalendarNotes = true }: { 
   const inPeriod = (event: ForumEvent) => !period || (event.date >= period.start && event.date <= period.end);
   const upcoming = !period && filter === "past" ? [] : groups.upcoming.filter(inPeriod);
   const past = !period && filter === "upcoming" ? [] : groups.past.filter(inPeriod);
-  const visible = [...upcoming, ...past];
+  const upcomingList = useIncrementalList(upcoming, 3);
+  const pastList = useIncrementalList(past, 3);
+  const visibleUpcoming = period ? upcoming : filter === "past" ? [] : upcomingList.visibleItems;
+  const visiblePast = period ? past : filter === "upcoming" ? [] : pastList.visibleItems;
+  const visible = [...visibleUpcoming, ...visiblePast];
   const media = visible.map(event => ({
     src: event.image, title: event.title,
     alt: `Original event poster: ${event.title}, ${event.speaker}, ${event.displayDate}`,
   }));
 
-  function renderGroup(title: string, items: ForumEvent[], isPast: boolean) {
+  function renderGroup(title: string, items: ForumEvent[], isPast: boolean, hasMore: boolean, showMore: () => void) {
     if (items.length === 0) return null;
+    const listId = `schedule-list${period ? "-period" : ""}-${isPast ? "past" : "upcoming"}`;
     return <section className="schedule-group" aria-label={title}>
       <div className="schedule-group-heading"><h3>{title}</h3><span>{isPast ? "Most recent first" : "Earliest first"}</span></div>
-      <ol className="schedule-list">{items.map(event => {
+      <ol className="schedule-list" id={listId}>{items.map(event => {
         const start = getEventStart(event);
         const month = new Intl.DateTimeFormat("en-IN", { timeZone: eventTimeZone, month: "short", year: "numeric" }).format(start);
         return <li key={event.id} className="schedule-item">
@@ -48,6 +54,7 @@ export function EventSchedule({ asOfDate, period, showCalendarNotes = true }: { 
           <button type="button" className="text-link schedule-poster" onClick={click => { returnFocusRef.current = click.currentTarget; setSelected(visible.findIndex(item => item.id === event.id)); }} aria-label={`View poster for ${event.title}`}>View poster <ArrowUpRight size={17} aria-hidden="true" /></button>
         </li>;
       })}</ol>
+      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls={listId} onClick={showMore}>Load more {isPast ? "past" : "upcoming"} events</button></div>}
     </section>;
   }
 
@@ -55,8 +62,8 @@ export function EventSchedule({ asOfDate, period, showCalendarNotes = true }: { 
     {!period && <div className="filter-bar" role="group" aria-label="Filter event schedule">{filters.map(item => <button key={item.value} type="button" aria-pressed={filter === item.value} onClick={() => setFilter(item.value)}>{item.label}</button>)}<span role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "event" : "events"}</span></div>}
     {showCalendarNotes && <p className="schedule-timezone"><Clock3 size={15} aria-hidden="true" /> All dates and times are in India Standard Time (IST, UTC+05:30). An event stays in Today until the day ends.</p>}
     {!period && filter !== "past" && upcoming.length === 0 && <div className="schedule-empty"><span className="icon-box"><CalendarDays size={26} aria-hidden="true" /></span><div><h3>No upcoming dates announced yet.</h3><p>We will list the next event once its details are confirmed. {filter === "all" ? "Past conversations are listed below." : "Choose Past events to explore previous conversations."}</p><Link className="text-link" href="/contact-us/">Enquire about future events <ArrowUpRight size={16} aria-hidden="true" /></Link></div></div>}
-    {renderGroup("Upcoming & today", upcoming, false)}
-    {renderGroup("Past conversations", past, true)}
+    {renderGroup("Upcoming & today", visibleUpcoming, false, !period && upcomingList.hasMore && filter !== "past", upcomingList.showMore)}
+    {renderGroup("Past conversations", visiblePast, true, !period && pastList.hasMore && filter !== "upcoming", pastList.showMore)}
     {!period && filter === "past" && past.length === 0 && <div className="schedule-empty"><p>No past events to show yet. Choose Upcoming to explore confirmed dates.</p></div>}
     {showCalendarNotes && <p className="schedule-note">Listing an event does not open registration. Check the original poster and contact the team for participation details.</p>}
     <MediaDialog items={media} selected={selected} onSelect={setSelected} returnFocusRef={returnFocusRef} />
