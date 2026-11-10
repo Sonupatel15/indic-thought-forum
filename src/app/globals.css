@@ -87,7 +87,6 @@ main:focus { outline: none; }
 .hero-signature { display: flex; align-items: center; gap: 14px; font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 15px; color: #e5dfd3; margin-top: 32px; }
 .hero-signature strong { display: block; font-size: clamp(18px, 1.6vw, 22px); font-weight: 600; font-style: normal; line-height: 1.5; }
 .hero-signature > div > span { display: block; }
-.signature-line { width: 32px; height: 1px; background: #d8c6a9; }
 .hero-bottom { position: absolute; bottom: 0; left: 0; right: 0; min-height: 68px; border-top: 1px solid #ffffff2e; display: flex; align-items: center; justify-content: space-between; font-size: 11px; letter-spacing: .02em; color: #d4d8d6; }
 .hero-bottom > a { display: flex; align-items: center; gap: 20px; color: white; }
 .hero-bottom > span { font-style: italic; }
@@ -100,6 +99,8 @@ main:focus { outline: none; }
 .section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 35px; margin-bottom: 39px; }
 .section-heading .eyebrow { margin-bottom: 13px; }
 .section-heading h2 { font-size: var(--type-heading); }
+.home-conversation-section .section-heading .eyebrow { font-size: calc(var(--type-label) * .75); }
+.home-conversation-section .section-heading h2 { font-size: calc(var(--type-heading) * .75); }
 .section-heading p { max-width: 650px; font-size: var(--type-caption); margin-top: 13px; }
 .section-heading > .text-link { white-space: nowrap; margin-bottom: 6px; }
 .philosophy-section { background: #eceae2; }

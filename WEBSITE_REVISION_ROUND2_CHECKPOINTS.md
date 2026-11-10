@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **1 - Header and Global Branding complete**. Waiting for confirmation before Checkpoint 2.
+Current checkpoint: **2 - Home complete**. Waiting for confirmation before Checkpoint 3.
 
 ## Working agreement
 
@@ -33,9 +33,9 @@ Current checkpoint: **1 - Header and Global Branding complete**. Waiting for con
 
 ### Checkpoint 2 - Home
 
-- [ ] **R2-H-1 | Not started** - Remove only the decorative line beside "Indic Thought Forum" in the hero.
-- [ ] **R2-H-2 | Not started** - Reduce "Gather. Listen. Grow." and "Conversations that stay with you." to approximately 75% of their current size at every breakpoint; revert and record if inconsistent with neighboring headings.
-- [ ] **R2-H-3 | Not started** - Remove social links/icons only from "Watch. Listen. Connect."; preserve the rest of the section.
+- [x] **R2-H-1 | Done** - Remove only the decorative line beside "Indic Thought Forum" in the hero.
+- [x] **R2-H-2 | Done** - Reduce "Gather. Listen. Grow." and "Conversations that stay with you." to approximately 75% of their current size at every breakpoint; revert and record if inconsistent with neighboring headings.
+- [x] **R2-H-3 | Done** - Remove social links/icons only from "Watch. Listen. Connect."; preserve the rest of the section.
 
 ### Checkpoint 3 - Footer
 
@@ -280,6 +280,23 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Open questions or assumptions:** No blockers. No Next.js-branded public assets or visible production badges existed to remove. No new dependencies were required.
 - **Commit:** to be recorded after the Checkpoint 1-only commit.
 - **Next step:** stop and await confirmation before Checkpoint 2.
+
+### Checkpoint 2 - Home
+
+- **R2-H-1 | Done.** Removed only the decorative `.signature-line` span next to the real-text branding in the Home hero (`src/app/page.tsx`). Removed its now-unused 32x1px CSS rule from `src/app/globals.css`; the signature text, hero, actions, and other dividers remain.
+- **R2-H-2 | Done.** Scoped the size reduction to the Home conversation section with `.home-conversation-section`; the shared `SectionHeading` and every other page remain unchanged. The eyebrow "Gather. Listen. Grow." went from `var(--type-label)` (11px) to `calc(var(--type-label) * .75)` (8.25px). Its h2 "Conversations that stay with you." went from `var(--type-heading)` to `calc(var(--type-heading) * .75)`. This tracks the existing responsive heading token rather than hard-coding a viewport-specific size. Representative before -> after h2 sizes: 393px 25.584px -> 19.188px, 768px 30px -> 22.5px, 1280px 38.4px -> 28.8px, 1440px and 3840px 42px -> 31.5px. The eyebrow is 11px -> 8.25px at every width. Screenshot and responsive comparison found the smaller label and title remain legible and visually balanced beside other section headings, so no reversion was needed. Description, heading line-height, margins, spacing, and colors are unchanged.
+- **R2-H-3 | Done.** Removed only the `SocialChannels compact` element and its now-unused import from the Home "Watch. Listen. Connect." section (`src/app/page.tsx`). The section heading, description, media link, featured podcast, and player remain; footer and Updates social channels are unchanged.
+- **Files/components changed:**
+  - `src/app/page.tsx`: Home hero signature child, a modifier class on the "Gather..." section, and only the Home "Watch..." `SocialChannels` element/import.
+  - `src/app/globals.css`: removed the unused `.signature-line` rule and added responsive-token-based 75% typography rules scoped to `.home-conversation-section`.
+  - `tests/home.spec.ts`: added checks for removal scope, retained podcast/footer links, and exact 75% sizes at 16 viewport widths.
+  - `WEBSITE_REVISION_ROUND2_CHECKPOINTS.md`: recorded status and verification.
+- **Before -> after colors and spacing:** no colors, dimensions other than requested font sizes, section spacing, or layout gaps were changed. The hero signature flex gap remains (one child, therefore no visible gap); the existing hero, event cards, and social sections elsewhere are unchanged.
+- **Screen sizes tested:** Heading scale at 320, 360, 361, 393, 480, 481, 760, 761, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS px across Chromium desktop/mobile, Firefox, WebKit desktop, iOS-style, and tablet projects. Existing Home poster/overflow regression test additionally covers 320, 393, 480, 768, 1024, 1440, 1920, 2560, and 3840px.
+- **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. Full `npx playwright test tests/home.spec.ts`: 36 passed across six browser/device projects. `npx playwright test tests/media.spec.ts --grep "verified social channels"`: 6 passed, confirming Updates social links still work. Browser-suite validation confirmed the removed Home social component does not affect the featured podcast or footer links. An initial strict-font assertion was adjusted for normal Firefox subpixel rounding (less than 0.05px); the full rerun passed. Two concurrent Playwright invocations once encountered temporary trace-file collisions; sequential reruns passed.
+- **Open questions or assumptions:** None. No application behavior beyond the listed Home changes was altered.
+- **Commit:** to be recorded after the Checkpoint 2-only commit.
+- **Next step:** stop and await confirmation before Checkpoint 3.
 
 ## Content proposals and approval
 

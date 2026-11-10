@@ -9,6 +9,7 @@ test("Home has real-text branding, unnumbered sections, updated goals, and no pu
   await page.goto("/");
   const main = page.locator("main");
   await expect(page.locator(".hero-eyebrow, .hero-signature img, #our-purpose img, .principle-card .card-number")).toHaveCount(0);
+  await expect(page.locator(".hero-signature .signature-line")).toHaveCount(0);
   await expect(main).not.toContainText("Rooted in heritage. Driven by purpose.");
   await expect(page.locator(".hero-signature strong")).toHaveText(site.name);
   await expect(page.locator(".hero-signature > div > span")).toHaveText(site.tagline);
@@ -23,6 +24,40 @@ test("Home has real-text branding, unnumbered sections, updated goals, and no pu
   await expect(main).not.toContainText("Privacy-first preview");
   await expect(main).not.toContainText("Choosing Load connects to YouTube/Google");
   await expect(page.locator(".youtube-label, .youtube-disclosure, iframe")).toHaveCount(0);
+  const mediaSection = page.locator('main section[aria-label="Podcasts and social media"]');
+  await expect(mediaSection.locator(".social-channel-links, .social-channel-grid")).toHaveCount(0);
+  await expect(mediaSection.locator(".youtube-load")).toHaveCount(1);
+  await expect(page.locator(".footer-about .social-channel-link")).toHaveCount(5);
+});
+
+test("Home conversation heading and eyebrow are 75% size across viewport breakpoints", async ({ page }) => {
+  for (const width of [320, 360, 361, 393, 480, 481, 760, 761, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840]) {
+    await page.setViewportSize({ width, height: width >= 2560 ? 2160 : 900 });
+    await page.goto("/");
+    const sizes = await page.locator(".home-conversation-section").evaluate(section => {
+      const heading = section.querySelector(".section-heading h2");
+      const eyebrow = section.querySelector(".section-heading .eyebrow");
+      if (!(heading instanceof HTMLElement) || !(eyebrow instanceof HTMLElement)) {
+        throw new Error("The Home conversation heading and eyebrow must remain present.");
+      }
+      const probe = document.createElement("span");
+      probe.style.position = "absolute";
+      document.body.append(probe);
+      probe.style.fontSize = "var(--type-heading)";
+      const headingBase = parseFloat(getComputedStyle(probe).fontSize);
+      probe.style.fontSize = "var(--type-label)";
+      const eyebrowBase = parseFloat(getComputedStyle(probe).fontSize);
+      probe.remove();
+      return {
+        heading: parseFloat(getComputedStyle(heading).fontSize),
+        headingBase,
+        eyebrow: parseFloat(getComputedStyle(eyebrow).fontSize),
+        eyebrowBase,
+      };
+    });
+    expect(sizes.heading, `Heading at ${width}px`).toBeCloseTo(sizes.headingBase * 0.75, 1);
+    expect(sizes.eyebrow, `Eyebrow at ${width}px`).toBeCloseTo(sizes.eyebrowBase * 0.75, 1);
+  }
 });
 
 test("Home shows exactly the latest three events including upcoming dates with correct posters and venues", async ({ page }) => {

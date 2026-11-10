@@ -7,7 +7,7 @@ import { GalleryGrid } from "@/components/gallery-grid";
 import { Icon } from "@/components/icon";
 import { homeStatistics, sankalpas, site } from "@/lib/site";
 import { getIndiaDateKey } from "@/lib/schedule";
-import { FeaturedPodcast, SocialChannels } from "@/components/media-content";
+import { FeaturedPodcast } from "@/components/media-content";
 
 export default function Home() {
   return <>
@@ -18,7 +18,7 @@ export default function Home() {
         <h1>Awakening Bharat.<br /><span>Inspiring the future.</span></h1>
         <p>A timeless civilization. A new generation of thinkers.<br className="desktop-break" /> One shared commitment to turn thought into action.</p>
         <div className="hero-actions"><Link href="/sankalpas/" className="button">Explore our Sankalpas <ArrowUpRight size={19} aria-hidden="true" /></Link><Link href="/join/" className="button button--outline">Join the Movement <ArrowRight size={18} aria-hidden="true" /></Link></div>
-        <div className="hero-signature"><span className="signature-line" aria-hidden="true" /><div><strong>{site.name}</strong><span>{site.tagline}</span></div></div>
+        <div className="hero-signature"><div><strong>{site.name}</strong><span>{site.tagline}</span></div></div>
       </div>
       <div className="hero-bottom container"><span>For those who want to build, not just debate.</span><a href="#our-purpose" aria-label="Discover our purpose">Discover ITF <ArrowDown size={16} aria-hidden="true" /></a></div>
     </section>
@@ -34,13 +34,13 @@ export default function Home() {
       <article className="pathway-card pathway-card--calendar"><span className="icon-box"><CalendarDays size={29} aria-hidden="true" /></span><span className="eyebrow">From curiosity to conversation</span><h3>Event calendar</h3><p>Explore our date-ordered schedule with confirmed dates, India Standard Time timings, venues, and original event posters.</p><ul><li>Upcoming gatherings</li><li>Past conversations</li><li>Details to plan your visit</li></ul><Link className="text-link" href="/calendar/">View event calendar <ArrowUpRight size={18} aria-hidden="true" /></Link></article>
     </div></section>
 
-    <section className="section soft-section"><div className="container"><SectionHeading eyebrow="Gather. Listen. Grow." title="Conversations that stay with you." description="A meeting of minds. A sharing of perspectives. A step towards clarity." href="/events/" linkLabel="Explore all events" /><EventList compact asOfDate={getIndiaDateKey()} /></div></section>
+    <section className="section soft-section home-conversation-section"><div className="container"><SectionHeading eyebrow="Gather. Listen. Grow." title="Conversations that stay with you." description="A meeting of minds. A sharing of perspectives. A step towards clarity." href="/events/" linkLabel="Explore all events" /><EventList compact asOfDate={getIndiaDateKey()} /></div></section>
 
     <section className="section container"><SectionHeading eyebrow="Your journey with ITF" title="Small commitments. Lasting change." description="You do not need to have all the answers. Just the willingness to begin." /><Journey /><div className="center-action"><Link className="text-link" href="/sankalpas/">Find your Sankalpa <ArrowRight size={18} aria-hidden="true" /></Link></div></section>
 
     <section className="container lakshya"><div><span className="eyebrow">Our shared Lakshya</span><h2>A vision we build.<br /><span>Together.</span></h2><p>Not milestones claimed. A purpose to work towards.</p></div>{homeStatistics.map(stat => <div className="goal" key={stat.label}><strong>{stat.value}<span>+</span></strong><span>{stat.label}</span></div>)}</section>
 
-    <section className="section container" aria-label="Podcasts and social media"><SectionHeading eyebrow="Watch. Listen. Connect." title="The conversation continues." description="Explore our podcasts, discover community posts, and find ITF on your favourite platform." href="/events/#podcasts" linkLabel="Explore our media" /><FeaturedPodcast showPreviewDetails={false} /><SocialChannels compact /></section>
+    <section className="section container" aria-label="Podcasts and social media"><SectionHeading eyebrow="Watch. Listen. Connect." title="The conversation continues." description="Explore our podcasts, discover community posts, and find ITF on your favourite platform." href="/events/#podcasts" linkLabel="Explore our media" /><FeaturedPodcast showPreviewDetails={false} /></section>
     <section className="section soft-section"><div className="container"><SectionHeading eyebrow="Moments of connection" title="A forum. A community. A family." description="Glimpses of the people and moments that bring our purpose to life." href="/events/#gallery" linkLabel="View our gallery" /><GalleryGrid preview /></div></section>
     <CommunityCTA />
     <section className="container support-strip"><span className="icon-box"><Icon name="hands" size={27} /></span><div><h2>Help a meaningful idea go further.</h2><p>Your time, your skills, or your support can make a difference.</p></div><Link href="/support/" className="text-link">Support the cause <MoveUpRight size={18} aria-hidden="true" /></Link></section>
