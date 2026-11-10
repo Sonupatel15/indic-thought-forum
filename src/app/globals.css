@@ -771,6 +771,13 @@ main:focus { outline: none; }
   .social-channel-card { padding: 23px; gap: 18px; }
   .social-channel-card .icon-box { width: 45px; height: 45px; }
 }
+@media (max-width: 360px) {
+  .header-inner { gap: 4px; }
+  .brand { gap: 6px; }
+  .brand strong { font-size: 15px; }
+  .brand small { font-size: 6px; }
+  .brand img { width: 40px; height: 40px; }
+}
 @media (pointer: coarse) {
   .icon-button { min-width: 44px; min-height: 44px; }
   .field input, .field textarea, .field select { font-size: 16px; }

@@ -608,6 +608,8 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 - `npm exec -- playwright test footer.spec.ts --project=desktop --grep "all public footers retain" --workers=2 --timeout=90000 --reporter=list`: **1 passed**. The external-request check allows only the three OpenStreetMap tile hosts required by the Calendar map.
 - Full desktop suite `npm exec -- playwright test --project=desktop --workers=2 --timeout=90000 --reporter=list`: **57 passed, 1 skipped**.
 - No physical-device certification is claimed.
+- 2026-11-10 responsive revalidation found the shared header menu button extended beyond its container on 320px screens. Compactened the brand and header spacing below 360px, and strengthened overflow checks to compare against the layout viewport so a narrow-screen overrun cannot be masked by a desktop scrollbar. The all-route matrix now includes short phone heights and breakpoint edges.
+- Revalidation: `npm run build`, `npm run lint`, and `npm run typecheck` passed. The responsive matrix passed on desktop Chromium, Pixel 7 emulation, and iPad Mini emulation: **13 routes x 18 widths per project**, including viewport widths from 320 to 3840 CSS pixels.
 
 #### Review handoff
 

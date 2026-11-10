@@ -146,10 +146,10 @@ test("unconfigured services never imply a successful message or take a payment",
 
 test("layouts fit phone through large-TV widths on every public route", async ({ page }) => {
   test.setTimeout(240000);
-  const widths = [320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840];
+  const widths = [320, 360, 361, 375, 480, 481, 760, 761, 768, 1024, 1025, 1180, 1181, 1200, 1440, 1920, 2560, 3840];
   const sharedHeroRoutes = ["/about/", "/sankalpas/", "/events/", "/calendar/", "/contact-us/"];
   for (const width of widths) {
-    await page.setViewportSize({ width, height: 900 });
+    await page.setViewportSize({ width, height: width <= 480 ? 568 : 900 });
     for (const route of routes) {
       await page.goto(route);
       const layout = await page.evaluate(() => {
@@ -161,15 +161,25 @@ test("layouts fit phone through large-TV widths on every public route", async ({
           const renderedRatio = image.clientWidth / image.clientHeight;
           return Math.abs(naturalRatio - renderedRatio) / naturalRatio < 0.02;
         });
+        const header = document.querySelector(".header-inner");
+        const brand = header?.querySelector(".brand");
+        const toggle = header?.querySelector(".menu-toggle");
+        const headerBounds = header?.getBoundingClientRect();
+        const brandBounds = brand?.getBoundingClientRect();
+        const toggleBounds = toggle?.getBoundingClientRect();
+        const headerFits = !headerBounds || !brandBounds || !toggleBounds || toggleBounds.width === 0
+          || (brandBounds.right <= toggleBounds.left + 1 && toggleBounds.right <= headerBounds.right + 1);
         return {
-          noHorizontalOverflow: document.documentElement.scrollWidth <= innerWidth,
+          noHorizontalOverflow: document.documentElement.scrollWidth <= document.documentElement.clientWidth,
           headingsFit,
           imagesAreUndistorted,
+          headerFits,
         };
       });
       expect(layout.noHorizontalOverflow, `${route} has no horizontal overflow at ${width}px`).toBe(true);
       expect(layout.headingsFit, `${route} headings fit at ${width}px`).toBe(true);
       expect(layout.imagesAreUndistorted, `${route} images preserve their aspect ratio at ${width}px`).toBe(true);
+      expect(layout.headerFits, `${route} header fits at ${width}px`).toBe(true);
       if (sharedHeroRoutes.includes(route)) {
         await expect(page.locator("main > .page-intro")).toHaveCount(1);
         const heroContainer = await page.locator(".page-intro > .container").boundingBox();
