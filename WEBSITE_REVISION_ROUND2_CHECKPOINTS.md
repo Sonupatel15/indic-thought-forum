@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **8 - Calendar complete**. Waiting for confirmation before Checkpoint 9.
+Current checkpoint: **9 - Contact complete**. Waiting for confirmation before Final review.
 
 ## Working agreement
 
@@ -75,11 +75,11 @@ Current checkpoint: **8 - Calendar complete**. Waiting for confirmation before C
 
 ### Checkpoint 9 - Contact
 
-- [ ] **R2-CT-1 | Not started** - Provide clearly separated Join the Community and Contribute to the Community forms with labels, required indicators, validation, accessible errors, and only existing configured submission services.
+- [x] **R2-CT-1 | Done** - Provide clearly separated Join the Community and Contribute to the Community forms with labels, required indicators, validation, accessible errors, and only existing configured submission services. The absent backend remains an open question; no service was added.
   - Join: name, email, optional phone, city, referral source, optional message.
   - Contribute: name, email, optional phone, contribution area, availability, required contribution message.
-  - Record absent backend/service as an open question; do not add one.
-- [ ] **R2-CT-2 | Not started** - Add Other to "I'm interested in"; when selected, reveal a required custom-interest text field.
+  - Open question: the site owner must select/configure a backend and confirm it accepts and securely processes both form payloads before enabling submissions.
+- [x] **R2-CT-2 | Done** - Add Other to "I'm interested in"; when selected, reveal a required custom-interest text field.
 
 ### Final review
 
@@ -376,3 +376,13 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. Calendar/schedule tests passed across all six Playwright browser/device profiles (96 passed). The responsive layout matrix passed across 18 widths (320–3840px) and all public routes. Automated WCAG A/AA checks passed on desktop and mobile (2 passed). Browser verification confirmed the rendered Calendar page and upcoming-only map/list.
 - **Checkpoint commit subject:** `Round 2 - Checkpoint 8: Calendar`.
 - **Next step:** stop; wait for confirmation before Checkpoint 9.
+
+### Checkpoint 9 completion - Contact
+
+- **R2-CT-1 | Done:** replaced the single enquiry form with clearly named Join the Community and Contribute to the Community forms. Join requires name, email, city, referral source, and interest; phone and message are optional. Contribution requires name, email, area, availability, and message; phone is optional. All fields have unique IDs and labels, required indicators, HTML validation, and an accessible live error message. Existing consent, privacy link, honeypot, disabled-service behavior, and explicit success-confirmation protocol remain.
+- **R2-CT-2 | Done:** Join's "I'm interested in" includes Other; selecting it reveals a required custom-interest field. Sankalpa URLs continue to prefill the Contribute form's area.
+- **Backend open question:** no `NEXT_PUBLIC_FORMS_ENDPOINT` is configured and this repository has no form backend. Both buttons remain disabled, and entered information is neither sent nor stored. Before enabling the existing endpoint setting, the site owner must select a service and verify its schema, delivery, privacy, retention, validation, and abuse-protection behavior for both payload types. No service/backend was added.
+- **Files and documentation:** updated the Contact layout and submission component, typed the additional optional submission fields, added responsive spacing for the stacked forms, revised Contact/Sankalpa and mocked-endpoint tests, and documented the payloads and open question in `README.md` and this tracker. Existing Sankalpa destinations and query parameter names are unchanged.
+- **Validation:** production build, lint, and strict typecheck passed. Contact and Sankalpa flow tests passed on all six Playwright browser/device profiles (30 passed; the six configured-service test instances were skipped because the deployment has no endpoint). A separate mocked HTTPS endpoint build/test verified both payload shapes and success handling (1 passed), without sending data externally. The all-route responsive matrix passed at 18 widths; automated WCAG A/AA checks passed on desktop and mobile (2 passed).
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 9: Contact`.
+- **Next step:** stop; wait for confirmation before Final review.

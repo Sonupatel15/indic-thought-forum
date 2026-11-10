@@ -482,6 +482,7 @@ main:focus { outline: none; }
 .updates-closing .cta-wrap { margin-block: 0; }
 
 .contact-layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.35fr); gap: 56px; align-items: start; }
+.contact-forms { display: grid; gap: calc(var(--section-spacing) * .25); min-width: 0; }
 .contact-aside { padding: 0; }
 .contact-aside > h2 { font-size: var(--type-heading); }
 .contact-aside > p { font-size: 13px; margin-top: 23px; }

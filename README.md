@@ -35,7 +35,7 @@ On Windows, the build also runs `scripts/finalize-export.mjs`. Next.js 16.4's ex
 - Day, month, and year calendar views, a selected-date panel, a featured gathering, and an attributed OpenStreetMap venue map
 - Curated podcasts and community-post cards, official social links, and click-to-load YouTube players
 - Filterable photo gallery with native modal focus management, arrow navigation, and Escape support
-- Validated Contact form; selected Sankalpa carries into the Contact interest field
+- Separate, validated Join the Community and Contribute to the Community forms; Sankalpa pathways prefill the contribution area, and "Other" reveals a required custom interest
 - Explicit unavailable states until real form/payment services are configured
 - Pre-rendered HTML, per-page SEO metadata, canonical URLs, social cards, sitemap, robots
 - A preloaded self-hosted variable font, responsive WebP hero, local podcast thumbnails, and no third-party media connection before opt-in
@@ -45,7 +45,7 @@ The project has **no database, admin dashboard, authentication, payment processi
 
 **About** combines About Us and Philosophy at `/about/`. **Updates** combines Events, Gallery, Podcasts, community posts, and social channels at `/events/`, with section links for easy navigation. The short labels are consistent across navigation, footer, breadcrumbs, and page titles; the existing URLs are unchanged. The old `/philosophy/`, `/gallery/`, and `/media/` URLs remain static compatibility pages that render the same combined content, with canonical metadata pointing to the combined route. Navigation and the sitemap use the combined routes.
 
-Contact keeps a disabled send button and a short service-status explanation beside it when no endpoint is configured, without the former long messaging notice. Nothing is transmitted or stored in that state. The separate membership route has been removed; all membership invitations now lead to Contact, preserving Sankalpa interest query parameters.
+Contact has separate Join the Community and Contribute to the Community forms. When no endpoint is configured, both send buttons are disabled and each form explains that entered details are not transmitted or stored. The separate membership route has been removed; all membership invitations lead to the Join form, while Sankalpa pathways preserve their selected contribution area.
 
 ## Browser and device compatibility
 
@@ -83,7 +83,7 @@ Configured URLs are validated. Invalid URLs or email configuration stop the buil
 
 ### Form endpoint contract
 
-The frontend sends `POST` with `Content-Type: application/json`, without cookies:
+The frontend sends `POST` with `Content-Type: application/json`, without cookies. Join submissions use the membership payload:
 
 ```json
 {
@@ -92,15 +92,19 @@ The frontend sends `POST` with `Content-Type: application/json`, without cookies
   "email": "member@example.com",
   "phone": "+91 98765 43210",
   "area": "Culture & heritage",
-  "message": "I would like to contribute...",
+  "city": "Bengaluru",
+  "referralSource": "A friend",
+  "message": "",
   "consent": true,
   "website": ""
 }
 ```
 
-`type` is `membership` or `contact`. `website` is a honeypot. A successful response must be a 2xx status with JSON **`{ "success": true }`**. No other response is displayed as success. Rate limits, unconfirmed responses, timeouts, and failures are surfaced to the visitor, and entered information is retained for retry. Drafts are not stored in local storage.
+Contribute submissions use `type: "contact"` and add `availability`; their `message` is required. Join submissions use `type: "membership"`; `city` and `referralSource` are required, `message` is optional, and `customInterest` is sent only when `area` is `"Other"`. `phone` may be empty in either form. `website` is a honeypot. A successful response must be a 2xx status with JSON **`{ "success": true }`**. No other response is displayed as success. Rate limits, unconfirmed responses, timeouts, and failures are surfaced to the visitor, and entered information is retained for retry. Drafts are not stored in local storage.
 
-When no endpoint is configured, Contact keeps its explicit unavailable-service status and disabled submit button without repeating the storage notice. It does not send or store an unconfigured submission.
+When no endpoint is configured, each Contact form keeps its explicit unavailable-service status and disabled submit button. Neither form sends or stores an unconfigured submission.
+
+**Open question:** this repository does not include or configure a form backend. Before enabling `NEXT_PUBLIC_FORMS_ENDPOINT`, the site owner must select the service and verify that it accepts both payload shapes (including city, referral source, contribution availability, and custom interest), routes them to the right team, and meets the site's validation, privacy, retention, and delivery requirements. No backend or service was added in this checkpoint.
 
 Before enabling an endpoint, implement **server-side validation**, length limits, strict type/area allowlists, consent checks, honeypot rejection, rate limiting, spam protection, safe email delivery/storage, and appropriate retention. Client-side checks are not a security boundary. Only acknowledge success after the enquiry has been durably accepted. Configure CORS to allow the production origin and `POST`/`OPTIONS` with `Content-Type`; never embed API keys in the frontend.
 
@@ -227,7 +231,7 @@ npm run build
 npm test
 ```
 
-If Playwright reports that a browser is missing, run `npx playwright install chromium firefox webkit`, then retry. Tests serve the actual production export and cover public routes, browser/network errors, navigation, responsive overflow, gallery controls, archive/schedule filters, focus restoration, form validation/reset, explicit disconnected-service behavior, links, metadata, and the form-service request/response contract. Calendar tests verify current IST day/month/year defaults, every month selection, previous/next month and day transitions across years, leap February, year navigation and drill-down, Today reset, midnight rollover, invalid year/date rejection, month-upcoming updates, independent schedule pagination, upcoming-only map filtering, map selection/centering/popups, and correct sorting without modifying the shared data. Combined-section tests check retained editorial text, event/gallery/media records, compatibility URLs, and section anchors. Responsive tests also check narrow calendar selector widths and alignment. Media tests verify zero external requests before consent, keyboard activation, player removal and focus restoration, source links, permitted embed origin, responsive image selection, and the single font preload. Automated player tests use a mocked provider frame rather than contacting Google; they do not verify live external playback availability.
+If Playwright reports that a browser is missing, run `npx playwright install chromium firefox webkit`, then retry. Tests serve the actual production export and cover public routes, browser/network errors, navigation, responsive overflow, gallery controls, archive/schedule filters, focus restoration, the separate Join/Contribute forms, conditional custom interest, validation/reset, explicit disconnected-service behavior, links, metadata, and mocked form payload/response handling. Calendar tests verify current IST day/month/year defaults, every month selection, previous/next month and day transitions across years, leap February, year navigation and drill-down, Today reset, midnight rollover, invalid year/date rejection, month-upcoming updates, independent schedule pagination, upcoming-only map filtering, map selection/centering/popups, and correct sorting without modifying the shared data. Combined-section tests check retained editorial text, event/gallery/media records, compatibility URLs, and section anchors. Responsive tests also check narrow calendar selector widths and alignment. Media tests verify zero external requests before consent, keyboard activation, player removal and focus restoration, source links, permitted embed origin, responsive image selection, and the single font preload. Automated player tests use a mocked provider frame rather than contacting Google; they do not verify live external playback availability.
 
 For focused checks, use `npx playwright test media.spec.ts --project=desktop` or `npx playwright test schedule.spec.ts --project=desktop`, and select `--project=firefox`, `--project=webkit`, `--project=mobile`, `--project=ios`, or `--project=tablet` as needed. Mobile-menu tests are intentionally skipped in the three desktop profiles.
 

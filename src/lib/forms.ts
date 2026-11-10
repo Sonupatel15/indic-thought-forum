@@ -5,6 +5,10 @@ export interface Submission {
   phone: string;
   area: string;
   message: string;
+  city?: string;
+  referralSource?: string;
+  availability?: string;
+  customInterest?: string;
   consent: true;
   website: string;
 }

@@ -149,7 +149,7 @@ test("existing personal contribution pathways still link to the correct membersh
     await expect(card.getByRole("link")).toHaveAttribute("href", `/contact-us/?area=${pathway.id}`);
     await card.getByRole("link").click();
     await expect(page).toHaveURL(new RegExp(`/contact-us/\\?area=${pathway.id}$`));
-    await expect(page.getByLabel("I'm interested in")).toHaveValue(pathway.category);
+    await expect(page.getByRole("form", { name: "Contribute to the Community" }).getByLabel("Area of contribution")).toHaveValue(pathway.category);
     await page.goto("/sankalpas/");
   }
 });
