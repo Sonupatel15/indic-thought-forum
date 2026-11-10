@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **5 - About complete**. Waiting for confirmation before Checkpoint 6.
+Current checkpoint: **6 - Sankalpas complete**. Waiting for confirmation before Checkpoint 7.
 
 ## Working agreement
 
@@ -55,8 +55,8 @@ Current checkpoint: **5 - About complete**. Waiting for confirmation before Chec
 
 ### Checkpoint 6 - Sankalpas
 
-- [x] **R2-S-1 | Done** - Point "I'd like to contribute" to Contact instead of Become a member. Implemented and tested as the approved Checkpoint 3 prerequisite; verify again in Checkpoint 6.
-- [x] **R2-S-2 | Done** - Inventory and retarget every Become a member link/button to Contact, remove its page/route, list every change, and verify no broken references remain. Implemented and tested as the approved Checkpoint 3 prerequisite; verify again in Checkpoint 6.
+- [x] **R2-S-1 | Done** - All six "I'd like to contribute" links go to Contact with their existing area IDs; every linked Contact form now verifies the correct selected interest.
+- [x] **R2-S-2 | Done** - Reverified the full migration inventory from Checkpoint 3, absence of live `/join/` references and route, its 404 response, sitemap exclusion, and working Contact destinations.
 
 ### Checkpoint 7 - Updates
 
@@ -340,3 +340,12 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. `npx playwright test tests/about.spec.ts --project=desktop --project=mobile` passed: 5 passed, 1 expected desktop-only sweep skipped on mobile. Responsive, contrast, content, and route assertions passed.
 - **Checkpoint commit subject:** `Round 2 - Checkpoint 5: About`.
 - **Next step:** stop; wait for confirmation before Checkpoint 6.
+
+### Checkpoint 6 verification - Sankalpas
+
+- **Implementation status:** the membership route/link migration was completed in Checkpoint 3 as approved. No application or sitemap changes were needed in this verification checkpoint.
+- **R2-S-1 | Done:** all six `src/app/sankalpas/page.tsx` contribution links preserve their area IDs in `/contact-us/?area=<id>`. Expanded `tests/sankalpas.spec.ts` to click every link and verify the Contact form selects the corresponding `sankalpas` category, not only the first pathway.
+- **R2-S-2 | Done:** rechecked the complete incoming-link inventory documented in Checkpoint 3: footer invitation, shared CTA, Home hero, six Sankalpa pathways, Contact membership prompt, and Support volunteering link. They route to Contact or the existing relevant Contact interest. Search found no live `/join/` references in `src` or `README.md`; the remaining test references intentionally assert no links, a 404, and sitemap exclusion. `src/app/join` is absent, `/join/` returns 404, and `sitemap.xml` excludes it.
+- **Validation:** `npm run lint` and `npm run typecheck` passed. Targeted Playwright verification passed on desktop and mobile: Sankalpa interest destinations/prefill, footer migration and removed-route assertions, internal Home links/SEO, affected navigation and legacy routes, and all public pages. Result: 9 passed, 1 expected mobile profile skip.
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 6: Sankalpas`.
+- **Next step:** stop; wait for confirmation before Checkpoint 7.

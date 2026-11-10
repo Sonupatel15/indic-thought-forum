@@ -147,10 +147,11 @@ test("existing personal contribution pathways still link to the correct membersh
     await expect(card).toContainText(pathway.description);
     await expect(card).toContainText(pathway.action);
     await expect(card.getByRole("link")).toHaveAttribute("href", `/contact-us/?area=${pathway.id}`);
+    await card.getByRole("link").click();
+    await expect(page).toHaveURL(new RegExp(`/contact-us/\\?area=${pathway.id}$`));
+    await expect(page.getByLabel("I'm interested in")).toHaveValue(pathway.category);
+    await page.goto("/sankalpas/");
   }
-  await page.locator("#heritage").getByRole("link").click();
-  await expect(page).toHaveURL(/\/contact-us\/\?area=heritage$/);
-  await expect(page.getByLabel("I'm interested in")).toHaveValue("Culture & heritage");
 });
 
 test("Sankalpa contribution heading and full description stay aligned and readable across screen widths", async ({ page }) => {
