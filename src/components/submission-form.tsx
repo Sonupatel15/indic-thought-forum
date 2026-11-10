@@ -48,7 +48,7 @@ export function SubmissionForm({ membership = false }: { membership?: boolean })
     }
   }
 
-  return <form className="submission-form" onSubmit={submit} onReset={() => setStatus({ type: "idle", message: "" })}>
+  return <form id="contact-form" className="submission-form" onSubmit={submit} onReset={() => setStatus({ type: "idle", message: "" })}>
     <h2>{membership ? "Your journey starts here." : "Let's start a conversation."}</h2>
     <p>{membership ? "Tell us a little about yourself and how you would like to contribute." : "Share your thoughts, a question, or an idea for collaboration."}</p>
     {!site.formsEndpoint && membership && <div className="notice" role="status"><AlertCircle size={20} aria-hidden="true" /><p>Online registration is not available yet. This form does not send or save your information until our service is connected.{site.contactEmail && <> Please email <a href={`mailto:${site.contactEmail}`}>{site.contactEmail}</a>.</>}</p></div>}

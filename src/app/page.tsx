@@ -17,7 +17,7 @@ export default function Home() {
       <div className="container hero-content">
         <h1>Awakening Bharat.<br /><span>Inspiring the future.</span></h1>
         <p>A timeless civilization. A new generation of thinkers.<br className="desktop-break" /> One shared commitment to turn thought into action.</p>
-        <div className="hero-actions"><Link href="/sankalpas/" className="button">Explore our Sankalpas <ArrowUpRight size={19} aria-hidden="true" /></Link><Link href="/join/" className="button button--outline">Join the Movement <ArrowRight size={18} aria-hidden="true" /></Link></div>
+        <div className="hero-actions"><Link href="/sankalpas/" className="button">Explore our Sankalpas <ArrowUpRight size={19} aria-hidden="true" /></Link><Link href="/contact-us/" className="button button--outline">Join the Movement <ArrowRight size={18} aria-hidden="true" /></Link></div>
         <div className="hero-signature"><div><strong>{site.name}</strong><span>{site.tagline}</span></div></div>
       </div>
       <div className="hero-bottom container"><span>For those who want to build, not just debate.</span><a href="#our-purpose" aria-label="Discover our purpose">Discover ITF <ArrowDown size={16} aria-hidden="true" /></a></div>

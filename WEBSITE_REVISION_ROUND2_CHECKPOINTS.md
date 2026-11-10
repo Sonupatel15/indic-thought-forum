@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **2 - Home complete**. Waiting for confirmation before Checkpoint 3.
+Current checkpoint: **3 - Footer complete**. Waiting for confirmation before Checkpoint 4.
 
 ## Working agreement
 
@@ -39,9 +39,9 @@ Current checkpoint: **2 - Home complete**. Waiting for confirmation before Check
 
 ### Checkpoint 3 - Footer
 
-- [ ] **R2-F-1 | Not started** - Remove the entire Explore and Get Involved repeated navigation groups.
-- [ ] **R2-F-2 | Not started** - Retain all social links including X and WhatsApp; balance placement across devices, use suitable mobile tap targets, and record final icon/target sizes.
-- [ ] **R2-F-3 | Not started** - Point "Find your place here" in "Begin with a thought. Make it a movement." to Contact; remove its former page/route and update all incoming links. Approved: consolidate the site-wide `/join/` migration from R2-S-1/R2-S-2 into this checkpoint to avoid broken links.
+- [x] **R2-F-1 | Done** - Remove the entire Explore and Get Involved repeated navigation groups.
+- [x] **R2-F-2 | Done** - Retain all social links including X and WhatsApp; balance placement across devices, use suitable mobile tap targets, and record final icon/target sizes.
+- [x] **R2-F-3 | Done** - Point "Find your place here" in "Begin with a thought. Make it a movement." to Contact; remove its former page/route and update all incoming links. Approved: consolidate the site-wide `/join/` migration from R2-S-1/R2-S-2 into this checkpoint to avoid broken links.
 
 ### Checkpoint 4 - Privacy and Accessibility
 
@@ -55,8 +55,8 @@ Current checkpoint: **2 - Home complete**. Waiting for confirmation before Check
 
 ### Checkpoint 6 - Sankalpas
 
-- [ ] **R2-S-1 | Not started** - Point "I'd like to contribute" to Contact instead of Become a member. Approved implementation prerequisite: Checkpoint 3; verify again here.
-- [ ] **R2-S-2 | Not started** - Inventory and retarget every Become a member link/button to Contact, remove its page/route, list every change, and verify no broken references remain. Approved implementation prerequisite: Checkpoint 3; verify again here.
+- [x] **R2-S-1 | Done** - Point "I'd like to contribute" to Contact instead of Become a member. Implemented and tested as the approved Checkpoint 3 prerequisite; verify again in Checkpoint 6.
+- [x] **R2-S-2 | Done** - Inventory and retarget every Become a member link/button to Contact, remove its page/route, list every change, and verify no broken references remain. Implemented and tested as the approved Checkpoint 3 prerequisite; verify again in Checkpoint 6.
 
 ### Checkpoint 7 - Updates
 
@@ -297,6 +297,27 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 - **Open questions or assumptions:** None. No application behavior beyond the listed Home changes was altered.
 - **Commit:** to be recorded after the Checkpoint 2-only commit.
 - **Next step:** stop and await confirmation before Checkpoint 3.
+
+### Checkpoint 3 completion - Footer and approved membership migration
+
+- **R2-F-1 | Done:** removed the complete Explore and Get involved groups from `src/components/footer.tsx`, not merely hidden them.
+- **R2-F-2 | Done:** retained all five existing profile URLs in the existing `SocialChannels compact` component beneath the brand. `src/app/globals.css` changes the footer from four columns (1.5fr/1fr/1.1fr/1.3fr) to two shrink-safe columns (1.5fr/1fr), stacking into one column at <=760px. Removed the <=1180px three-column override and hidden invitation rule. The closing invitation is now visible at all widths.
+- **Before/after sizes and spacing:** social glyphs remain 17px inside 25px boxes, outgoing arrows 13px, link minimum height 44px, social gap 7px, top margin 20px; brand logo remains 56px. Desktop footer gap stays 50px (30px at <=1180px), padding stays 65px/50px; mobile gap becomes 30px instead of 30px/20px, padding stays 43px/35px. Footer background #eeeae1, border #e6e3d8, text colors and all typography remain unchanged.
+- **R2-F-3 / R2-S-1 / R2-S-2 | Done:** removed `src/app/join/page.tsx` and its sitemap entry (`src/app/sitemap.ts`). No replacement or redirect route was introduced. The old route returns HTTP 404; the export contains neither the route nor references to it.
+- **Complete changed-link inventory:**
+  - `src/components/footer.tsx`: Find your place here -> `/contact-us/`; Become a member removed with Get involved.
+  - `src/components/sections.tsx`: shared Become a Member CTA -> `/contact-us/`, covering Home, About/Philosophy, Sankalpas, Updates/Gallery/Media, Calendar.
+  - `src/app/page.tsx`: Join the Movement -> `/contact-us/`.
+  - `src/app/sankalpas/page.tsx`: all six I'd like to contribute links -> `/contact-us/?area=<existing-id>`.
+  - `src/app/support/page.tsx`: Explore volunteering -> `/contact-us/?area=community`.
+  - `src/components/contact-layout.tsx`: Looking to become a member? -> `/contact-us/#contact-form`; `src/components/submission-form.tsx` adds the corresponding form anchor. This points visitors to the existing form rather than an unhelpful page-only self-link.
+  - The existing Contact form already supports the area query; all six pathway selections remain prefilled correctly. No new fields, wording, service connection, or Contact redesign was introduced.
+- **Other directly related files:** `README.md` documents the current 12 routes, footer layout, and Contact migration; `tests/footer.spec.ts`, `tests/website.spec.ts`, `tests/about.spec.ts`, `tests/sankalpas.spec.ts` now assert the new destinations, route removal, visible invitation, and removed navigation groups. The footer test's obsolete Home-social assertion was aligned with completed R2-H-3; no social data changed.
+- **Uncommitted work review requested by user:** all three pre-existing staged files were necessary: the <=360px header fit fix in `src/app/globals.css`, its expanded all-route responsive test in `tests/website.spec.ts`, and its existing Round 1 evidence in `WEBSITE_REVISION_CHECKPOINTS.md`. Confirmed with 3 passing responsive profiles (desktop/mobile/tablet), then committed separately as `3a2297e` before Checkpoint 3 changes. No pre-existing changes were discarded. The build-generated `next-env.d.ts` path changes were restored, not committed.
+- **Validation:** production build, strict typecheck, and lint passed. Full desktop suite: 58 passed, 1 expected skip. Cross-browser footer/Contact migration selections: 25 passed, 5 expected skips across mobile Chromium, Firefox, desktop WebKit, iOS-style, and tablet profiles. Footer reflow checks cover 320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840 CSS px; current desktop all-route matrix covers 18 widths. Tests cover no broken internal links/images, no runtime errors, accessible layouts, all existing social URLs, original Contact validation/unavailable state, preselected interests, no links to the removed route, and 404 for the removed route. No physical-device certification is claimed.
+- **Open questions:** none for this checkpoint. The disconnected form service remains unchanged; two new Contact forms remain Checkpoint 9. Privacy/Accessibility wording still requires proposal and approval in Checkpoint 4.
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 3: Footer and Contact migration`.
+- **Next step:** stop; wait for confirmation before Checkpoint 4.
 
 ## Content proposals and approval
 

@@ -36,7 +36,7 @@ test("About and Philosophy retain the shared hero and original content without p
     await expect(page.locator(".quote-section + .reading-width")).toContainText("Respect is part of the practice.");
     await expect(page.locator(".journey .step-number")).toHaveText(["01", "02", "03", "04", "05"]);
     for (const step of steps) await expect(page.locator(".journey")).toContainText(step.description);
-    await expect(page.locator(".community-cta a")).toHaveAttribute("href", "/join/");
+    await expect(page.locator(".community-cta a")).toHaveAttribute("href", "/contact-us/");
     await expect(page.getByRole("link", { name: "Explore ways to contribute" })).toHaveAttribute("href", "/sankalpas/");
     await expect(page.locator('#primary-navigation a[href="/about/"]')).toHaveAttribute("aria-current", "page");
   }
@@ -49,7 +49,7 @@ test("page-specific ornament removal preserves the intended scope and Home princ
   test.skip(testInfo.project.name !== "desktop", "The full ornament-scope sweep runs once; About is checked in every profile.");
   for (const [route, intro, cta] of [
     ["/", 0, 1], ["/sankalpas/", 0, 0], ["/events/", 0, 0], ["/calendar/", 0, 0],
-    ["/gallery/", 0, 0], ["/media/", 0, 0], ["/contact-us/", 0, 0], ["/join/", 1, 0],
+    ["/gallery/", 0, 0], ["/media/", 0, 0], ["/contact-us/", 0, 0],
     ["/support/", 1, 0], ["/privacy/", 1, 0], ["/accessibility/", 1, 0],
   ] as const) {
     await page.goto(route);

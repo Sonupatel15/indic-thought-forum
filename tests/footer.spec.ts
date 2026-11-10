@@ -46,21 +46,21 @@ test("header and footer share a faithful lightweight official logo and real-text
   await expect(page.locator("nextjs-portal, [data-nextjs-dialog]")).toHaveCount(0);
 });
 
-test("all public footers retain the existing profiles and add the exact X and WhatsApp links without social embeds", async ({ page }, testInfo) => {
+test("all public footers retain social profiles and use Contact without repeated navigation", async ({ page, request }, testInfo) => {
   test.skip(testInfo.project.name !== "desktop", "Full route coverage runs once; footer device reflow runs in every profile.");
   test.setTimeout(90000);
   const errors: string[] = [];
   const external: string[] = [];
   const allowedExternalHosts = new Set(["a.tile.openstreetmap.org", "b.tile.openstreetmap.org", "c.tile.openstreetmap.org"]);
   page.on("pageerror", error => errors.push(error.message));
-  page.on("console", message => { if (message.type() === "error") errors.push(message.text()); });
+  page.on("console", message => { if (message.type() === "error" || message.type() === "warning") errors.push(message.text()); });
   page.on("response", response => { if (response.status() >= 400) errors.push(`${response.status()} ${response.url()}`); });
   page.on("request", request => {
     const hostname = new URL(request.url()).hostname;
     if (!["127.0.0.1", "localhost"].includes(hostname) && !allowedExternalHosts.has(hostname)) external.push(request.url());
   });
   expect(socialProfiles.map(profile => profile.platform)).toEqual(["YouTube", "Instagram", "Facebook", "X (Twitter)", "WhatsApp"]);
-  for (const route of ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/join/", "/support/", "/privacy/", "/accessibility/"]) {
+  for (const route of ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/support/", "/privacy/", "/accessibility/"]) {
     expect((await page.goto(route))?.status(), route).toBe(200);
     const footer = page.locator(".site-footer");
     await footer.scrollIntoViewIfNeeded();
@@ -68,6 +68,10 @@ test("all public footers retain the existing profiles and add the exact X and Wh
     await expect(footer.locator(".brand strong")).toHaveText(site.name);
     await expect(footer.locator(".brand small")).toHaveText(site.tagline);
     await expect(footer.locator(".social-channel-link")).toHaveCount(5);
+    await expect(footer.getByRole("heading", { name: "Explore", exact: true })).toHaveCount(0);
+    await expect(footer.getByRole("heading", { name: "Get involved", exact: true })).toHaveCount(0);
+    await expect(footer.getByRole("link", { name: "Find your place here" })).toHaveAttribute("href", "/contact-us/");
+    await expect(page.locator('a[href^="/join/"]')).toHaveCount(0);
     for (const profile of socialProfiles) {
       const link = footer.locator(`a[href="${profile.url}"]`);
       await expect(link).toHaveCount(1);
@@ -80,11 +84,13 @@ test("all public footers retain the existing profiles and add the exact X and Wh
     for (const profile of newProfiles) await expect(footer.locator(`a[href="${profile.url}"]`)).toHaveCount(1);
   }
   await page.goto("/");
-  for (const profile of newProfiles) await expect(page.locator(`main .social-channel-links a[href="${profile.url}"]`)).toHaveCount(1);
+  for (const profile of newProfiles) await expect(page.locator(`main .social-channel-links a[href="${profile.url}"]`)).toHaveCount(0);
   await page.goto("/events/#social-channels");
   for (const profile of newProfiles) await expect(page.locator(`.social-channel-grid a[href="${profile.url}"]`)).toHaveCount(1);
   expect(external).toEqual([]);
   expect(errors).toEqual([]);
+  expect((await request.get("/join/")).status()).toBe(404);
+  expect(await (await request.get("/sitemap.xml")).text()).not.toContain("/join/");
 });
 
 test("footer logo, text and five social links reflow from phone to TV widths", async ({ page }) => {
@@ -95,6 +101,7 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
       await page.goto(route);
       await page.evaluate(() => document.fonts.ready);
       const footer = page.locator(".site-footer");
+      await expect(footer.getByRole("link", { name: "Find your place here" })).toBeVisible();
       const metrics = await footer.evaluate(element => {
         const logo = element.querySelector(".brand img");
         const copy = element.querySelector(".brand > span");

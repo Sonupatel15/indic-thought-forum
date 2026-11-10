@@ -175,7 +175,7 @@ main:focus { outline: none; }
 .support-strip > .text-link { margin-left: auto; }
 
 .site-footer { background: #eeeae1; border-top: 1px solid #e6e3d8; }
-.footer-main { display: grid; grid-template-columns: 1.5fr 1fr 1.1fr 1.3fr; gap: 50px; padding-block: 65px 50px; }
+.footer-main { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 50px; padding-block: 65px 50px; }
 .footer-about { min-width: 0; }
 .site-footer .brand { gap: 12px; max-width: 100%; }
 .site-footer .brand img { width: 56px; height: 56px; flex-shrink: 0; }
@@ -557,8 +557,6 @@ main:focus { outline: none; }
   .gallery-photo { height: 250px; }
   .community-cta { padding: 44px 38px; }
   .community-cta .button { font-size: 11px; padding-inline: 18px; }
-  .footer-main { grid-template-columns: 1.4fr 1fr 1fr; }
-  .footer-note { display: none; }
   .simple-card { padding: 25px; }
   .sankalpa-grid { grid-template-columns: repeat(2, 1fr); }
   .upcoming-note { flex-wrap: wrap; }
@@ -647,7 +645,7 @@ main:focus { outline: none; }
   .support-strip > .text-link { margin-left: 71px; }
   .support-strip h2 { font-size: 15px; }
   .support-strip p { font-size: 10px; }
-  .footer-main { grid-template-columns: 1fr 1fr; gap: 30px 20px; padding-block: 43px 35px; }
+  .footer-main { grid-template-columns: minmax(0, 1fr); gap: 30px; padding-block: 43px 35px; }
   .footer-about { grid-column: 1 / -1; }
   .footer-about > p { margin-top: 15px; }
   .footer-location { margin-top: 10px; }

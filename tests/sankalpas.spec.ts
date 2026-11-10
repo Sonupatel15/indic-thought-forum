@@ -146,11 +146,11 @@ test("existing personal contribution pathways still link to the correct membersh
     const card = page.locator(`.sankalpa-card[id="${pathway.id}"]`);
     await expect(card).toContainText(pathway.description);
     await expect(card).toContainText(pathway.action);
-    await expect(card.getByRole("link")).toHaveAttribute("href", `/join/?area=${pathway.id}`);
+    await expect(card.getByRole("link")).toHaveAttribute("href", `/contact-us/?area=${pathway.id}`);
   }
   await page.locator("#heritage").getByRole("link").click();
-  await expect(page).toHaveURL(/\/join\/\?area=heritage$/);
-  await expect(page.getByLabel("Area of contribution")).toHaveValue("Culture & heritage");
+  await expect(page).toHaveURL(/\/contact-us\/\?area=heritage$/);
+  await expect(page.getByLabel("I'm interested in")).toHaveValue("Culture & heritage");
 });
 
 test("Sankalpa contribution heading and full description stay aligned and readable across screen widths", async ({ page }) => {

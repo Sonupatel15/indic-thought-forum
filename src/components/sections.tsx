@@ -27,5 +27,5 @@ export function Journey() {
 }
 
 export function CommunityCTA({ showOrnament = true }: { showOrnament?: boolean }) {
-  return <section className="container cta-wrap"><div className="community-cta">{showOrnament && <div className="cta-decoration" aria-hidden="true">✦</div>}<div><span className="eyebrow">Every contribution begins with you</span><h2>From a shared thought.<br />To a meaningful tomorrow.</h2><p>Join a community committed to Bharateeya values and purposeful action.</p></div><Link className="button button--light" href="/join/">Become a Member <ArrowRight size={19} aria-hidden="true" /></Link></div></section>;
+  return <section className="container cta-wrap"><div className="community-cta">{showOrnament && <div className="cta-decoration" aria-hidden="true">✦</div>}<div><span className="eyebrow">Every contribution begins with you</span><h2>From a shared thought.<br />To a meaningful tomorrow.</h2><p>Join a community committed to Bharateeya values and purposeful action.</p></div><Link className="button button--light" href="/contact-us/">Become a Member <ArrowRight size={19} aria-hidden="true" /></Link></div></section>;
 }

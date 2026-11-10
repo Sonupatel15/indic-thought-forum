@@ -4,7 +4,7 @@ import { sendSubmission, type Submission } from "../src/lib/forms";
 import { events, gallery, principles, steps } from "../src/lib/site";
 import { podcasts, socialPosts } from "../src/lib/media";
 
-const routes = ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/join/", "/support/", "/privacy/", "/accessibility/"];
+const routes = ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/support/", "/privacy/", "/accessibility/"];
 
 test.beforeEach(async ({ page }) => {
   await page.route(/^https:\/\/[abc]\.tile\.openstreetmap\.org\//, route => route.fulfill({
@@ -51,8 +51,8 @@ test("home calls to action go to complete pages", async ({ page }) => {
   await page.getByRole("link", { name: "Explore our Sankalpas" }).click();
   await expect(page).toHaveURL(/\/sankalpas\/$/);
   await page.getByRole("link", { name: "I'd like to contribute" }).first().click();
-  await expect(page).toHaveURL(/\/join\/\?area=heritage$/);
-  await expect(page.getByLabel("Area of contribution")).toHaveValue("Culture & heritage");
+  await expect(page).toHaveURL(/\/contact-us\/\?area=heritage$/);
+  await expect(page.getByLabel("I'm interested in")).toHaveValue("Culture & heritage");
 });
 
 test("mobile menu opens, navigates, and closes with Escape", async ({ page }, testInfo) => {
@@ -109,8 +109,8 @@ test("event archive loads every event newest first without category filters", as
   await expect(page.getByRole("dialog")).not.toBeVisible();
 });
 
-test("membership form validates required data and resets without persisting drafts", async ({ page }) => {
-  await page.goto("/join/?area=learning");
+test("Contact interest validates required data and resets without persisting drafts", async ({ page }) => {
+  await page.goto("/contact-us/?area=learning");
   const form = page.locator("form");
   expect(await form.evaluate(element => (element as HTMLFormElement).checkValidity())).toBe(false);
   await page.getByLabel("Full name").fill("Test Member");
@@ -120,7 +120,7 @@ test("membership form validates required data and resets without persisting draf
   await page.getByLabel("Phone number").fill("invalid phone");
   expect(await page.getByLabel("Phone number").evaluate(input => input instanceof HTMLInputElement && input.validity.patternMismatch)).toBe(true);
   await page.getByLabel("Phone number").fill("+91 98765 43210");
-  await page.getByLabel("Why would you like to join?").fill("I would like to join a community reading circle.");
+  await page.getByLabel("Your message").fill("I would like to join a community reading circle.");
   await page.getByRole("checkbox").check();
   expect(await form.evaluate(element => (element as HTMLFormElement).checkValidity())).toBe(true);
   await page.getByRole("button", { name: "Reset form" }).click();
@@ -137,8 +137,6 @@ test("unconfigured services never imply a successful message or take a payment",
   await expect(page.locator("main")).not.toContainText("Details entered here are not transmitted or stored.");
   await expect(page.getByRole("button", { name: "Send message" })).toBeDisabled();
   await expect(page.locator(".intro-ornament")).toHaveCount(0);
-  await page.goto("/join/");
-  await expect(page.locator("main")).toContainText("This form does not send or save your information until our service is connected.");
   await page.goto("/support/");
   await expect(page.getByRole("button", { name: "Online donations opening soon" })).toBeDisabled();
   await expect(page.locator('input[autocomplete="cc-number"]')).toHaveCount(0);
@@ -315,7 +313,7 @@ test("affected navigation links and fragments resolve, including legacy URLs", a
   }
 });
 
-test("short section labels are consistent in navigation, footer, breadcrumbs, and page titles", async ({ page }) => {
+test("short section labels are consistent in navigation, breadcrumbs, and page titles", async ({ page }) => {
   for (const [route, label] of [["/about/", "About"], ["/events/", "Updates"]]) {
     await page.goto(route);
     const menuToggle = page.getByRole("button", { name: "Open menu", exact: true });
@@ -323,7 +321,7 @@ test("short section labels are consistent in navigation, footer, breadcrumbs, an
     const navigation = page.getByRole("navigation", { name: "Main navigation" });
     await expect(navigation.getByRole("link", { name: label, exact: true })).toHaveAttribute("href", route);
     await expect(navigation.getByRole("link", { name: label, exact: true })).toHaveAttribute("aria-current", "page");
-    await expect(page.locator(`.site-footer a[href="${route}"]`)).toHaveText(label);
+    await expect(page.locator(`.site-footer a[href="${route}"]`)).toHaveCount(0);
     await expect(page.locator(".breadcrumb > span").last()).toHaveText(label);
     await expect(page.locator(".page-intro .eyebrow")).toHaveText(label);
     await expect(page).toHaveTitle(`${label} | Indic Thought Forum`);

@@ -28,14 +28,14 @@ On Windows, the build also runs `scripts/finalize-export.mjs`. Next.js 16.4's ex
 ## Included pages and behavior
 
 - Home, About, Sankalpas, Updates, Calendar
-- Contact, membership enquiry, Support, Privacy, Accessibility, custom 404
+- Contact (including membership enquiries), Support, Privacy, Accessibility, custom 404
 - Responsive mobile navigation, active-page indicators, skip navigation
 - Filterable event archive with original poster viewer
 - Side-by-side homepage features for Sankalpas and the event calendar
 - Day, month, and year calendar views, a selected-date panel, a featured gathering, and an attributed OpenStreetMap venue map
 - Curated podcasts and community-post cards, official social links, and click-to-load YouTube players
 - Filterable photo gallery with native modal focus management, arrow navigation, and Escape support
-- Validated contact/membership forms; selected Sankalpa carries into membership interest
+- Validated Contact form; selected Sankalpa carries into the Contact interest field
 - Explicit unavailable states until real form/payment services are configured
 - Pre-rendered HTML, per-page SEO metadata, canonical URLs, social cards, sitemap, robots
 - A preloaded self-hosted variable font, responsive WebP hero, local podcast thumbnails, and no third-party media connection before opt-in
@@ -45,7 +45,7 @@ The project has **no database, admin dashboard, authentication, payment processi
 
 **About** combines About Us and Philosophy at `/about/`. **Updates** combines Events, Gallery, Podcasts, community posts, and social channels at `/events/`, with section links for easy navigation. The short labels are consistent across navigation, footer, breadcrumbs, and page titles; the existing URLs are unchanged. The old `/philosophy/`, `/gallery/`, and `/media/` URLs remain static compatibility pages that render the same combined content, with canonical metadata pointing to the combined route. Navigation and the sitemap use the combined routes.
 
-Contact keeps a disabled send button and a short service-status explanation beside it when no endpoint is configured, without the former long messaging notice. Nothing is transmitted or stored in that state. Membership's existing unavailable notice remains unchanged.
+Contact keeps a disabled send button and a short service-status explanation beside it when no endpoint is configured, without the former long messaging notice. Nothing is transmitted or stored in that state. The separate membership route has been removed; all membership invitations now lead to Contact, preserving Sankalpa interest query parameters.
 
 ## Browser and device compatibility
 
@@ -62,7 +62,7 @@ The automated production-export suite uses these six profiles:
 | iPhone 13-style | WebKit with mobile emulation | iOS-style viewport/touch behavior and mobile interactions |
 | iPad Mini-style | WebKit with tablet emulation | Tablet layout, touch controls, and navigation |
 
-Shared typography scales cover hero titles, section headings, subheadings, body copy, captions, and labels; cards and boxes use one 5px corner radius. Responsive reflow tests cover **320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS pixels** on all 13 public routes, including compatibility URLs. They check horizontal overflow and heading fit at every width, shared hero/content alignment on About, Sankalpas, Updates, Calendar, and Contact, and image aspect ratios. Automated WCAG A/AA checks include all 13 public routes. Coarse-pointer devices get at least 44px image-viewer controls and 16px form inputs to reduce unwanted focus zoom on iOS.
+Shared typography scales cover hero titles, section headings, subheadings, body copy, captions, and labels; cards and boxes use one 5px corner radius. Responsive reflow tests cover **320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS pixels** on all 12 public routes, including compatibility URLs. They check horizontal overflow and heading fit at every width, shared hero/content alignment on About, Sankalpas, Updates, Calendar, and Contact, and image aspect ratios. Automated WCAG A/AA checks include all 12 public routes. Coarse-pointer devices get at least 44px image-viewer controls and 16px form inputs to reduce unwanted focus zoom on iOS.
 
 These are **automated engine tests and emulated devices on the development machine**, not tests on physical Android/iOS hardware or shipping macOS Safari. Modern Edge and other Chromium browsers are expected to behave similarly, but their branded browser distributions are not separately certified here. Internet Explorer, obsolete browsers without native dialog support, smart TVs, and embedded in-app browsers are not declared supported.
 
@@ -100,7 +100,7 @@ The frontend sends `POST` with `Content-Type: application/json`, without cookies
 
 `type` is `membership` or `contact`. `website` is a honeypot. A successful response must be a 2xx status with JSON **`{ "success": true }`**. No other response is displayed as success. Rate limits, unconfirmed responses, timeouts, and failures are surfaced to the visitor, and entered information is retained for retry. Drafts are not stored in local storage.
 
-When no endpoint is configured, Contact keeps its explicit unavailable-service status and disabled submit button without repeating the storage notice; Join retains its longer registration notice. Neither page sends or stores an unconfigured submission.
+When no endpoint is configured, Contact keeps its explicit unavailable-service status and disabled submit button without repeating the storage notice. It does not send or store an unconfigured submission.
 
 Before enabling an endpoint, implement **server-side validation**, length limits, strict type/area allowlists, consent checks, honeypot rejection, rate limiting, spam protection, safe email delivery/storage, and appropriate retention. Client-side checks are not a security boundary. Only acknowledge success after the enquiry has been durably accepted. Configure CORS to allow the production origin and `POST`/`OPTIONS` with `Content-Type`; never embed API keys in the frontend.
 
@@ -118,7 +118,7 @@ Provide a verified hosted checkout or donation-page URL. The website intentional
 - Design system and responsive styling: `src/app/globals.css`
 - Optimized, self-hosted images: `public/images`
 
-The owner supplied the Sankalpa tracker as pasted tabular data. The public table displays seven columns: Talk date, Talk topic, Speaker, Sankalpa, Status, Owner, and Notes. It contains the 20 approved rows; source rows 20-21 marked "No publishable sankalpa" are excluded and their contents are not included in the public data. Month-level dates and "POC" are retained literally; exact talk dates are not inferred from the event archive. Surrounding whitespace and the spelling of "Deprioritised" are normalized for display. Priority, due date, last updated, and next action are retained in the approved records but do not add visible columns. The existing six personal-contribution pathways remain below the tracker and still link to membership interest.
+The owner supplied the Sankalpa tracker as pasted tabular data. The public table displays seven columns: Talk date, Talk topic, Speaker, Sankalpa, Status, Owner, and Notes. It contains the 20 approved rows; source rows 20-21 marked "No publishable sankalpa" are excluded and their contents are not included in the public data. Month-level dates and "POC" are retained literally; exact talk dates are not inferred from the event archive. Surrounding whitespace and the spelling of "Deprioritised" are normalized for display. Priority, due date, last updated, and next action are retained in the approved records but do not add visible columns. The existing six personal-contribution pathways remain below the tracker and link to Contact with their interest.
 
 The approved tracker expands the owner's "DJ" abbreviation to "Dhananjay" in owner and next-action records, including combined-owner and possessive references.
 
@@ -146,7 +146,7 @@ Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics.
 
 ### About and Philosophy
 
-About retains the shared text-based `PageIntro` hero, breadcrumb, original heading/description, and `/about/` canonical metadata. `/philosophy/` continues to render the same combined content. The thought section is now a photo-free reading column; its original wording, principles, following editorial content, journey, and membership links remain.
+About retains the shared text-based `PageIntro` hero, breadcrumb, original heading/description, and `/about/` canonical metadata. `/philosophy/` continues to render the same combined content. The thought section is now a photo-free reading column; its original wording, principles, following editorial content, journey, and contribution invitations remain, now linking to Contact.
 
 `PageIntro` and `CommunityCTA` accept `showOrnament={false}` for About, removing both intro and CTA sparkles without changing decorations on other pages. Shared principles are now unnumbered on both Home and About; journey-step numbers remain. The guiding belief retains its centered serif quotation, label, and explanation within an inset white panel with an orange accent, rather than a full-width dark band resembling the page's end.
 
@@ -171,11 +171,11 @@ YouTube's privacy-enhanced domain is **not anonymous playback or a guarantee of 
 
 ### Footer branding
 
-The shared footer uses the official `public/images/itf-assets/ITF-Logo.png` emblem with the real-text name/tagline from `site`. Header branding and metadata icons are unchanged. The footer displays a 56px square, contain-fitted logo with 18-20px brand text and a 12px tagline that can wrap naturally.
+The header and footer share the official `public/images/itf-assets/ITF-Logo.png` emblem rendition with the real-text name/tagline from `site`; there is no tab icon. The footer displays a 56px square, contain-fitted logo with 18-20px brand text and a 12px tagline that can wrap naturally.
 
 Run `npm run assets:branding` to regenerate the local `itf-logo-footer.webp` from the official source. This preserves transparency, uses lossless WebP at 168x168 for 3x-density display, checks a 32 KiB budget, and leaves the original PNG untouched. No external download is involved.
 
-Footer, Home, and Updates social links share `socialProfiles` in `src/lib/media.ts`. The five profiles include the supplied X and WhatsApp links with visible labels, accessible new-tab notices, and `noopener noreferrer`. Merely rendering a link does not connect to either provider or join the group.
+Footer and Updates social links share `socialProfiles` in `src/lib/media.ts`. The five profiles include the supplied X and WhatsApp links with visible labels, accessible new-tab notices, and `noopener noreferrer`. Merely rendering a link does not connect to either provider or join the group. The footer keeps social links beneath its brand in a two-column brand/invitation layout, stacked below 760px. Social glyphs remain 17px in 25px boxes with at least 44px-high tap targets. Repeated Explore/Get involved groups are removed; the closing invitation links to Contact on every viewport.
 
 ### Maintaining the event calendar
 
