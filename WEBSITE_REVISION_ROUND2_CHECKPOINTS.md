@@ -2,7 +2,7 @@
 
 Audit date: 2026-11-10 (IST).
 Source: the supplied 317-line Round 2 brief.
-Current checkpoint: **3 - Footer complete**. Waiting for confirmation before Checkpoint 4.
+Current checkpoint: **4 - Privacy and Accessibility complete**. Waiting for confirmation before Checkpoint 5.
 
 ## Working agreement
 
@@ -45,8 +45,8 @@ Current checkpoint: **3 - Footer complete**. Waiting for confirmation before Che
 
 ### Checkpoint 4 - Privacy and Accessibility
 
-- [ ] **R2-P-1 | Not started** - Remove the Gemini-like sparkle on both pages only.
-- [ ] **R2-P-2 | Not started** - Review both pages against actual site behavior; record exact proposed wording, avoid invented policies/contact details, and obtain approval before applying content edits.
+- [x] **R2-P-1 | Done** - Removed only the decorative intro sparkle from both pages.
+- [x] **R2-P-2 | Done** - Reviewed both pages against actual site behavior, recorded exact wording, obtained user approval, and applied the approved content edits without adding unverified policies or contact details.
 
 ### Checkpoint 5 - About
 
@@ -321,4 +321,12 @@ Checkpoint 1 is complete. Future checkpoint records must include item status, ex
 
 ## Content proposals and approval
 
-No content proposals have been applied. Privacy and Accessibility review and approval belong to Checkpoint 4.
+### Checkpoint 4 progress
+
+- **R2-P-1 | Done:** `src/app/privacy/page.tsx` and `src/app/accessibility/page.tsx` previously used the default `PageIntro` ornament (`src/components/sections.tsx` renders `✦` when `showOrnament` is true). Passed `showOrnament={false}` only on these two page intros; the shared component and all other routes are unchanged. Added a regression test for both routes.
+- **Privacy review:** form fields and conditional form availability match `SubmissionForm`, `sendSubmission`, and `site.formsEndpoint`; YouTube embeds only load after the visitor opts in; local social cards are curated outbound links; donations are conditional on the configured hosted URL. Replaced unverified claims about submission use and hosting logs with wording that states what is known from the site code and what the operator must confirm.
+- **Accessibility review:** keyboard navigation, focus visibility, skip link, form labels, image-viewer keyboard controls/focus return, and reduced-motion behavior are present in the implementation. The archive-poster limitation is consistent with the available poster images and event text. Barrier-report instructions now reflect whether a public email or connected form is configured.
+- **Approved and applied wording:** the user approved the exact proposal above. Privacy now says the form sends submitted information to the configured enquiry service, the site code does not implement mailing-list subscription, and the operator must confirm service use/retention; it no longer asserts unverified host log practices. Privacy requests and accessibility reports now use the configured public email if present, otherwise the contact form only if its service is connected, and state when neither route is available. The Privacy last-updated date was changed to 10 November 2026 with user approval.
+- **Validation:** `npm run build`, `npm run lint`, and `npm run typecheck` passed. Targeted Playwright tests passed on desktop and mobile for both pages’ ornament and configured-contact copy. The automated WCAG A/AA checks also passed on both profiles.
+- **Checkpoint commit subject:** `Round 2 - Checkpoint 4: Privacy and Accessibility`.
+- **Next step:** stop; wait for confirmation before Checkpoint 5.

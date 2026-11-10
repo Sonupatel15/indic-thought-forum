@@ -34,6 +34,36 @@ test("every public page is statically available, titled, and free of runtime err
   expect(errors).toEqual([]);
 });
 
+test("Privacy and Accessibility pages omit the decorative intro sparkle", async ({ page }) => {
+  for (const route of ["/privacy/", "/accessibility/"]) {
+    await page.goto(route);
+    await expect(page.locator(".page-intro .intro-ornament")).toHaveCount(0);
+  }
+});
+
+test("Privacy and Accessibility disclosures match configured contact methods", async ({ page }) => {
+  const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL?.trim();
+  const formsEndpoint = process.env.NEXT_PUBLIC_FORMS_ENDPOINT?.trim();
+  const contactFallback = contactEmail
+    ? "email"
+    : formsEndpoint
+      ? "form"
+      : "unavailable";
+
+  await page.goto("/privacy/");
+  await expect(page.locator(".legal-copy")).toContainText("The website code does not implement a mailing-list subscription.");
+  await expect(page.locator(".legal-copy")).toContainText("The website code does not identify the hosting provider");
+  if (contactFallback === "email") await expect(page.locator('.legal-copy a[href^="mailto:"]')).toHaveCount(1);
+  else if (contactFallback === "form") await expect(page.locator(".legal-copy").getByRole("link", { name: "contact form" })).toHaveCount(1);
+  else await expect(page.locator(".legal-copy")).toContainText("This deployment has no configured contact email or connected enquiry service, so this website cannot receive the request.");
+
+  await page.goto("/accessibility/");
+  await expect(page.locator(".legal-copy")).toContainText("If you encounter difficulty, report the page, the issue, and any assistive technology involved, without sharing sensitive information.");
+  if (contactFallback === "email") await expect(page.locator('.legal-copy a[href^="mailto:"]')).toHaveCount(1);
+  else if (contactFallback === "form") await expect(page.locator(".legal-copy").getByRole("link", { name: "contact form" })).toHaveCount(1);
+  else await expect(page.locator(".legal-copy")).toContainText("This deployment has no configured contact email or connected enquiry service, so this website cannot receive a report.");
+});
+
 test("key pages have no automated WCAG A or AA violations", async ({ page }) => {
   test.setTimeout(90000);
   for (const route of routes) {
