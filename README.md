@@ -32,7 +32,7 @@ On Windows, the build also runs `scripts/finalize-export.mjs`. Next.js 16.4's ex
 - Responsive mobile navigation, active-page indicators, skip navigation
 - Filterable event archive with original poster viewer
 - Side-by-side homepage features for Sankalpas and the event calendar
-- Day, month, and year calendar views plus a date-ordered schedule with upcoming/past filters, IST timings, venues, speakers, and posters
+- Day, month, and year calendar views, a selected-date panel, a featured gathering, and an attributed OpenStreetMap venue map
 - Curated podcasts and community-post cards, official social links, and click-to-load YouTube players
 - Filterable photo gallery with native modal focus management, arrow navigation, and Escape support
 - Validated contact/membership forms; selected Sankalpa carries into membership interest
@@ -177,7 +177,9 @@ Footer, Home, and Updates social links share `socialProfiles` in `src/lib/media.
 
 `src/lib/site.ts` contains the single shared `events` array used by the calendar, schedule, and event archive. The Calendar page defaults to the complete current IST month. Day view initially shows today; year view initially shows all twelve months of the current year. Switching views preserves a navigated date; Today restores the current period in any view.
 
-Month selection offers all twelve months. The year field accepts years 1-9999 with native validation and an Apply year action. Previous/next controls follow the active view and keep month/year selectors synchronized across year boundaries. Month cells open day details; year cards open month details. Year view uses a responsive twelve-month overview rather than twelve small date grids. Confirmed event details and original poster controls are reused from the schedule. This is not a booking system or external calendar integration.
+Month selection offers all twelve months. The year field accepts years 1-9999 with native validation and an Apply year action. Previous/next controls follow the active view and keep month/year selectors synchronized across year boundaries. Selecting a month date keeps the month grid visible and updates its selected-date event panel; the Day control opens the standalone day view. Year cards open month view. Year view uses a responsive twelve-month overview rather than twelve small date grids. Event details and original poster controls are reused from the schedule. This is not a booking system or external calendar integration.
+
+The November 29, 2026 Ganeshaiah gathering is featured above the calendar. `eventMapLocations` lists the verified OSM venue records and coordinates used by the interactive Leaflet map. Coordinates correspond to the mapped Alliance Francaise way 35277205 (12.9913969, 77.5968841) and Suchitra Cinema and Cultural Academy way 495472305 (12.9260031, 77.5697863). The map displays OpenStreetMap tile and data attribution and links to OSM location and directions pages. Keep every event venue mapped; the map fails explicitly at build/render time if an event has no corresponding venue coordinates.
 
 Each event requires:
 
@@ -199,7 +201,7 @@ The current start times are taken from the posters: 15:00 for October and Novemb
 - The event date is interpreted in **Asia/Kolkata (IST, UTC+05:30)**, independently of the visitor's time zone.
 - Today's events remain labeled **Today** through the end of the India calendar day. This is not a claim that the event is currently live.
 - Date classification refreshes after hydration, once per minute, and when the window regains focus. An open page can move an event into the archive without a rebuild.
-- The archive and homepage event cards use the same date classification and exclude future events.
+- Home's three event cards use the same date classification and show the newest event dates; the Updates archive includes all confirmed events newest first.
 - Empty states explicitly say no upcoming dates are announced. Past posters do not imply that registration is open.
 - Invalid event dates or times fail explicitly during rendering/build rather than publishing an incorrect schedule.
 - Adding or editing actual event content still requires a **rebuild and redeploy**. No admin editing interface or database has been added.

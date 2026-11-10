@@ -82,6 +82,11 @@ export const events: ForumEvent[] = [
   { id: "independent", title: "Are We Independent? The Battle for India's Mind", speaker: "Sri Sankrant Sanu", date: "2026-02-20", displayDate: "20 February 2026", startTime: "18:00", venue: eventVenue, image: "/images/sankrant-sanu/event-poster/are-we-independent-2026-02-20.png", previewImage: "/images/sankrant-sanu/event-poster/are-we-independent-2026-02-20.webp", ...eventPosterSize, category: "Ideas & dialogue" },
 ];
 
+export const eventMapLocations = [
+  { id: "alliance-francaise", venue: allianceVenue, latitude: 12.9913969, longitude: 77.5968841, osmWayId: 35277205 },
+  { id: "suchitra-academy", venue: eventVenue, latitude: 12.9260031, longitude: 77.5697863, osmWayId: 495472305 },
+] as const;
+
 export const gallery = [
   { src: "/images/sankrant-sanu/event-photos/community-gathering.webp", title: "A community brought together by ideas", category: "Community", alt: "Participants gathered at an Indic Thought Forum event" },
   { src: "/images/sankrant-sanu/event-photos/community-conversation.webp", title: "Making room for meaningful conversations", category: "Conversations", alt: "A moment from an ITF community conversation" },

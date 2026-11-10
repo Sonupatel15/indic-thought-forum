@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, and **5 - Updates Page**.
-Next checkpoint: **6 - Calendar Page**, awaiting user confirmation.
-H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, and U-1 through U-9 are verified complete. C-3 is also complete through shared event data; other later-checkpoint requirements remain deferred.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, and **6 - Calendar Page**.
+Next checkpoint: **7 - Contact Page**, awaiting user confirmation.
+H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, and C-1 through C-7 are verified complete. Other later-checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -80,13 +80,13 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 6 - Calendar Page
 
-- [ ] **C-1 | Not started** - Remove the Gemini-like ornament.
-- [ ] **C-2 | Not started** - Feature the confirmed November 29, 2026 upcoming event above the calendar; shared event data is a prerequisite, but the featured UI remains checkpoint 6.
+- [x] **C-1 | Done** - Remove the Gemini-like ornament.
+- [x] **C-2 | Done** - Feature the confirmed November 29, 2026 upcoming event above the calendar; shared event data is a prerequisite, but the featured UI remains checkpoint 6.
 - [x] **C-3 | Done** - Add the Ganeshaiah event to November 29, 2026 with verified poster details. Completed as H-1's shared-data prerequisite; calendar tests verify its date marker, speaker, 3:00 PM IST timing, and Alliance Francaise venue.
-- [ ] **C-4 | Not started** - Keep month view visible when selecting a date and show that date's events beside the calendar, or below it on small screens.
-- [ ] **C-5 | Not started** - Review and correct calendar month/year labels, weekday headers, controls, and date-cell sizes.
-- [ ] **C-6 | Not started** - Remove the specified confirmed-events heading, lengthy IST explanation, empty-month sentence, and registration-note block.
-- [ ] **C-7 | Not started** - Implement the approved attributed OpenStreetMap-based Bengaluru event map with verified venue pins, pan, zoom, event details, and directions below the calendar in checkpoint 6.
+- [x] **C-4 | Done** - Keep month view visible when selecting a date and show that date's events beside the calendar, or below it on small screens.
+- [x] **C-5 | Done** - Review and correct calendar month/year labels, weekday headers, controls, and date-cell sizes.
+- [x] **C-6 | Done** - Remove the specified confirmed-events heading, lengthy IST explanation, empty-month sentence, and registration-note block.
+- [x] **C-7 | Done** - Implement the approved attributed OpenStreetMap-based Bengaluru event map with verified venue pins, pan, zoom, event details, and directions below the calendar in checkpoint 6.
 
 ### Checkpoint 7 - Contact Page
 
@@ -538,9 +538,36 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 
 - No checkpoint-5 item remains blocked. Review the podcast inclusion criterion (ten long-form conversations from the official uploads playlist) and neutral Instagram-linked cards; no captions or dates were invented.
 - The Home feature remains pinned to its previous episode. Updates player previews still require an explicit user click before loading YouTube.
-- Checkpoint 6 (Calendar) is next. Stop here and wait for explicit user confirmation before starting it.
+- Checkpoint 6 (Calendar) was next. Stop here and wait for explicit user confirmation before starting it.
 
-### Checkpoints 6-9 and final review
+### Checkpoint 6 - Completed implementation record
 
-Not started except the already verified shared-data/component item C-3. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 5 and do not begin checkpoint 6 until the user confirms.
+- C-1 through C-7 are implemented and verified Done. C-3's shared event data was completed in checkpoint 1; this checkpoint adds the featured event and calendar/map experience.
+- Disabled the intro and CTA ornaments on Calendar only. Featured the confirmed November 29, 2026 Ganeshaiah gathering with its locally hosted poster and confirmed date, time, speaker, and venue above the calendar.
+- Selecting a date now retains month view and updates an adjacent selected-date schedule panel; the panel stacks below the date grid on small screens. Day and year views, month/year labels, weekday order, selectors, previous/next controls, and Today reset remain functional. Kept date cells at least 48px high on phones, 60px on tablet layouts, and 80px at larger sizes.
+- Removed the calendar's "Confirmed events" heading, long timezone explanation, no-events period sentence, and registration note. Kept the short IST legend and date-specific status information.
+- Added an interactive Leaflet map using OpenStreetMap tiles, visible attribution, keyboard-accessible zoom controls and venue markers, event details in marker popups and venue cards, and OpenStreetMap location/directions links. Verified venue coordinates against OpenStreetMap's venue records: Alliance Francaise de Bangalore way 35277205 at **12.9913969, 77.5968841**; Suchitra Cinema and Cultural Academy way 495472305 at **12.9260031, 77.5697863**. Every event venue must have a mapped record or the map raises an explicit error.
+- Added `leaflet` and `@types/leaflet`; no API key or additional map service is used. Visible tile and data attribution links to the OpenStreetMap copyright/ODbL information.
+- Changed: `package.json`, `package-lock.json`, `README.md`, `src/app/calendar/page.tsx`, `src/app/globals.css`, `src/app/layout.tsx`, `src/components/event-calendar.tsx`, `src/components/event-schedule.tsx`, `src/lib/site.ts`, `tests/schedule.spec.ts`, `tests/website.spec.ts`, and this document.
+- Created: `src/components/calendar-featured-event.tsx`, `src/components/event-map.tsx`. Deleted files: none. Asset moves/renames: none. Restored build-generated `next-env.d.ts` to its committed baseline.
+- Commit subject: `Checkpoint 6: Calendar page updates`.
+
+#### Validation
+
+- `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**. All 17 static routes/endpoints generated; 13 Windows route-segment files normalized.
+- `npm exec -- playwright test schedule.spec.ts --workers=3 --timeout=90000 --reporter=list`: **72 passed** across all six configured browser/device profiles. Covers calendar selection/view state, date ordering, year/month controls, selected-date event details, map markers/popups, attribution, directions links, and zoom controls.
+- `npm exec -- playwright test website.spec.ts --project=desktop --grep "every public page|key pages|layouts fit|all internal home links" --workers=2 --timeout=90000 --reporter=list`: **4 passed**, including all-route runtime/image checks, automated WCAG A/AA, responsive layouts at **320–2560 CSS pixels**, and internal links/SEO endpoints. OpenStreetMap tiles were stubbed in automated browser tests; live tile-service availability is not certified.
+- `git diff --check`: **Passed**. Visually inspected the Calendar hero/featured event in the existing local preview; the map's marker, zoom, and attribution controls were present in its browser snapshot.
+- Dependency installation reported **7 moderate advisories**; no broad audit fix or unrelated dependency upgrade was applied.
+- No physical-device certification is claimed.
+
+#### Review handoff
+
+- No checkpoint-6 item remains blocked. Review the chosen OSM venue coordinates and the one-day selected-event panel; the existing full schedule and IST date logic remain in place.
+- The map uses the public OSM tile service and includes required contributor attribution. External tile loading and OSM directions were not live-provider certified in the automated suite.
+- Checkpoint 7 (Contact) is next. Stop here and wait for explicit user confirmation before starting it.
+
+### Checkpoints 7-9 and final review
+
+Not started. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
+Stop after checkpoint 6 and do not begin checkpoint 7 until the user confirms.

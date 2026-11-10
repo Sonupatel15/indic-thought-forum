@@ -1,13 +1,26 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, type Page } from "@playwright/test";
 import { events } from "../src/lib/site";
 import { formatEventTime, getEventSchedule, getEventStart, getIndiaDateKey } from "../src/lib/schedule";
+
+test.beforeEach(async ({ page }) => {
+  await page.route(/^https:\/\/[abc]\.tile\.openstreetmap\.org\//, route => route.fulfill({
+    status: 200,
+    contentType: "image/svg+xml",
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"></svg>',
+  }));
+});
 
 const queenTara = events.find(event => event.id === "queen-tara");
 if (!queenTara) throw new Error("The confirmed Queen Tara event is required by the schedule fixtures.");
 
+async function openCalendar(page: Page) {
+  await page.goto("/calendar/");
+  await expect(page.locator(".event-map-canvas")).toHaveAttribute("data-map-ready", "true");
+}
+
 test("calendar shows a date-ordered archive with times, venues, and working filters", async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-12-01T12:00:00Z"));
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const archive = page.getByRole("region", { name: "Complete event schedule" });
   await expect(page.getByRole("heading", { name: "No upcoming dates announced yet." })).toBeVisible();
   await expect(page.locator(".schedule-item")).toHaveCount(7);
@@ -32,7 +45,7 @@ test("calendar shows a date-ordered archive with times, venues, and working filt
 
 test("upcoming dates sort earliest first and are not incorrectly labeled as archive", async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-04-02T00:00:00Z"));
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const archive = page.getByRole("region", { name: "Complete event schedule" });
   await page.getByRole("button", { name: "Upcoming", exact: true }).click();
   await expect(archive.locator(".schedule-item")).toHaveCount(6);
@@ -41,13 +54,13 @@ test("upcoming dates sort earliest first and are not incorrectly labeled as arch
   ]);
   await expect(archive.locator(".schedule-status").first()).toHaveText("Today");
   await page.goto("/events/");
-  await expect(page.locator(".event-card")).toHaveCount(1);
-  await expect(page.locator(".event-card")).toContainText("Are We Independent?");
+  await expect(page.locator(".event-card")).toHaveCount(3);
+  await expect(page.locator(".event-card").first()).toContainText("Pepper, Potato, Mould and Gold");
 });
 
 test("schedule rolls an event into the archive after midnight in India without rebuilding", async ({ page }) => {
   await page.clock.install({ time: new Date("2026-11-29T18:29:00Z") });
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const archive = page.getByRole("region", { name: "Complete event schedule" });
   await page.getByRole("button", { name: "Upcoming", exact: true }).click();
   await expect(archive.locator(".schedule-item")).toHaveCount(1);
@@ -61,13 +74,17 @@ test("schedule rolls an event into the archive after midnight in India without r
 
 test("calendar defaults to the complete current IST month, day, and year", async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-10-31T20:00:00Z"));
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const calendar = page.getByRole("region", { name: "Browse event calendar" });
   await expect(calendar.locator(".calendar-period")).toHaveText("November 2026");
   await expect(calendar.getByLabel("Month", { exact: true })).toHaveValue("10");
   await expect(calendar.getByLabel("Year", { exact: true })).toHaveValue("2026");
   await expect(calendar.locator(".calendar-day")).toHaveCount(30);
   await expect(calendar.getByRole("button", { name: "Sunday, 29 November 2026. 1 confirmed event", exact: true })).toBeVisible();
+  await expect(calendar.locator(".calendar-details .schedule-item")).toHaveCount(0);
+  await calendar.getByRole("button", { name: "Sunday, 29 November 2026. 1 confirmed event", exact: true }).click();
+  await expect(calendar.locator(".calendar-period")).toHaveText("November 2026");
+  await expect(calendar.locator(".calendar-details > h3")).toHaveText("Events on Sunday, 29 November 2026");
   await expect(calendar.locator(".calendar-details .schedule-item")).toHaveCount(1);
   await expect(calendar.locator(".calendar-details .schedule-item")).toContainText("K. N. Ganeshaiah");
   await expect(calendar.locator(".calendar-details .schedule-item")).toContainText(/3:00\s?pm IST/i);
@@ -76,8 +93,8 @@ test("calendar defaults to the complete current IST month, day, and year", async
   const dates = await calendar.locator(".calendar-day time").evaluateAll(items => items.map(item => item.getAttribute("datetime")));
   expect(dates).toEqual(Array.from({ length: 30 }, (_, index) => `2026-11-${String(index + 1).padStart(2, "0")}`));
   await calendar.getByRole("button", { name: "Day", exact: true }).click();
-  await expect(calendar.locator(".calendar-period")).toContainText("1 November 2026");
-  await expect(calendar.locator(".calendar-empty")).toContainText("No confirmed events");
+  await expect(calendar.locator(".calendar-period")).toContainText("29 November 2026");
+  await expect(calendar.locator(".calendar-details .schedule-item")).toHaveCount(1);
   await calendar.getByRole("button", { name: "Year", exact: true }).click();
   await expect(calendar.locator(".calendar-period")).toHaveText("2026");
   await expect(calendar.locator(".calendar-year-month")).toHaveCount(12);
@@ -87,7 +104,7 @@ test("calendar defaults to the complete current IST month, day, and year", async
 
 test("month selection and previous/next navigation synchronize months and years", async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-11-01T12:00:00Z"));
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const calendar = page.getByRole("region", { name: "Browse event calendar" });
   const month = calendar.getByLabel("Month", { exact: true });
   const year = calendar.getByLabel("Year", { exact: true });
@@ -125,11 +142,13 @@ test("month selection and previous/next navigation synchronize months and years"
 
 test("calendar date selection shows original event details and day navigation crosses years", async ({ page }) => {
   await page.clock.setFixedTime(new Date("2026-11-01T12:00:00Z"));
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const calendar = page.getByRole("region", { name: "Browse event calendar" });
   await calendar.getByLabel("Month", { exact: true }).selectOption("5");
   await calendar.getByRole("button", { name: "Saturday, 6 June 2026. 1 confirmed event", exact: true }).click();
-  await expect(calendar.locator(".calendar-period")).toContainText("6 June 2026");
+  await expect(calendar.locator(".calendar-period")).toHaveText("June 2026");
+  await expect(calendar.locator(".calendar-day[aria-pressed=\"true\"] time")).toHaveAttribute("datetime", "2026-06-06");
+  await expect(calendar.locator(".calendar-details > h3")).toHaveText("Events on Saturday, 6 June 2026");
   await expect(calendar.locator(".schedule-item")).toHaveCount(1);
   await expect(calendar.locator(".schedule-item")).toContainText(queenTara.title);
   await expect(calendar.locator(".schedule-item")).toContainText(queenTara.venue);
@@ -141,6 +160,7 @@ test("calendar date selection shows original event details and day navigation cr
   await calendar.getByRole("button", { name: "Month", exact: true }).click();
   await calendar.getByLabel("Month", { exact: true }).selectOption("11");
   await calendar.getByRole("button", { name: "Thursday, 31 December 2026. No confirmed events", exact: true }).click();
+  await calendar.getByRole("button", { name: "Day", exact: true }).click();
   await calendar.getByRole("button", { name: "Next day", exact: true }).click();
   await expect(calendar.locator(".calendar-period")).toContainText("1 January 2027");
   await expect(calendar.getByLabel("Year", { exact: true })).toHaveValue("2027");
@@ -151,7 +171,7 @@ test("calendar date selection shows original event details and day navigation cr
 
 test("calendar follows IST midnight by default and rejects an invalid year", async ({ page }) => {
   await page.clock.install({ time: new Date("2026-12-31T18:29:00Z") });
-  await page.goto("/calendar/");
+  await openCalendar(page);
   const calendar = page.getByRole("region", { name: "Browse event calendar" });
   await expect(calendar.locator(".calendar-period")).toHaveText("December 2026");
   await page.clock.fastForward(90000);
@@ -161,6 +181,32 @@ test("calendar follows IST midnight by default and rejects an invalid year", asy
   await calendar.getByRole("button", { name: "Apply year", exact: true }).click();
   expect(await calendar.getByLabel("Year", { exact: true }).evaluate(input => input instanceof HTMLInputElement && input.validity.rangeUnderflow)).toBe(true);
   await expect(calendar.locator(".calendar-period")).toHaveText("January 2027");
+});
+
+test("calendar features the November gathering and an attributed interactive venue map", async ({ page }) => {
+  await page.clock.setFixedTime(new Date("2026-11-10T06:00:00Z"));
+  await openCalendar(page);
+  await expect(page.locator(".intro-ornament, .cta-decoration")).toHaveCount(0);
+  const feature = page.locator(".calendar-featured-event");
+  await expect(feature).toContainText("Pepper, Potato, Mould and Gold: How They Shaped Human History");
+  await expect(feature).toContainText("29 November 2026");
+  await expect(feature).toContainText(/3:00\s?pm IST/i);
+  await expect(feature.locator("img")).toHaveAttribute("alt", /Original event poster/);
+  await expect(page.locator(".schedule-timezone, .schedule-note, .calendar-empty")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Confirmed events:/ })).toHaveCount(0);
+
+  const map = page.locator(".event-map-canvas");
+  await expect(map).toHaveAttribute("data-map-ready", "true");
+  await expect(map.locator(".leaflet-marker-icon")).toHaveCount(2);
+  await expect(page.locator(".event-map-location")).toHaveCount(2);
+  await expect(page.locator(".event-map-location li")).toHaveCount(events.length);
+  await expect(page.locator(".event-map-attribution")).toContainText("OpenStreetMap contributors");
+  await expect(page.getByRole("link", { name: "Get directions" }).first()).toHaveAttribute("href", /openstreetmap\.org\/directions\?to=/);
+  await map.locator('.leaflet-marker-icon[title="Alliance Francaise de Bangalore, Vasanth Nagar, Bengaluru"]').click();
+  await expect(page.locator(".leaflet-popup-content")).toContainText("Pepper, Potato, Mould and Gold");
+  const initialZoom = Number(await map.getAttribute("data-zoom"));
+  await map.locator(".leaflet-control-zoom-in").click();
+  await expect.poll(async () => Number(await map.getAttribute("data-zoom"))).toBe(initialZoom + 1);
 });
 
 test("homepage features Sankalpas beside the calendar and navigation identifies the page", async ({ page }) => {

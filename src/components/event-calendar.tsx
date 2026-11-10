@@ -34,11 +34,12 @@ export function EventCalendar({ asOfDate }: { asOfDate: string }) {
   const month = monthNumber - 1;
   const dayLabel = new Intl.DateTimeFormat("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(calendarDate(year, month, day));
   const label = view === "day" ? dayLabel : view === "month" ? `${months[month]} ${year}` : String(year);
-  const start = view === "day" ? selectedDate : dateKey(calendarDate(year, view === "year" ? 0 : month, 1));
-  const end = view === "day" ? selectedDate : dateKey(calendarDate(year, view === "year" ? 11 : month, view === "year" ? 31 : daysInMonth(year, month)));
   const firstWeekday = calendarDate(year, month, 1).getUTCDay();
   const dayCount = daysInMonth(year, month);
   const cellCount = Math.ceil((firstWeekday + dayCount) / 7) * 7;
+  const detailStart = view === "year" ? dateKey(calendarDate(year, 0, 1)) : selectedDate;
+  const detailEnd = view === "year" ? dateKey(calendarDate(year, 11, 31)) : selectedDate;
+  const detailLabel = view === "year" ? String(year) : dayLabel;
 
   function selectMonth(nextYear: number, nextMonth: number) {
     setSelection(dateKey(calendarDate(nextYear, nextMonth, Math.min(day, daysInMonth(nextYear, nextMonth)))));
@@ -78,24 +79,26 @@ export function EventCalendar({ asOfDate }: { asOfDate: string }) {
       <button className="button button--small" type="submit">Apply year</button>
     </form>
     <p className="calendar-legend">Dates follow India Standard Time (IST). A dot marks a confirmed event; select a date for details.</p>
-    {view === "month" && <div className="calendar-month-grid" role="group" aria-label={label}>
-      {weekdays.map(name => <span className="calendar-weekday" key={name}><abbr title={name}>{name.slice(0, 3)}</abbr></span>)}
-      {Array.from({ length: cellCount }, (_, index) => {
-        const date = index - firstWeekday + 1;
-        if (date < 1 || date > dayCount) return <span key={index} className="calendar-blank" aria-hidden="true" />;
-        const key = dateKey(calendarDate(year, month, date));
-        const count = events.filter(event => event.date === key).length;
-        const fullLabel = `${weekdays[index % 7]}, ${date} ${months[month]} ${year}`;
-        return <button type="button" className="calendar-day" key={index} aria-current={key === today ? "date" : undefined} aria-label={`${fullLabel}. ${count ? `${count} confirmed ${count === 1 ? "event" : "events"}` : "No confirmed events"}`} onClick={() => { setSelection(key); setView("day"); }}>
-          <time dateTime={key}>{date}</time>{count > 0 && <span className="calendar-event-dot" aria-hidden="true" />}
-        </button>;
-      })}
-    </div>}
-    {view === "year" && <div className="calendar-year-grid" role="group" aria-label={`Months in ${year}`}>{months.map((name, index) => {
-      const prefix = `${String(year).padStart(4, "0")}-${String(index + 1).padStart(2, "0")}`;
-      const count = events.filter(event => event.date.startsWith(prefix)).length;
-      return <button className="calendar-year-month" type="button" key={name} aria-label={`View ${name} ${year}, ${count} confirmed ${count === 1 ? "event" : "events"}`} onClick={() => { selectMonth(year, index); setView("month"); }}><strong>{name}</strong><span>{count} confirmed {count === 1 ? "event" : "events"}</span></button>;
-    })}</div>}
-    <div className="calendar-details"><h3>Confirmed events: {label}</h3><EventSchedule asOfDate={asOfDate} period={{ start, end, label }} /></div>
+    <div className={`calendar-results${view === "month" ? " calendar-results--month" : ""}`}>
+      {view === "month" && <div className="calendar-month-grid" role="group" aria-label={label}>
+        {weekdays.map(name => <span className="calendar-weekday" key={name}><abbr title={name}>{name.slice(0, 3)}</abbr></span>)}
+        {Array.from({ length: cellCount }, (_, index) => {
+          const date = index - firstWeekday + 1;
+          if (date < 1 || date > dayCount) return <span key={index} className="calendar-blank" aria-hidden="true" />;
+          const key = dateKey(calendarDate(year, month, date));
+          const count = events.filter(event => event.date === key).length;
+          const fullLabel = `${weekdays[index % 7]}, ${date} ${months[month]} ${year}`;
+          return <button type="button" className="calendar-day" key={index} aria-current={key === today ? "date" : undefined} aria-pressed={key === selectedDate} aria-label={`${fullLabel}. ${count ? `${count} confirmed ${count === 1 ? "event" : "events"}` : "No confirmed events"}`} onClick={() => setSelection(key)}>
+            <time dateTime={key}>{date}</time>{count > 0 && <span className="calendar-event-dot" aria-hidden="true" />}
+          </button>;
+        })}
+      </div>}
+      {view === "year" && <div className="calendar-year-grid" role="group" aria-label={`Months in ${year}`}>{months.map((name, index) => {
+        const prefix = `${String(year).padStart(4, "0")}-${String(index + 1).padStart(2, "0")}`;
+        const count = events.filter(event => event.date.startsWith(prefix)).length;
+        return <button className="calendar-year-month" type="button" key={name} aria-label={`View ${name} ${year}, ${count} confirmed ${count === 1 ? "event" : "events"}`} onClick={() => { selectMonth(year, index); setView("month"); }}><strong>{name}</strong><span>{count} confirmed {count === 1 ? "event" : "events"}</span></button>;
+      })}</div>}
+      <div className="calendar-details"><h3>{view === "year" ? `Events in ${detailLabel}` : `Events on ${detailLabel}`}</h3><EventSchedule asOfDate={asOfDate} period={{ start: detailStart, end: detailEnd, label: detailLabel }} showCalendarNotes={false} /></div>
+    </div>
   </section>;
 }

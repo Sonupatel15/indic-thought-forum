@@ -6,6 +6,14 @@ import { podcasts, socialPosts } from "../src/lib/media";
 
 const routes = ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/join/", "/support/", "/privacy/", "/accessibility/"];
 
+test.beforeEach(async ({ page }) => {
+  await page.route(/^https:\/\/[abc]\.tile\.openstreetmap\.org\//, route => route.fulfill({
+    status: 200,
+    contentType: "image/svg+xml",
+    body: '<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256"></svg>',
+  }));
+});
+
 test("every public page is statically available, titled, and free of runtime errors", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));

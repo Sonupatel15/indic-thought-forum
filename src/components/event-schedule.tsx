@@ -15,7 +15,7 @@ const filters: { value: ScheduleFilter; label: string }[] = [
   { value: "past", label: "Past events" },
 ];
 
-export function EventSchedule({ asOfDate, period }: { asOfDate: string; period?: { start: string; end: string; label: string } }) {
+export function EventSchedule({ asOfDate, period, showCalendarNotes = true }: { asOfDate: string; period?: { start: string; end: string; label: string }; showCalendarNotes?: boolean }) {
   const today = useEventDate(asOfDate);
   const [filter, setFilter] = useState<ScheduleFilter>("all");
   const [selected, setSelected] = useState<number | null>(null);
@@ -53,13 +53,12 @@ export function EventSchedule({ asOfDate, period }: { asOfDate: string; period?:
 
   return <div className="event-schedule">
     {!period && <div className="filter-bar" role="group" aria-label="Filter event schedule">{filters.map(item => <button key={item.value} type="button" aria-pressed={filter === item.value} onClick={() => setFilter(item.value)}>{item.label}</button>)}<span role="status" aria-live="polite">{visible.length} {visible.length === 1 ? "event" : "events"}</span></div>}
-    <p className="schedule-timezone"><Clock3 size={15} aria-hidden="true" /> All dates and times are in India Standard Time (IST, UTC+05:30). An event stays in Today until the day ends.</p>
-    {period && visible.length === 0 && <p className="calendar-empty" role="status">No confirmed events for {period.label}.</p>}
+    {showCalendarNotes && <p className="schedule-timezone"><Clock3 size={15} aria-hidden="true" /> All dates and times are in India Standard Time (IST, UTC+05:30). An event stays in Today until the day ends.</p>}
     {!period && filter !== "past" && upcoming.length === 0 && <div className="schedule-empty"><span className="icon-box"><CalendarDays size={26} aria-hidden="true" /></span><div><h3>No upcoming dates announced yet.</h3><p>We will list the next event once its details are confirmed. {filter === "all" ? "Past conversations are listed below." : "Choose Past events to explore previous conversations."}</p><Link className="text-link" href="/contact-us/">Enquire about future events <ArrowUpRight size={16} aria-hidden="true" /></Link></div></div>}
     {renderGroup("Upcoming & today", upcoming, false)}
     {renderGroup("Past conversations", past, true)}
     {!period && filter === "past" && past.length === 0 && <div className="schedule-empty"><p>No past events to show yet. Choose Upcoming to explore confirmed dates.</p></div>}
-    <p className="schedule-note">Listing an event does not open registration. Check the original poster and contact the team for participation details.</p>
+    {showCalendarNotes && <p className="schedule-note">Listing an event does not open registration. Check the original poster and contact the team for participation details.</p>}
     <MediaDialog items={media} selected={selected} onSelect={setSelected} returnFocusRef={returnFocusRef} />
   </div>;
 }
