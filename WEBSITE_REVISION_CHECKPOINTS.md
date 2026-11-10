@@ -2,9 +2,9 @@
 
 Audit date: 2026-11-09 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, and **3 - About Page**.
-Next checkpoint: **4 - Sankalpas Page**, awaiting user confirmation.
-H-1 through H-12, F-1 through F-3, and A-1 through A-5 are verified complete. C-3 and U-8 are also complete through shared data/components; other later-checkpoint requirements remain deferred.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, and **4 - Sankalpas Page**.
+Next checkpoint: **5 - Updates Page**, awaiting user confirmation.
+H-1 through H-12, F-1 through F-3, A-1 through A-5, and S-1 through S-4 are verified complete. C-3 and U-8 are also complete through shared data/components; other later-checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -61,10 +61,10 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 4 - Sankalpas Page
 
-- [ ] **S-1 | Not started** - Recommend and implement a hero consistent with other pages, without duplicating the existing `PageIntro`.
-- [ ] **S-2 | Not started** - Remove the Gemini-like ornament.
-- [ ] **S-3 | Not started** - Replace every "DJ" reference in displayed Sankalpa content with "Dhananjay", including combined owners, possessives, and next actions.
-- [ ] **S-4 | Not started** - Fix alignment and responsive wrapping of "Where will you begin?", its heading, and the complete contribution-pathways description on phones through TV-sized screens.
+- [x] **S-1 | Done** - Retain the existing shared `PageIntro` hero, consistent with other pages; do not duplicate it.
+- [x] **S-2 | Done** - Remove the intro and CTA Gemini-like ornaments on Sankalpas only.
+- [x] **S-3 | Done** - Replace every "DJ" reference in tracker owner and next-action data with "Dhananjay", including combined owners and possessives.
+- [x] **S-4 | Done** - Align the pathway eyebrow, heading, and full description; balance heading wrapping and constrain description width for phones through TV-sized screens.
 
 ### Checkpoint 5 - Updates Page
 
@@ -487,9 +487,34 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 
 - No checkpoint-3 item remains blocked.
 - The heading/copy, quote wording, journey, CTA actions, footer, and gallery assets are preserved. About's two decorative sparkles and thought photo are intentionally removed; the same About content remains accessible via `/philosophy/`.
-- Review About, then confirm checkpoint 4 (Sankalpas). Its existing hero can reuse the same pattern; its own sparkle removal, DJ-name replacement, and contribution-block alignment remain unstarted.
+- Review About, then checkpoint 4 (Sankalpas), which is now complete. Stop before checkpoint 5 until the user confirms.
 
-### Checkpoints 4-9 and final review
+### Checkpoint 4 - Completed implementation record
+
+- S-1 through S-4 are implemented and verified Done. Preserve the existing shared `PageIntro` hero and its copy; adding another hero would duplicate the same visual surface.
+- Disabled both `PageIntro` and `CommunityCTA` ornaments on Sankalpas only. Their default remains unchanged elsewhere.
+- Expanded all abbreviated owner and next-action references in `src/lib/sankalpas.ts` to `Dhananjay`, including combined owners, “Dhananjay's office,” and next-action sentences. Other tracker data and the seven-column public table are unchanged.
+- Scoped pathway heading styles to the Sankalpas contribution section: consistent left alignment, balanced heading wrapping, and a readable maximum text width for the full description. Existing pathway cards and their grid are unchanged.
+- Changed: `src/app/sankalpas/page.tsx`, `src/app/globals.css`, `src/lib/sankalpas.ts`, `tests/sankalpas.spec.ts`, `README.md`, and this document. Created/deleted files: none. Asset moves/renames: none.
+- Regression tests assert one existing shared hero, no Sankalpas intro/CTA ornaments, no remaining `DJ` in owner or next-action data, and complete/aligned pathway copy.
+- The tracker layout fixture now opens its `<details>` element directly to avoid cross-engine click flakiness; row-spacing assertions allow 0.1 CSS pixel for browser geometry rounding. Separate note-history tests still exercise the user-facing keyboard interaction.
+- Commit subject: `Checkpoint 4: Sankalpas page updates`.
+
+#### Validation
+
+- `npm run build`, `npm run lint`, and `npm run typecheck`: **Passed**. All 17 static routes/endpoints generated; 13 Windows route-segment files normalized. Restored build-generated `next-env.d.ts` imports to their committed baseline.
+- `npm exec -- playwright test sankalpas.spec.ts --workers=3 --timeout=90000 --reporter=list`: **60 passed** across desktop Chromium, mobile Chromium, desktop Firefox, desktop WebKit, iPhone WebKit, and iPad WebKit.
+- `npm exec -- playwright test website.spec.ts --project=desktop --grep "every public page|key pages|layouts fit|short section labels" --workers=2 --timeout=90000 --reporter=list`: **4 passed**.
+- The pathway eyebrow, heading, and complete description were checked at **320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS-pixel widths** across all six configured browser/device profiles. Viewport height was 900px below 2560px and 2160px at the two largest widths. Checks verified exact copy, shared left alignment, no clipping or horizontal overflow, phone wrapping, and description width at or below 760px.
+- Reused the user's existing `127.0.0.1:4173` static preview after verifying HTTP 200. No preview/dev server was started or stopped; no dependencies were installed.
+- No physical-device certification or manual screenshot review is claimed.
+
+#### Review handoff
+
+- No checkpoint-4 item remains blocked. The existing hero and pathway cards are preserved; only Sankalpas' two ornaments, full-name references, and pathway-heading wrapping/alignment changed.
+- Review Sankalpas, then confirm checkpoint 5 (Updates). Do not begin it until confirmed.
+
+### Checkpoints 5-9 and final review
 
 Not started except the already verified shared-data/component items C-3 and U-8. For each checkpoint, append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results and screen sizes, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 3 and do not begin checkpoint 4 until the user confirms.
+Stop after checkpoint 4 and do not begin checkpoint 5 until the user confirms.

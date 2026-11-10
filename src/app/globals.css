@@ -212,6 +212,10 @@ main:focus { outline: none; }
 .reading-width p { font-size: 15px; }
 .reading-width .lead { font-size: 19px; margin-bottom: 22px; }
 .sankalpa-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.sankalpa-pathways > .section-heading { align-items: flex-start; }
+.sankalpa-pathways > .section-heading > div { width: 100%; max-width: 760px; }
+.sankalpa-pathways > .section-heading h2 { max-width: 24ch; text-wrap: balance; }
+.sankalpa-pathways > .section-heading p { max-width: 64ch; text-wrap: pretty; }
 .sankalpa-card { display: flex; flex-direction: column; border: 1px solid var(--line); padding: 30px; background: #fbfaf6; border-radius: var(--radius); }
 .sankalpa-card > .icon-box { margin-bottom: 25px; }
 .sankalpa-card > .eyebrow { font-size: 9px; margin-bottom: 12px; }
