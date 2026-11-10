@@ -1,10 +1,10 @@
 # ITF Website Revision Checkpoints
 
-Audit date: 2026-11-09 (IST).
+Initial audit date: 2026-11-09 (IST). Final review: 2026-11-10 (IST).
 Source of requirements: the supplied 402-line website revision brief.
-Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, **6 - Calendar Page**, **7 - Contact Page**, and **8 - Site-wide Design Consistency and Responsiveness**.
-Next checkpoint: **9 - Code Quality and Architecture**, awaiting user confirmation.
-H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, C-1 through C-7, and CT-1 through CT-2 are verified complete. Other later-checkpoint requirements remain deferred.
+Completed checkpoints: **0 - Audit and Setup**, **1 - Home Page**, **2 - Footer**, **3 - About Page**, **4 - Sankalpas Page**, **5 - Updates Page**, **6 - Calendar Page**, **7 - Contact Page**, **8 - Site-wide Design Consistency and Responsiveness**, and **9 - Code Quality and Architecture**.
+Final review: **Complete**.
+H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, C-1 through C-7, CT-1 through CT-2, G-1 through G-5, E-1 through E-4, and R-1 through R-3 are verified complete. No later checkpoint requirements remain deferred.
 
 ## Working agreement
 
@@ -103,16 +103,16 @@ For unstarted checkpoints, the audit below is a baseline, not implementation com
 
 ### Checkpoint 9 - Code Quality and Architecture
 
-- [ ] **E-1 | Not started** - Keep the site modular, extensible, and scalable using appropriate SOLID/object-oriented principles without unnecessary classes or abstraction in the existing React architecture.
-- [ ] **E-2 | Not started** - Reuse or extract hero, section-heading, card, poster-grid, incremental-list, calendar, and approved map components where appropriate.
-- [ ] **E-3 | Not started** - Store events, posters, podcasts, posts, gallery entries, statistics, and social links in structured content/configuration; adding an event should require only its data and images.
-- [ ] **E-4 | Not started** - Standardize file, folder, and asset naming; remove only code, styles, and assets made unused by these revisions, after checking every reference.
+- [x] **E-1 | Done** - Keep the site modular, extensible, and scalable using appropriate SOLID/object-oriented principles without unnecessary classes or abstraction in the existing React architecture.
+- [x] **E-2 | Done** - Reuse or extract hero, section-heading, card, poster-grid, incremental-list, calendar, and approved map components where appropriate.
+- [x] **E-3 | Done** - Store events, posters, podcasts, posts, gallery entries, statistics, and social links in structured content/configuration; adding an event should require only its data and images.
+- [x] **E-4 | Done** - Standardize file, folder, and asset naming; remove only code, styles, and assets made unused by these revisions, after checking every reference.
 
 ### Final Review
 
-- [ ] **R-1 | Not started** - Verify every requirement against the actual site; mark it Done or document a specific blocker.
-- [ ] **R-2 | Not started** - Confirm a clean production build, working local images/internal links, verified external links where accessible, and no browser console/runtime errors.
-- [ ] **R-3 | Not started** - Add the final change summary, remaining open items, and recommended next steps to this document.
+- [x] **R-1 | Done** - Verify every requirement against the actual site; mark it Done or document a specific blocker.
+- [x] **R-2 | Done** - Confirm a clean production build, working local images/internal links, verified external links where accessible, and no browser console/runtime errors.
+- [x] **R-3 | Done** - Add the final change summary, remaining open items, and recommended next steps to this document.
 
 ## Checkpoint 0 audit
 
@@ -614,7 +614,27 @@ Generated previews (new files, not moves; the original PNGs above remain unchang
 - No G-1 through G-5 item remains blocked. Review the shared scale values and 5px corner choice. Automated tests use desktop Chromium viewport emulation; no physical-device certification is claimed.
 - Checkpoint 9 (Code Quality and Architecture) is next. Stop here and wait for explicit user confirmation before starting it.
 
-### Checkpoint 9 and final review
+### Checkpoint 9 - Completed implementation record
 
-Not started. Append its item statuses, changed/created/deleted files, exact asset moves, validation commands/results, assumptions/open questions, and independent commit reference.
-Stop after checkpoint 8 and do not begin checkpoint 9.
+- E-1 through E-4 are implemented and verified Done. The site remains a functional React/Next.js architecture without new classes or service-layer abstractions.
+- Existing shared feature components cover page heroes/headings, principles/journey/CTA, event posters, gallery cards/dialogs, media cards, calendars/schedules, and the approved OpenStreetMap view. Extracted `useIncrementalList` to share list paging state and bounds across events, podcasts, and social posts while keeping each feature's card markup and initial count unchanged.
+- Events and poster paths, venue coordinates, gallery records, and Home Lakshya statistics are structured in `src/lib/site.ts`; podcasts, social posts, and social profiles are structured in `src/lib/media.ts`; Sankalpa tracker records remain in `src/lib/sankalpas.ts`. `ForumEvent` is now readonly at its shared data boundary. Adding an event continues to require one record and its original/preview images; venue coordinates remain required and are explicitly checked by the map component.
+- Audited all app, component, test, script, and README references before removing old generated outputs left behind by the approved logo and poster revisions. Removed `public/images/logo.png` and `public/images/event-2.webp`, `event-3.webp`, and `event-4.webp`, and removed their stale generator entries (including the unused `event-1.webp` output) plus the no-longer-used `community.webp` generator entry from `scripts/prepare-assets.mjs`. No matching runtime or test references remained. Retained all referenced hero, gallery, podcast, approved logo, and original event-poster assets. No further CSS deletion or asset rename was justified by the reference audit.
+- Updated the README with the shared incremental-list behavior and the current asset-preparation scope.
+- Changed: `README.md`, `scripts/prepare-assets.mjs`, `src/components/event-list.tsx`, `src/components/media-content.tsx`, `src/lib/site.ts`, and this document. Created: `src/lib/use-incremental-list.ts`. Deleted: the four unused image outputs listed above. Asset moves/renames: none.
+- Commit subject: `Checkpoint 9: Code quality and architecture`.
+
+#### Final review and validation
+
+- All checkpoint items H-1 through H-12, F-1 through F-3, A-1 through A-5, S-1 through S-4, U-1 through U-9, C-1 through C-7, CT-1 through CT-2, G-1 through G-5, E-1 through E-4, and R-1 through R-3 are recorded Done. No checkpoint blocker remains.
+- `npm run build`: **Passed**; all 17 static routes/endpoints generated and 13 Windows route-segment files normalized. `npm run lint` and `npm run typecheck`: **Passed**.
+- `npm exec -- playwright test --project=desktop --workers=2 --timeout=90000 --reporter=list`: **57 passed, 1 intentional skip**. This includes all-route production availability, local image/runtime/console checks, accessibility, layouts, navigation/internal links, and event/media paging.
+- `npm exec -- playwright test media.spec.ts --project=mobile --project=firefox --project=webkit --project=ios --project=tablet --grep "every podcast|verified social channels|Updates orders" --workers=3 --timeout=90000 --reporter=list`: **15 passed** across five additional browser/device emulation profiles.
+- Responsive suite coverage remains 13 public routes at 320–3840 CSS pixels; six configured browser profiles are represented in the existing project/test matrix. No physical-device certification is claimed.
+- Checked all five social profile URLs, five supplied Instagram-post URLs, ten YouTube watch URLs, and OpenStreetMap attribution with redirect-following HTTP HEAD requests on 10 November 2026; each returned HTTP 200. This confirms destination reachability at check time, not future availability, post/video playback, event details, or account ownership.
+- `git diff --check`: **Passed**. Restored the build-generated `next-env.d.ts` to its committed baseline; it is not part of this checkpoint.
+
+#### Final summary and handoff
+
+- Checkpoints 0 through 9 are complete. Maintain records in the shared content files, provide local images for new posters/media, then run `npm run build`, `npm run lint`, `npm run typecheck`, and the relevant Playwright checks before publishing.
+- No outstanding code or content blocker was found. Future physical-device and deployed-domain review remains a release recommendation, not an incomplete checkpoint requirement. The preparation script still fetches approved source assets when explicitly run; it is not part of the production build.

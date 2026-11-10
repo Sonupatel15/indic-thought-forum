@@ -6,16 +6,17 @@ import { ArrowUpRight, CalendarDays, MapPin } from "lucide-react";
 import { events } from "@/lib/site";
 import { getEventSchedule } from "@/lib/schedule";
 import { useEventDate } from "@/lib/use-event-date";
+import { useIncrementalList } from "@/lib/use-incremental-list";
 import { MediaDialog } from "./media-dialog";
 
 export function EventList({ compact = false, asOfDate }: { compact?: boolean; asOfDate: string }) {
   const today = useEventDate(asOfDate);
-  const [visibleCount, setVisibleCount] = useState(3);
   const [selected, setSelected] = useState<number | null>(null);
   const returnFocusRef = useRef<HTMLButtonElement>(null);
   const { upcoming, past } = getEventSchedule(events, today);
   const available = compact ? [...upcoming].reverse().concat(past).slice(0, 3) : [...events].sort((a, b) => b.date.localeCompare(a.date));
-  const visible = compact ? available : available.slice(0, visibleCount);
+  const { visibleItems, hasMore, showMore } = useIncrementalList(available, 3);
+  const visible = compact ? available : visibleItems;
   const media = visible.map(event => ({ src: event.image, title: event.title, alt: `Original event poster: ${event.title}, ${event.speaker}, ${event.displayDate}` }));
 
   return <>
@@ -26,7 +27,7 @@ export function EventList({ compact = false, asOfDate }: { compact?: boolean; as
       </button>
       <div className="event-body"><div className="event-date"><CalendarDays size={14} aria-hidden="true" /><time dateTime={event.date}>{event.displayDate}</time><span>{event.date < today ? "Archive" : event.date === today ? "Today" : "Upcoming"}</span></div><h3><button type="button" onClick={click => { returnFocusRef.current = click.currentTarget; setSelected(index); }}>{event.title}</button></h3><p className="event-speaker">{event.speaker}</p><div className="event-location"><MapPin size={14} aria-hidden="true" />{event.venue}</div></div>
     </article>)}</div>
-    {!compact && visible.length < available.length && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-list" onClick={() => setVisibleCount(count => Math.min(count + 3, available.length))}>Load more events</button></div>}
+    {!compact && hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-list" onClick={showMore}>Load more events</button></div>}
     <MediaDialog items={media} selected={selected} onSelect={setSelected} returnFocusRef={returnFocusRef} />
   </>;
 }

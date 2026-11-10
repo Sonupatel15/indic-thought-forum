@@ -72,7 +72,7 @@ const eventVenue = "Suchitra Cinema & Cultural Academy, Banashankari, Bengaluru"
 const allianceVenue = "Alliance Francaise de Bangalore, Vasanth Nagar, Bengaluru";
 const eventPosterSize = { imageWidth: 1587, imageHeight: 2245 };
 
-export const events: ForumEvent[] = [
+export const events: readonly ForumEvent[] = [
   { id: "ganeshaiah", title: "Pepper, Potato, Mould and Gold: How They Shaped Human History", speaker: "K. N. Ganeshaiah", date: "2026-11-29", displayDate: "29 November 2026", startTime: "15:00", venue: allianceVenue, image: "/images/ganeshaiah/event-poster/pepper-potato-mould-and-gold-2026-11-29.png", previewImage: "/images/ganeshaiah/event-poster/pepper-potato-mould-and-gold-2026-11-29.webp", ...eventPosterSize, category: "History" },
   { id: "vedanga-jyotisha", title: "Vedanga Jyotisha: Exploring the Foundations of Indian Astronomy", speaker: "Shri Ram Mohan", date: "2026-10-25", displayDate: "25 October 2026", startTime: "15:00", venue: allianceVenue, image: "/images/ram-mohan/event-poster/vedanga-jyotisha-2026-10-25.png", previewImage: "/images/ram-mohan/event-poster/vedanga-jyotisha-2026-10-25.webp", ...eventPosterSize, category: "Ideas & dialogue" },
   { id: "places-of-worship", title: "Places of Worship Act, 1991", speaker: "Sri Manjunatha Ajjampura", date: "2026-07-11", displayDate: "11 July 2026", startTime: "17:30", venue: eventVenue, image: "/images/manjunath-ajjampura/event-poster/places-of-worship-act-2026-07-11.png", previewImage: "/images/manjunath-ajjampura/event-poster/places-of-worship-act-2026-07-11.webp", ...eventPosterSize, category: "Ideas & dialogue" },
