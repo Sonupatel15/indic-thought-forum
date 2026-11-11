@@ -22,7 +22,7 @@ const featuredEvent = getFeaturedEvent();
 
 export default function Calendar() {
   return <>
-    <PageIntro eyebrow="Event calendar" title="Make time for meaningful conversations." description="A simple schedule of our gatherings: what is coming next, what we have explored, and the details you need to plan." showOrnament={false} />
+    <PageIntro eyebrow="Event calendar" title="Make time for meaningful conversations." description="A simple schedule of our gatherings: what is coming next, what we have explored, and the details you need to plan." />
     <section className="section container calendar-primary-section">
       <CalendarFeaturedEvent event={featuredEvent} />
       <SectionHeading eyebrow="Dates for your diary" title="The ITF event calendar." description="Explore a day, a complete month, or the year ahead. Only confirmed event details are published." />

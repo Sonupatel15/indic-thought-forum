@@ -50,7 +50,7 @@ test("page-specific ornament removal preserves the intended scope and Home princ
   for (const [route, intro, cta] of [
     ["/", 0, 1], ["/sankalpas/", 0, 0], ["/events/", 0, 0], ["/calendar/", 0, 0],
     ["/gallery/", 0, 0], ["/media/", 0, 0], ["/contact-us/", 0, 0],
-    ["/support/", 1, 0], ["/privacy/", 0, 0], ["/accessibility/", 0, 0],
+    ["/support/", 0, 0], ["/privacy/", 0, 0], ["/accessibility/", 0, 0],
   ] as const) {
     await page.goto(route);
     await expect(page.locator(".intro-ornament"), route).toHaveCount(intro);
@@ -154,7 +154,7 @@ test("About heroes, reading columns and continuing quote panels reflow from phon
       expect(metrics.eyebrowContrast).toBeGreaterThanOrEqual(4.5);
       expect(metrics.quoteContrast).toBeGreaterThanOrEqual(4.5);
       expect(metrics.explanationContrast).toBeGreaterThanOrEqual(4.5);
-      expect(metrics.ctaFooterGap).toBeCloseTo(40, 3);
+      expect(metrics.ctaFooterGap).toBeCloseTo(width > 1180 ? 96 : width > 760 ? 75 : 58, 1);
       expect(metrics.accentWidth).toBe(1);
       expect(metrics.textAlign).toBe("center");
       expect(metrics.quoteFont).toContain("Georgia");

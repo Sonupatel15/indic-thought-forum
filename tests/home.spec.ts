@@ -26,7 +26,7 @@ test("Home has real-text branding, unnumbered sections, clearly stated goals, an
   await expect(mediaSection.locator(".social-channel-links, .social-channel-grid")).toHaveCount(0);
   await expect(mediaSection.locator(".youtube-load")).toHaveCount(1);
   await expect(mediaSection.getByRole("link", { name: /Visit Instagram/ })).toHaveCount(1);
-  await expect(page.locator(".footer-about .social-channel-link")).toHaveCount(5);
+  await expect(page.locator(".footer-about .footer-social .social-channel-link")).toHaveCount(5);
 });
 
 test("Home conversation heading and eyebrow use the shared type scale across viewport breakpoints", async ({ page }) => {

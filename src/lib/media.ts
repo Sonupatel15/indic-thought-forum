@@ -100,4 +100,4 @@ export const podcasts: readonly PodcastEpisode[] = [
   },
 ];
 
-export const homeFeaturedPodcast = shivSastry;
+export const homeFeaturedPodcast = podcasts[0];

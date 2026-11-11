@@ -75,10 +75,13 @@ test("all public footers retain social profiles and use Contact without repeated
     for (const profile of socialProfiles) {
       const link = footer.locator(`a[href="${profile.url}"]`);
       await expect(link).toHaveCount(1);
-      await expect(link).toContainText(profile.platform);
+      await expect(link).toHaveAccessibleName(profile.platform);
+      await expect(link).toHaveAttribute("aria-label", profile.platform);
+      await expect(link).toHaveAttribute("title", profile.platform);
       await expect(link).toHaveAttribute("target", "_blank");
       await expect(link).toHaveAttribute("rel", "noopener noreferrer");
-      await expect(link.locator(".icon-box svg")).toHaveCount(1);
+      await expect(link.locator("svg")).toHaveCount(1);
+      await expect(link.locator(".lucide-arrow-up-right")).toHaveCount(0);
       await expect(link.locator(".sr-only")).toHaveText(" (opens in a new tab)");
     }
     for (const profile of newProfiles) await expect(footer.locator(`a[href="${profile.url}"]`)).toHaveCount(1);
@@ -95,7 +98,7 @@ test("all public footers retain social profiles and use Contact without repeated
 
 test("footer logo, text and five social links reflow from phone to TV widths", async ({ page }) => {
   test.setTimeout(120000);
-  for (const width of [320, 393, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840]) {
+  for (const width of [320, 360, 393, 480, 599, 600, 768, 1023, 1024, 1180, 1200, 1440, 1920, 2560, 3840]) {
     await page.setViewportSize({ width, height: width >= 2560 ? 2160 : 900 });
     for (const route of ["/", "/events/"]) {
       await page.goto(route);
@@ -121,7 +124,7 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
           copyOverflow: name.scrollWidth > name.clientWidth + 1 || tagline.scrollWidth > tagline.clientWidth + 1,
           badLinks: [...element.querySelectorAll(".social-channel-link")].filter(link => {
             const box = link.getBoundingClientRect();
-            return box.left < -1 || box.right > innerWidth + 1 || box.height < 44;
+            return box.left < -1 || box.right > innerWidth + 1 || box.height < 38;
           }).map(link => link.getAttribute("href")),
         };
       });
@@ -136,6 +139,42 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
       expect(metrics.copyOverflow).toBe(false);
       expect(metrics.badLinks).toEqual([]);
       await expect(footer.locator(".social-channel-link")).toHaveCount(5);
+      const layout = await footer.evaluate(element => {
+        const box = (selector: string) => {
+          const item = element.querySelector(selector);
+          if (!item) throw new Error(`Missing footer element: ${selector}`);
+          const rect = item.getBoundingClientRect();
+          return { top: rect.top, bottom: rect.bottom, left: rect.left, right: rect.right };
+        };
+        const grid = element.querySelector(".footer-main");
+        if (!grid) throw new Error("Missing footer grid");
+        return {
+          brand: box(".footer-about"), values: box(".footer-values"), cta: box(".footer-note"),
+          grid: box(".footer-main"), bottom: box(".footer-bottom"),
+          columns: getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length,
+          socialTops: [...element.querySelectorAll(".social-channel-link")].map(link => link.getBoundingClientRect().top),
+          dividers: [...element.querySelectorAll("*")].filter(item => parseFloat(getComputedStyle(item).borderTopWidth) > 0 && item.getBoundingClientRect().width > 100).length,
+          height: element.getBoundingClientRect().height,
+        };
+      });
+      expect(layout.columns).toBe(width >= 1024 ? 3 : width >= 600 ? 2 : 1);
+      expect(layout.bottom.left).toBe(layout.grid.left);
+      expect(layout.bottom.right).toBe(layout.grid.right);
+      expect(layout.dividers).toBe(1);
+      expect(Math.max(...layout.socialTops) - Math.min(...layout.socialTops)).toBeLessThanOrEqual(1);
+      if (width >= 1024) {
+        expect(Math.abs(layout.brand.top - layout.values.top)).toBeLessThanOrEqual(1);
+        expect(Math.abs(layout.brand.top - layout.cta.top)).toBeLessThanOrEqual(1);
+        expect(layout.height).toBeLessThan(400);
+      } else if (width >= 600) {
+        expect(layout.brand.top).toBe(layout.values.top);
+        expect(layout.cta.top).toBeGreaterThan(layout.brand.bottom);
+        expect(layout.cta.left).toBe(layout.brand.left);
+        expect(layout.cta.right).toBe(layout.values.right);
+      } else {
+        expect(layout.values.top).toBeGreaterThan(layout.brand.bottom);
+        expect(layout.cta.top).toBeGreaterThan(layout.values.bottom);
+      }
       if (route === "/events/") {
         await expect(page.locator(".social-channel-card")).toHaveCount(5);
         expect(await page.locator(".social-channel-card").evaluateAll(cards => cards.every(card => {
@@ -144,5 +183,28 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
         }))).toBe(true);
       }
     }
+  }
+});
+
+test("footer links have visible keyboard focus and accent hover states", async ({ page }) => {
+  await page.goto("/");
+  const footer = page.locator(".site-footer");
+  await footer.scrollIntoViewIfNeeded();
+  await expect(footer.getByRole("navigation", { name: "Footer", exact: true })).toBeVisible();
+  for (const link of await footer.getByRole("link").all()) {
+    await link.focus();
+    expect(await link.evaluate(element => {
+      const style = getComputedStyle(element);
+      return element.matches(":focus-visible") && style.outlineStyle !== "none" && parseFloat(style.outlineWidth) >= 2;
+    })).toBe(true);
+    await page.keyboard.press("Tab");
+  }
+  for (const link of await footer.locator(".social-channel-link, .footer-cta").all()) {
+    await link.hover();
+    await expect(link).toHaveCSS("background-color", "rgb(169, 67, 9)");
+    await expect(link).toHaveCSS("color", "rgb(255, 255, 255)");
+    await page.mouse.move(0, 0);
+    await link.focus();
+    await expect(link).toHaveCSS("background-color", "rgb(169, 67, 9)");
   }
 });

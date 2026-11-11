@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/metadata";
 export const metadata = pageMetadata("Privacy Policy", "How the Indic Thought Forum public website handles your information, enquiries, and privacy choices.", "/privacy/");
 
 export default function Privacy() {
-  return <><PageIntro eyebrow="Privacy policy" title="Your trust matters." description="A clear explanation of how this public website handles information." showOrnament={false} /><article className="section container legal-copy">
+  return <><PageIntro eyebrow="Privacy policy" title="Your trust matters." description="A clear explanation of how this public website handles information." /><article className="section container legal-copy">
     <p className="legal-date">Last updated: 10 November 2026</p>
     <h2>What this website collects</h2><p>Browsing this website does not require an account. When online enquiries are enabled and you choose to submit a form, the information requested includes your name, email address, optional or required phone number as shown, area of interest, message, and your consent to be contacted.</p>
     <h2>Current form availability</h2><p>{site.formsEndpoint ? "Online enquiries are enabled. Your form is sent over HTTPS to our configured enquiry service only when you submit it." : "Online enquiries are not connected in this deployment. The forms do not send or save the information you enter."} The site does not store form drafts in your browser.</p>

@@ -14,8 +14,8 @@ export function SectionHeading({ eyebrow, title, description, href, linkLabel }:
   );
 }
 
-export function PageIntro({ eyebrow, title, description, showOrnament = true }: { eyebrow: string; title: string; description: string; showOrnament?: boolean }) {
-  return <section className="page-intro"><div className="container"><div className="breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><span>{eyebrow}</span></div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{description}</p>{showOrnament && <div className="intro-ornament" aria-hidden="true">✦</div>}</div></section>;
+export function PageIntro({ eyebrow, title, description }: { eyebrow: string; title: string; description: string }) {
+  return <section className="page-intro"><div className="container"><div className="breadcrumb"><Link href="/">Home</Link><span aria-hidden="true">/</span><span>{eyebrow}</span></div><span className="eyebrow">{eyebrow}</span><h1>{title}</h1><p>{description}</p></div></section>;
 }
 
 export function Principles() {

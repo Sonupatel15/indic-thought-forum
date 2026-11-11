@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  devIndicators: false,
   images: { unoptimized: true },
 };
 

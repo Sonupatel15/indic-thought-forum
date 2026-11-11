@@ -31,11 +31,22 @@ export function SocialPosts() {
 
 export function SocialChannels({ compact = false }: { compact?: boolean }) {
   const icons = { YouTube: Play, Instagram: Camera, Facebook: UsersRound, "X (Twitter)": AtSign, WhatsApp: MessageCircle };
-  return <div className={compact ? "social-channel-links" : "social-channel-grid"}>{socialProfiles.map(profile => {
+  if (compact) {
+    return <ul className="social-channel-links">{socialProfiles.map(profile => {
+      const Icon = icons[profile.platform];
+      return <li key={profile.platform}>
+        <a className="social-channel-link" href={profile.url} target="_blank" rel="noopener noreferrer" aria-label={profile.platform} title={profile.platform}>
+          <Icon size={18} aria-hidden="true" />
+          <span className="sr-only"> (opens in a new tab)</span>
+        </a>
+      </li>;
+    })}</ul>;
+  }
+  return <div className="social-channel-grid">{socialProfiles.map(profile => {
     const Icon = icons[profile.platform];
-    return <a className={compact ? "social-channel-link" : "social-channel-card"} key={profile.platform} href={profile.url} target="_blank" rel="noopener noreferrer">
+    return <a className="social-channel-card" key={profile.platform} href={profile.url} target="_blank" rel="noopener noreferrer">
       <span className="icon-box"><Icon size={17} aria-hidden="true" /></span>
-      {compact ? <span>{profile.platform}</span> : <div><span className="eyebrow">{profile.label}</span><h3>{profile.platform}</h3><span className="social-handle">{profile.handle}</span><p>{profile.description}</p></div>}
+      <div><span className="eyebrow">{profile.label}</span><h3>{profile.platform}</h3><span className="social-handle">{profile.handle}</span><p>{profile.description}</p></div>
       <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span>
     </a>;
   })}</div>;

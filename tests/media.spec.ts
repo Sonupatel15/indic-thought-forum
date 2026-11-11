@@ -50,7 +50,7 @@ test("every podcast retains a usable YouTube link even when embedding is unavail
     "UX37BufManw", "CP8G3DXbzgw", "9zZnYfYLTsE", "v-0RB4e5SNo", "trB-R1Mf3PI",
     "lFzOmGN2o5A", "za2JjGqiP28", "3f_nS6Z3lhE", "teN5_eTt0cs", "02Z4CCbVsRg",
   ]);
-  expect(homeFeaturedPodcast.id).toBe("shiv-sastry");
+  expect(homeFeaturedPodcast).toBe(podcasts[0]);
   await expect(page.locator("#podcasts .youtube-player")).toHaveCount(3);
   const columns = await page.locator("#podcast-archive").evaluate(grid => getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length);
   for (let count = 2; count < podcasts.length - 1;) {
@@ -68,6 +68,16 @@ test("every podcast retains a usable YouTube link even when embedding is unavail
   await expect(page.locator("#podcasts .youtube-disclosure")).toHaveCount(0);
   await expect(page.locator("#podcasts")).not.toContainText("Privacy-first preview");
   await expect(page.locator("#podcasts")).not.toContainText("Choosing Load connects to YouTube/Google");
+});
+
+test("Home features the same latest podcast as Updates", async ({ page }) => {
+  for (const route of ["/", "/events/"]) {
+    await page.goto(route);
+    const featured = page.locator(".featured-podcast");
+    await expect(featured.getByRole("heading", { name: podcasts[0].title, exact: true })).toBeVisible();
+    await expect(featured.locator(".youtube-load img")).toHaveAttribute("src", podcasts[0].thumbnail);
+    await expect(featured.getByRole("link", { name: /Watch on YouTube/ })).toHaveAttribute("href", `https://www.youtube.com/watch?v=${podcasts[0].videoId}`);
+  }
 });
 
 test("loading more events and podcasts moves keyboard focus to the first newly shown item", async ({ page }) => {
@@ -223,9 +233,10 @@ test("Updates posters, social links and section gaps use the responsive scale", 
         posterFit: getComputedStyle(image).objectFit,
         instagramCalloutWidth: box("#posts .instagram-profile-link").width,
         iconBox: box(".social-channel-card .icon-box").width,
-        footerIconBox: box(".footer-about .icon-box").width,
+        footerTargetWidth: box(".footer-social .social-channel-link").width,
+        footerTargetHeight: box(".footer-social .social-channel-link").height,
         glyph: box(".social-channel-card .icon-box svg").width,
-        footerGlyph: box(".footer-about .icon-box svg").width,
+        footerGlyph: box(".footer-social .social-channel-link svg").width,
         targetHeight: box(".social-channel-card").height,
         overflow: document.documentElement.scrollWidth > innerWidth,
       };
@@ -239,9 +250,10 @@ test("Updates posters, social links and section gaps use the responsive scale", 
     expect(metrics.posterFit).toBe("contain");
     expect(metrics.instagramCalloutWidth).toBeLessThanOrEqual(760);
     expect(metrics.iconBox).toBe(25);
-    expect(metrics.iconBox).toBe(metrics.footerIconBox);
+    expect(metrics.footerTargetWidth).toBe(38);
+    expect(metrics.footerTargetHeight).toBe(38);
     expect(metrics.glyph).toBe(17);
-    expect(metrics.glyph).toBe(metrics.footerGlyph);
+    expect(metrics.footerGlyph).toBe(18);
     expect(metrics.targetHeight).toBeGreaterThanOrEqual(44);
     expect(metrics.overflow).toBe(false);
   }
