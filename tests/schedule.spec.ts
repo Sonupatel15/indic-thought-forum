@@ -229,7 +229,7 @@ test("calendar features the November gathering and an attributed interactive ven
   await expect(page.locator(".event-map-event")).toContainText("Pepper, Potato, Mould and Gold");
   await expect(page.locator(".event-map-attribution")).toContainText("OpenStreetMap contributors");
   await expect(page.getByRole("link", { name: "Get directions" }).first()).toHaveAttribute("href", /openstreetmap\.org\/directions\?to=/);
-  await page.getByRole("button", { name: "Show Pepper, Potato, Mould and Gold: How They Shaped Human History on map" }).click();
+  await page.getByRole("button", { name: /Pepper, Potato, Mould and Gold: How They Shaped Human History.*View venue on map/ }).click();
   await expect(page.locator(".leaflet-popup-content")).toContainText("Pepper, Potato, Mould and Gold");
   await expect(page.locator(".leaflet-popup-content")).toContainText("K. N. Ganeshaiah");
   await expect(map.locator(".leaflet-marker-icon")).not.toHaveAttribute("title", /Suchitra/);
@@ -252,7 +252,7 @@ test("upcoming map events paginate in date order and select their existing venue
   await expect(page.locator(".event-map-links a")).toHaveCount(6);
   await expect(page.locator(".event-map-events")).not.toContainText("Are We Independent? The Battle for India's Mind");
   await expect(page.locator(".event-map-links a").first()).toHaveAttribute("href", /openstreetmap\.org\/way\/495472305/);
-  await page.getByRole("button", { name: "Show Hindumisia: Revisiting Forgotten History on map" }).click();
+  await page.getByRole("button", { name: /Hindumisia: Revisiting Forgotten History.*View venue on map/ }).click();
   await expect(map).toHaveAttribute("data-center", "12.92600,77.56979");
   await expect(map).toHaveAttribute("data-zoom", /^(1[4-9]|[2-9]\d)$/);
   await expect(page.locator(".leaflet-popup-content")).toContainText("Hindumisia: Revisiting Forgotten History");
@@ -287,6 +287,21 @@ test("map shows an empty state and no markers when there are no upcoming events"
   await expect(page.locator(".event-map-event")).toHaveCount(0);
   await expect(page.locator(".event-map-empty")).toHaveText("No upcoming events have confirmed venues yet.");
   await expect(page.locator(".event-map-canvas .leaflet-marker-icon")).toHaveCount(0);
+});
+
+test("failed map tiles expose recovery links without disabling venue selection", async ({ page }) => {
+  await page.route(/^https:\/\/[abc]\.tile\.openstreetmap\.org\//, route => route.abort());
+  await page.clock.setFixedTime(new Date("2026-11-01T12:00:00Z"));
+  await openCalendar(page);
+  await expect(page.locator(".event-map-error")).toContainText("The map background could not be loaded.");
+  await expect(page.locator(".event-map-error")).toContainText("Use the event links");
+  await expect(page.locator(".event-map-links a")).toHaveCount(2);
+  await page.locator(".event-map-select").click();
+  await expect(page.locator(".leaflet-popup-content")).toContainText("K. N. Ganeshaiah");
+  const zoomIn = page.locator(".leaflet-control-zoom-in");
+  await page.keyboard.press("Tab");
+  await zoomIn.focus();
+  await expect(zoomIn).toHaveCSS("outline-color", "rgb(138, 54, 8)");
 });
 
 test("homepage features Sankalpas beside the calendar and navigation identifies the page", async ({ page }) => {

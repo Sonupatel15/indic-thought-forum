@@ -1,9 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import { AlertCircle, ArrowRight, CheckCircle2, LoaderCircle, LockKeyhole } from "lucide-react";
-import { useSearchParams } from "next/navigation";
 import { site, sankalpas } from "@/lib/site";
 import { sendSubmission, type Submission } from "@/lib/forms";
 
@@ -12,16 +11,30 @@ type Status = { type: "idle" | "pending" | "success" | "error"; message: string 
 
 const interestOptions = ["Events & collaboration", "General enquiry"];
 
+function subscribeToLocation(onChange: () => void) {
+  window.addEventListener("popstate", onChange);
+  return () => window.removeEventListener("popstate", onChange);
+}
+
+function getLocationSearch() {
+  return window.location.search;
+}
+
+function getServerLocationSearch() {
+  return "";
+}
+
 export function SubmissionForm({ kind }: { kind: FormKind }) {
   const isJoin = kind === "join";
   const formId = isJoin ? "contact-form" : "contribute-form";
   const prefix = isJoin ? "join" : "contribute";
-  const params = useSearchParams();
-  const requestedArea = params.get("area");
-  const initialArea = sankalpas.find(item => item.id === requestedArea)?.category ?? "";
   const [interest, setInterest] = useState("");
+  const [area, setArea] = useState<string | null>(null);
   const [customInterest, setCustomInterest] = useState("");
   const [status, setStatus] = useState<Status>({ type: "idle", message: "" });
+  const search = useSyncExternalStore(subscribeToLocation, getLocationSearch, getServerLocationSearch);
+  const requestedArea = sankalpas.find(item => item.id === new URLSearchParams(search).get("area"))?.category ?? "";
+  const selectedArea = area ?? requestedArea;
 
   function invalid() {
     setStatus({ type: "error", message: "Please complete all required fields and correct any invalid values." });
@@ -71,6 +84,7 @@ export function SubmissionForm({ kind }: { kind: FormKind }) {
       await sendSubmission(site.formsEndpoint, payload);
       form.reset();
       setInterest("");
+      setArea("");
       setCustomInterest("");
       setStatus({
         type: "success",
@@ -92,7 +106,7 @@ export function SubmissionForm({ kind }: { kind: FormKind }) {
     if (isJoin) {
       setInterest("");
       setCustomInterest("");
-    }
+    } else setArea("");
   }}>
     <h2 id={`${prefix}-form-title`}>{isJoin ? "Join the Community" : "Contribute to the Community"}</h2>
     <p>{isJoin ? "Tell us a little about yourself and how you would like to take part." : "Share the contribution area, availability, and skills you would like to bring."}</p>
@@ -110,7 +124,7 @@ export function SubmissionForm({ kind }: { kind: FormKind }) {
         {interest === "Other" && <div className="field"><label htmlFor="join-custom-interest">Please describe your interest {requiredMark}</label><input id="join-custom-interest" name="customInterest" value={customInterest} onChange={event => setCustomInterest(event.target.value)} minLength={2} maxLength={200} required /></div>}
         <div className="field field--full"><label htmlFor="join-message">Message <span>(optional)</span></label><textarea id="join-message" name="message" rows={4} placeholder="Anything else you would like us to know?" minLength={10} maxLength={3000} /></div>
       </> : <>
-        <div className="field"><label htmlFor="contribute-area">Area of contribution {requiredMark}</label><select id="contribute-area" name="area" defaultValue={initialArea} required><option value="" disabled>Select an area</option>{sankalpas.map(item => <option key={item.id} value={item.category}>{item.category}</option>)}{interestOptions.map(option => <option key={option} value={option}>{option}</option>)}</select></div>
+        <div className="field"><label htmlFor="contribute-area">Area of contribution {requiredMark}</label><select id="contribute-area" name="area" value={selectedArea} onChange={event => setArea(event.target.value)} required><option value="" disabled>Select an area</option>{sankalpas.map(item => <option key={item.id} value={item.category}>{item.category}</option>)}{interestOptions.map(option => <option key={option} value={option}>{option}</option>)}</select></div>
         <div className="field"><label htmlFor="contribute-availability">Availability {requiredMark}</label><input id="contribute-availability" name="availability" placeholder="Days, times, or a schedule that works for you" minLength={2} maxLength={200} required /></div>
         <div className="field field--full"><label htmlFor="contribute-message">How would you like to contribute? {requiredMark}</label><textarea id="contribute-message" name="message" rows={5} placeholder="Share your interests, skills, or contribution idea..." minLength={10} maxLength={3000} required /><small>A minimum of 10 characters. Please do not include sensitive information.</small></div>
       </>}

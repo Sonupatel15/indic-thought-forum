@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { events } from "@/lib/site";
+import { events, type ForumEvent } from "@/lib/site";
 import { formatEventTime, getEventSchedule } from "@/lib/schedule";
 import { useEventDate } from "@/lib/use-event-date";
 import { useIncrementalList } from "@/lib/use-incremental-list";
@@ -29,20 +29,20 @@ function daysInMonth(year: number, month: number): number {
 function MonthUpcomingEvents({ today }: { today: string }) {
   const monthPrefix = today.slice(0, 7);
   const upcoming = getEventSchedule(events, today).upcoming.filter(event => event.date.startsWith(monthPrefix));
-  const { visibleItems, hasMore, showMore } = useIncrementalList(upcoming, 3);
+  const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList<ForumEvent, HTMLOListElement>(upcoming, 3);
   const monthLabel = `${months[Number(today.slice(5, 7)) - 1]} ${today.slice(0, 4)}`;
 
   return <aside className="calendar-upcoming" aria-label={`Upcoming events in ${monthLabel}`}>
     <h3>Upcoming this month</h3>
     <p className="calendar-upcoming-month">{monthLabel} · IST</p>
     {upcoming.length === 0 ? <p className="calendar-empty" role="status">No upcoming events this month.</p> : <>
-      <ol className="calendar-upcoming-list" id="calendar-upcoming-list">{visibleItems.map(event => <li key={event.id}>
+      <ol ref={gridRef} className="calendar-upcoming-list" id="calendar-upcoming-list">{visibleItems.map(event => <li key={event.id}>
         <strong>{event.title}</strong>
         <time dateTime={event.date}>{event.displayDate} · {formatEventTime(event)} IST</time>
         <span>{event.speaker}</span>
         <span>{event.venue}</span>
       </li>)}</ol>
-      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="calendar-upcoming-list" onClick={showMore}>Load more this month</button></div>}
+      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="calendar-upcoming-list" onClick={event => showMore(event.currentTarget)}>Load more this month</button></div>}
     </>}
   </aside>;
 }

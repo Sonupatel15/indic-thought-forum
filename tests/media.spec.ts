@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { test, expect } from "@playwright/test";
-import { getYouTubeEmbedUrl, homeFeaturedPodcast, podcasts, socialPosts, socialProfiles } from "../src/lib/media";
+import { getYouTubeEmbedUrl, homeFeaturedPodcast, podcasts, socialProfiles } from "../src/lib/media";
 import { events } from "../src/lib/site";
 
 test("media previews make no external requests before a visitor opts in", async ({ page }) => {
@@ -70,25 +70,34 @@ test("every podcast retains a usable YouTube link even when embedding is unavail
   await expect(page.locator("#podcasts")).not.toContainText("Choosing Load connects to YouTube/Google");
 });
 
-test("verified social channels and five Instagram posts link to their original source", async ({ page }) => {
+test("loading more events and podcasts moves keyboard focus to the first newly shown item", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto("/events/");
+  await page.waitForLoadState("networkidle");
+  const eventsButton = page.getByRole("button", { name: "Load more events" });
+  await eventsButton.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#event-list .event-card").nth(3)).toBeFocused();
+
+  const podcastsButton = page.getByRole("button", { name: "Load more podcasts" });
+  await podcastsButton.focus();
+  await page.keyboard.press("Enter");
+  await expect(page.locator("#podcast-archive .podcast-card").nth(2)).toBeFocused();
+});
+
+test("official social links use their profiles and the Instagram action matches its visible name", async ({ page }) => {
   await page.goto("/events/#posts");
-  const columns = await page.locator("#instagram-posts").evaluate(grid => getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length);
-  const initialCount = Math.ceil(3 / columns) * columns;
-  await expect(page.locator("#posts .social-post")).toHaveCount(initialCount);
-  await expect(page.locator("#posts a[href*='instagram.com']")).toHaveCount(initialCount);
-  await page.getByRole("button", { name: "Load more posts" }).click();
-  await expect(page.locator("#posts .social-post")).toHaveCount(5);
-  await expect(page.locator("#posts a[href*='instagram.com']")).toHaveCount(5);
-  await expect(page.locator("#posts")).not.toContainText("Queen Tara");
-  await expect(page.locator("#posts a[href*='youtube.com']")).toHaveCount(0);
+  const instagramProfile = socialProfiles.find(profile => profile.platform === "Instagram");
+  if (!instagramProfile) throw new Error("The official Instagram profile must be configured.");
+  await expect(page.locator("#posts .instagram-profile-link")).toHaveCount(1);
+  const instagramLink = page.locator("#posts a[href*='instagram.com']");
+  await expect(instagramLink).toHaveAttribute("href", instagramProfile.url);
+  await expect(instagramLink).toHaveAccessibleName(/Visit Instagram/);
+  await expect(instagramLink).not.toHaveAttribute("aria-label", /./);
+  await expect(page.getByRole("button", { name: "Load more posts" })).toHaveCount(0);
   await page.locator("#social-channels").scrollIntoViewIfNeeded();
   for (const profile of socialProfiles) {
     await expect(page.locator(`.social-channel-grid a[href="${profile.url}"]`)).toHaveCount(1);
-  }
-  for (const post of socialPosts) {
-    const link = page.locator(`#posts .social-post a[href="${post.url}"]`);
-    await expect(link).toHaveCount(1);
-    await expect(link).toHaveAttribute("rel", "noopener noreferrer");
   }
   await expect(page.locator(".media-privacy-note")).toHaveCount(0);
 });
@@ -116,10 +125,10 @@ test("Updates keeps the initial media cards and load-more controls within narrow
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Updates at ${width}px`).toBe(true);
     await expect(page.locator("#podcasts .youtube-player")).toHaveCount(3);
     await expect(page.locator("#events .event-card")).toHaveCount(width > 480 && width <= 760 ? 4 : 3);
-    await expect(page.locator("#posts .social-post")).toHaveCount(width > 760 ? 4 : 3);
+    await expect(page.locator("#posts .instagram-profile-link")).toHaveCount(1);
     await expect(page.getByRole("button", { name: "Load more podcasts" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Load more events" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Load more posts" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Load more posts" })).toHaveCount(0);
   }
 });
 
@@ -130,7 +139,6 @@ test("Updates load-more fills complete rows until each archive is exhausted in o
     const lists = [
       { selector: "#podcast-archive", child: ".podcast-card", initial: 2, total: podcasts.length - 1, columns: width > 760 ? 2 : 1, button: "Load more podcasts" },
       { selector: "#event-list", child: ".event-card", initial: 3, total: events.length, columns: width > 760 ? 3 : width > 480 ? 2 : 1, button: "Load more events" },
-      { selector: "#instagram-posts", child: ".social-post", initial: 3, total: socialPosts.length, columns: width > 760 ? 2 : 1, button: "Load more posts" },
     ];
     for (const list of lists) {
       const grid = page.locator(list.selector);
@@ -148,7 +156,7 @@ test("Updates load-more fills complete rows until each archive is exhausted in o
     }
     expect(await page.locator("#podcast-archive .youtube-controls a").evaluateAll(links => links.map(link => link.getAttribute("href")))).toEqual(podcasts.slice(1).map(episode => `https://www.youtube.com/watch?v=${episode.videoId}`));
     expect(await page.locator("#event-list time").evaluateAll(times => times.map(time => time.getAttribute("datetime")))).toEqual([...events].sort((a, b) => b.date.localeCompare(a.date)).map(event => event.date));
-    expect(await page.locator("#instagram-posts .text-link").evaluateAll(links => links.map(link => link.getAttribute("href")))).toEqual(socialPosts.map(post => post.url));
+    await expect(page.locator("#posts .instagram-profile-link")).toHaveCount(1);
     await expect(page.locator(".featured-podcast")).toHaveCount(1);
   }
 });
@@ -165,25 +173,25 @@ test("Updates resize rounds upward without hiding loaded items or reconnecting a
   await expect(page.frameLocator("iframe").getByRole("button", { name: "Play video" })).toBeVisible();
   await page.getByRole("button", { name: "Load more podcasts" }).click();
   await expect(page.locator(".podcast-card")).toHaveCount(5);
-  for (const [width, eventCount, postCount, podcastCount] of [[600, 4, 3, 5], [1440, 6, 4, 6], [393, 6, 4, 6]]) {
+  for (const [width, eventCount, podcastCount] of [[600, 4, 5], [1440, 6, 6], [393, 6, 6]]) {
     await page.setViewportSize({ width, height: 900 });
     await expect(page.locator("#events .event-card")).toHaveCount(eventCount);
-    await expect(page.locator("#posts .social-post")).toHaveCount(postCount);
+    await expect(page.locator("#posts .instagram-profile-link")).toHaveCount(1);
     await expect(page.locator(".podcast-card")).toHaveCount(podcastCount);
     await expect(page.frameLocator("iframe").getByRole("button", { name: "Play video" })).toBeVisible();
   }
-  for (const name of ["Load more events", "Load more posts", "Load more podcasts"]) {
+  for (const name of ["Load more events", "Load more podcasts"]) {
     await page.getByRole("button", { name, exact: true }).click();
     await expect(page.getByRole("button", { name, exact: true })).toHaveCount(0);
   }
   await page.setViewportSize({ width: 600, height: 900 });
   await expect(page.locator("#events .event-card")).toHaveCount(events.length);
-  await expect(page.locator("#posts .social-post")).toHaveCount(socialPosts.length);
+  await expect(page.locator("#posts .instagram-profile-link")).toHaveCount(1);
   await expect(page.locator(".podcast-card")).toHaveCount(podcasts.length - 1);
   expect(embeds).toHaveLength(1);
 });
 
-test("Updates posters, Posts, social icons and section gaps use the reduced responsive scale", async ({ page }) => {
+test("Updates posters, social links and section gaps use the responsive scale", async ({ page }) => {
   for (const width of [320, 393, 480, 600, 760, 761, 1024, 1180, 1200, 1440, 3840]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/events/");
@@ -213,9 +221,7 @@ test("Updates posters, Posts, social icons and section gaps use the reduced resp
         posterRatio: image.clientWidth / image.clientHeight,
         naturalRatio: image.naturalWidth / image.naturalHeight,
         posterFit: getComputedStyle(image).objectFit,
-        postGridWidth: box("#instagram-posts").width,
-        postWidth: box(".social-post").width,
-        postVisualHeight: box(".social-post-visual").height,
+        instagramCalloutWidth: box("#posts .instagram-profile-link").width,
         iconBox: box(".social-channel-card .icon-box").width,
         footerIconBox: box(".footer-about .icon-box").width,
         glyph: box(".social-channel-card .icon-box svg").width,
@@ -231,9 +237,7 @@ test("Updates posters, Posts, social icons and section gaps use the reduced resp
     expect(metrics.posterWidth / metrics.posterCardWidth).toBeLessThanOrEqual(.801);
     expect(metrics.posterRatio).toBeCloseTo(metrics.naturalRatio, 2);
     expect(metrics.posterFit).toBe("contain");
-    expect(metrics.postGridWidth).toBeLessThanOrEqual(1040);
-    expect(metrics.postWidth).toBeLessThanOrEqual(520.5);
-    expect(metrics.postVisualHeight).toBe(width > 760 ? 230 : 200);
+    expect(metrics.instagramCalloutWidth).toBeLessThanOrEqual(760);
     expect(metrics.iconBox).toBe(25);
     expect(metrics.iconBox).toBe(metrics.footerIconBox);
     expect(metrics.glyph).toBe(17);

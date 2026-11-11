@@ -6,7 +6,7 @@ import { formatEventTime } from "@/lib/schedule";
 export function CalendarFeaturedEvent({ event }: { event: ForumEvent }) {
   return <article className="calendar-featured-event" aria-labelledby="calendar-featured-title">
     <div className="calendar-featured-poster">
-      <Image src={event.previewImage} alt={`Original event poster: ${event.title}`} width={event.imageWidth} height={event.imageHeight} sizes="(max-width: 760px) 90vw, 280px" />
+      <Image src={event.previewImage} alt={`Original event poster: ${event.title}`} width={event.imageWidth} height={event.imageHeight} sizes="(max-width: 760px) 230px, 280px" loading="eager" />
     </div>
     <div className="calendar-featured-copy">
       <span className="eyebrow">Featured gathering</span>

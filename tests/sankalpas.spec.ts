@@ -49,7 +49,10 @@ test("Sankalpa tracker contains exactly seven columns and the twenty approved so
   await expect(table.locator("tbody tr")).toHaveCount(20);
   const actual = await table.locator("tbody tr").evaluateAll(rows => rows.map(row => [
     Number(row.id.replace("sankalpa-", "")),
-    ...Array.from(row.querySelectorAll("td")).slice(0, 6).map(cell => cell.textContent?.trim()),
+    ...Array.from(row.querySelectorAll("td")).slice(0, 6).map((cell, index) => {
+      const desktopTitle = index === 3 ? cell.querySelector(".sankalpa-desktop-title") : null;
+      return (desktopTitle ?? cell).textContent?.trim();
+    }),
   ]));
   expect(actual).toEqual(expectedRows);
   for (const row of await table.locator("tbody tr").all()) await expect(row.locator("td")).toHaveCount(7);
@@ -73,20 +76,23 @@ test("notes are intentionally empty and do not imply an editing or saving servic
   await page.goto("/sankalpas/");
   const table = page.getByRole("table");
   await expect(table.locator(".sankalpa-notes-cell")).toHaveCount(20);
+  await expect(table.locator(".sankalpa-notes-cell").first()).toContainText("No notes yet");
   await expect(table.locator(".sankalpa-latest-note, .sankalpa-note-history")).toHaveCount(0);
   await expect(table.getByRole("button", { name: /add note/i })).toHaveCount(0);
   await expect(table.locator("input, textarea")).toHaveCount(0);
 });
 
 test("future notes show only the latest update initially with all earlier notes in the dropdown", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/sankalpas/");
   const html = renderToStaticMarkup(createElement(SankalpaTable, { entries: [{ ...sankalpaRecords[0], notes: noteFixture }] }));
   await page.locator(".sankalpa-table-wrap").evaluate((element, markup) => { element.outerHTML = markup; }, html);
   const table = page.getByRole("table");
-  await expect(table.locator(".sankalpa-latest-note p")).toHaveText("Latest approved update.");
-  await expect(table.locator(".sankalpa-latest-note time")).toHaveAttribute("datetime", "2026-11-01T10:00:00.000Z");
-  await expect(table.locator(".sankalpa-latest-note time")).toContainText("IST");
-  const history = table.locator(".sankalpa-note-history");
+  const desktopNotes = table.locator(".sankalpa-notes-cell");
+  await expect(desktopNotes.locator(".sankalpa-latest-note p")).toHaveText("Latest approved update.");
+  await expect(desktopNotes.locator(".sankalpa-latest-note time")).toHaveAttribute("datetime", "2026-11-01T10:00:00.000Z");
+  await expect(desktopNotes.locator(".sankalpa-latest-note time")).toContainText("IST");
+  const history = desktopNotes.locator(".sankalpa-note-history");
   const toggle = history.locator("summary");
   await expect(toggle).toHaveText("Previous notes (2)");
   await expect(history.locator("li").first()).not.toBeVisible();
@@ -99,18 +105,20 @@ test("future notes show only the latest update initially with all earlier notes 
   await page.keyboard.press("Enter");
   await expect(history).not.toHaveAttribute("open", "");
   await expect(history.locator("li").first()).not.toBeVisible();
-  await expect(table.locator(".sankalpa-latest-note")).toBeVisible();
+  await expect(desktopNotes.locator(".sankalpa-latest-note")).toBeVisible();
   expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual({ local: 0, session: 0 });
 });
 
 test("a single note has no empty history dropdown and note text is rendered as plain text", async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto("/sankalpas/");
   const note = { id: "only", updatedAt: "2026-11-01T10:00:00.000Z", text: "<strong>Approved note</strong>\nSecond line." };
   const html = renderToStaticMarkup(createElement(SankalpaTable, { entries: [{ ...sankalpaRecords[0], notes: [note] }] }));
   await page.locator(".sankalpa-table-wrap").evaluate((element, markup) => { element.outerHTML = markup; }, html);
-  await expect(page.locator(".sankalpa-latest-note p")).toHaveText(note.text);
-  await expect(page.locator(".sankalpa-latest-note strong")).toHaveCount(0);
-  await expect(page.locator(".sankalpa-note-history")).toHaveCount(0);
+  const desktopNotes = page.locator(".sankalpa-notes-cell");
+  await expect(desktopNotes.locator(".sankalpa-latest-note p")).toHaveText(note.text);
+  await expect(desktopNotes.locator(".sankalpa-latest-note strong")).toHaveCount(0);
+  await expect(desktopNotes.locator(".sankalpa-note-history")).toHaveCount(0);
 });
 
 test("Sankalpa tracker and populated note history reflow without overflow and pass automated accessibility checks", async ({ page }) => {
@@ -120,20 +128,29 @@ test("Sankalpa tracker and populated note history reflow without overflow and pa
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Sankalpa table at ${width}px`).toBe(true);
     const html = renderToStaticMarkup(createElement(SankalpaTable, { entries: [{ ...sankalpaRecords[0], notes: noteFixture }] }));
     await page.locator(".sankalpa-table-wrap").evaluate((element, markup) => { element.outerHTML = markup; }, html);
-    await page.locator(".sankalpa-note-history").evaluate(element => element.setAttribute("open", ""));
+    if (width <= 1024) await page.locator(".sankalpa-mobile-details summary").first().click();
+    const history = width <= 1024
+      ? page.locator(".sankalpa-mobile-details .sankalpa-note-history").first()
+      : page.locator(".sankalpa-notes-cell .sankalpa-note-history").first();
+    await history.evaluate(element => element.setAttribute("open", ""));
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Note history at ${width}px`).toBe(true);
     const cells = await page.locator(".sankalpa-table tbody tr").first().locator("td").evaluateAll(items => items.map(item => {
       const bounds = item.getBoundingClientRect();
       return { x: bounds.x, right: bounds.right, y: bounds.y, bottom: bounds.bottom };
     }));
     if (width <= 1024) {
-      for (let index = 1; index < cells.length; index++) {
-        expect(cells[index].x).toBe(cells[0].x);
-        expect(cells[index].right).toBe(cells[0].right);
-        expect(cells[index].y).toBeGreaterThanOrEqual(cells[index - 1].bottom - 0.1);
+      expect(cells[3].bottom).toBeGreaterThan(cells[3].y);
+      for (const [index, cell] of cells.entries()) {
+        if (index !== 3) expect(cell.bottom).toBe(cell.y);
       }
+      await expect(page.locator(".sankalpa-mobile-details").first()).toContainText("Talk date");
+      await expect(page.locator(".sankalpa-mobile-details").first()).toContainText("Speaker");
     } else {
       for (const cell of cells) expect(cell.y).toBe(cells[0].y);
+    }
+    if (width === 320) {
+      const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();
+      expect(result.violations.map(item => ({ id: item.id, targets: item.nodes.map(node => node.target) }))).toEqual([]);
     }
   }
   const result = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa"]).analyze();

@@ -101,31 +101,3 @@ export const podcasts: readonly PodcastEpisode[] = [
 ];
 
 export const homeFeaturedPodcast = shivSastry;
-
-export const socialPosts = [
-  {
-    id: "instagram-dfcL3sFiMKi",
-    title: "Instagram post 1",
-    url: "https://www.instagram.com/indicthoughtforum/p/DfcL3sFiMKi/",
-  },
-  {
-    id: "instagram-DaxmfnmE2o3",
-    title: "Instagram post 2",
-    url: "https://www.instagram.com/indicthoughtforum/p/DaxmfnmE2o3/",
-  },
-  {
-    id: "instagram-DZ27VeuCC4k",
-    title: "Instagram post 3",
-    url: "https://www.instagram.com/indicthoughtforum/p/DZ27VeuCC4k/",
-  },
-  {
-    id: "instagram-DZu3_bzGajl",
-    title: "Instagram post 4",
-    url: "https://www.instagram.com/indicthoughtforum/p/DZu3_bzGajl/",
-  },
-  {
-    id: "instagram-DW5XbcbmapO",
-    title: "Instagram post 5",
-    url: "https://www.instagram.com/indicthoughtforum/p/DW5XbcbmapO/",
-  },
-] as const;

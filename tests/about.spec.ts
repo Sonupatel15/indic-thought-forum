@@ -154,8 +154,8 @@ test("About heroes, reading columns and continuing quote panels reflow from phon
       expect(metrics.eyebrowContrast).toBeGreaterThanOrEqual(4.5);
       expect(metrics.quoteContrast).toBeGreaterThanOrEqual(4.5);
       expect(metrics.explanationContrast).toBeGreaterThanOrEqual(4.5);
-      expect(metrics.ctaFooterGap).toBe(40);
-      expect(metrics.accentWidth).toBe(4);
+      expect(metrics.ctaFooterGap).toBeCloseTo(40, 3);
+      expect(metrics.accentWidth).toBe(1);
       expect(metrics.textAlign).toBe("center");
       expect(metrics.quoteFont).toContain("Georgia");
       expect(metrics.quoteWrapping).toBe("balance");

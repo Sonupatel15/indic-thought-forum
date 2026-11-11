@@ -1,7 +1,7 @@
 "use client";
 
-import { ArrowUpRight, Camera, MessageCircle, MessagesSquare, Play, Radio, X } from "lucide-react";
-import { homeFeaturedPodcast, podcasts, socialPosts, socialProfiles, type PodcastEpisode } from "@/lib/media";
+import { ArrowUpRight, AtSign, Camera, MessageCircle, Play, Radio, UsersRound } from "lucide-react";
+import { homeFeaturedPodcast, podcasts, socialProfiles, type PodcastEpisode } from "@/lib/media";
 import { useIncrementalList } from "@/lib/use-incremental-list";
 import { YouTubePlayer } from "./youtube-player";
 
@@ -16,23 +16,21 @@ export function MorePodcasts({ episodes = podcasts.slice(1), showPreviewDetails 
   const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(episodes, 2, 3, true);
   return <>
     <div ref={gridRef} className="podcast-grid" id="podcast-archive">{visibleItems.map(episode => <article className="podcast-card" key={episode.id}><YouTubePlayer episode={episode} showPreviewDetails={showPreviewDetails} /><div className="podcast-card-copy"><span className="eyebrow">{episode.topic}</span><h3>{episode.title}</h3>{episode.guest && <p className="podcast-guest">{episode.guest}</p>}{episode.description && <p>{episode.description}</p>}</div></article>)}</div>
-    {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="podcast-archive" onClick={showMore}>Load more podcasts</button></div>}
+    {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="podcast-archive" onClick={event => showMore(event.currentTarget)}>Load more podcasts</button></div>}
   </>;
 }
 
 export function SocialPosts() {
-  const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(socialPosts, 3, 3, true);
-  return <>
-    <div ref={gridRef} className="social-post-grid" id="instagram-posts">{visibleItems.map(post => <article className="social-post" key={post.id}>
-      <div className="social-post-visual social-post-visual--text"><Camera size={45} strokeWidth={1} aria-hidden="true" /><span>Instagram</span><small>Indic Thought Forum</small></div>
-      <div className="social-post-copy"><span className="eyebrow">Instagram</span><h3>{post.title}</h3><p>View the original post from Indic Thought Forum on Instagram.</p><a className="text-link" href={post.url} target="_blank" rel="noopener noreferrer" aria-label={`View ${post.title} on Instagram (opens in a new tab)`}>View on Instagram <ArrowUpRight size={17} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a></div>
-    </article>)}</div>
-    {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="instagram-posts" onClick={showMore}>Load more posts</button></div>}
-  </>;
+  const profile = socialProfiles.find(item => item.platform === "Instagram");
+  if (!profile) throw new Error("An Instagram profile is required for the social post link.");
+  return <div className="instagram-profile-link">
+    <div><Camera size={28} aria-hidden="true" /><div><h3>Follow ITF on Instagram</h3><p>{profile.description}</p></div></div>
+    <a className="button button--small" href={profile.url} target="_blank" rel="noopener noreferrer">Visit Instagram <ArrowUpRight size={16} aria-hidden="true" /><span className="sr-only"> (opens in a new tab)</span></a>
+  </div>;
 }
 
 export function SocialChannels({ compact = false }: { compact?: boolean }) {
-  const icons = { YouTube: Play, Instagram: Camera, Facebook: MessagesSquare, "X (Twitter)": X, WhatsApp: MessageCircle };
+  const icons = { YouTube: Play, Instagram: Camera, Facebook: UsersRound, "X (Twitter)": AtSign, WhatsApp: MessageCircle };
   return <div className={compact ? "social-channel-links" : "social-channel-grid"}>{socialProfiles.map(profile => {
     const Icon = icons[profile.platform];
     return <a className={compact ? "social-channel-link" : "social-channel-card"} key={profile.platform} href={profile.url} target="_blank" rel="noopener noreferrer">

@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "next dev --hostname 127.0.0.1 --port 3000",
     "build": "next build && node scripts/finalize-export.mjs",
-    "preview": "http-server out -p 3000 -a 127.0.0.1 -c-1",
+    "preview": "http-server out -p 4173 -a 127.0.0.1 -c-1",
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "playwright test",
@@ -17,6 +17,7 @@
     "assets:prepare": "node scripts/prepare-assets.mjs",
     "assets:media": "node scripts/prepare-media.mjs",
     "assets:posters": "node scripts/prepare-event-posters.mjs",
+    "assets:gallery": "node scripts/prepare-gallery-variants.mjs",
     "assets:branding": "node scripts/prepare-branding.mjs",
     "measure:performance": "node scripts/measure-performance.mjs"
   },

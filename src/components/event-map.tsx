@@ -29,12 +29,12 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
   const locations = useMemo(() => eventMapLocations
     .map(location => ({ ...location, events: upcoming.filter(event => event.venue === location.venue) }))
     .filter(location => location.events.length > 0), [upcoming]);
-  const { visibleItems, hasMore, showMore } = useIncrementalList(upcoming, 3);
+  const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(upcoming, 3);
   const mapElement = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const markerRefs = useRef<Map<string, LeafletMarker>>(new Map());
   const [mapReady, setMapReady] = useState(false);
-  const [mapError, setMapError] = useState(false);
+  const [mapError, setMapError] = useState<"tiles" | "initialization" | null>(null);
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
 
   function selectEvent(eventId: string, venue: string) {
@@ -56,7 +56,7 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
     let map: LeafletMap | undefined;
     const markers = new Map<string, LeafletMarker>();
     setMapReady(false);
-    setMapError(false);
+    setMapError(null);
     setSelectedEventId(null);
     delete element.dataset.mapReady;
 
@@ -73,6 +73,8 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+      }).on("tileerror", () => {
+        if (!disposed) setMapError("tiles");
       }).addTo(map);
 
       const icon = L.divIcon({
@@ -124,7 +126,7 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
     }).catch(error => {
       if (disposed) return;
       console.error("The Bengaluru event map could not be initialized.", error);
-      setMapError(true);
+      setMapError("initialization");
     });
 
     return () => {
@@ -140,18 +142,20 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
     <div className="event-map-layout">
       <div className="event-map-frame">
         <div ref={mapElement} className="event-map-canvas" role="group" aria-label="Interactive OpenStreetMap of upcoming ITF event venues in Bengaluru" />
-        {mapError && <p className="event-map-error" role="status">The interactive map could not be loaded. Use the event links below to open a location map or directions.</p>}
+        {mapError && <p className="event-map-error" role="status">{mapError === "tiles" ? "The map background could not be loaded." : "The interactive map could not be loaded."} Use the event links to open a location map or directions.</p>}
+        <noscript><p className="event-map-error">The interactive map requires JavaScript. Use the event links to open a location map or directions.</p></noscript>
       </div>
-      <div className="event-map-events" id="event-map-events">
+      <div ref={gridRef} className="event-map-events" id="event-map-events">
         {visibleItems.map(event => {
           const location = locationsByVenue.get(event.venue);
           if (!location) throw new Error(`Missing verified map coordinates for event "${event.id}".`);
           return <article className={`event-map-event${selectedEventId === event.id ? " is-selected" : ""}`} key={event.id}>
-            <button type="button" className="event-map-select" aria-label={`Show ${event.title} on map`} aria-pressed={selectedEventId === event.id} disabled={!mapReady} onClick={() => selectEvent(event.id, event.venue)}>
+            <button type="button" className="event-map-select" aria-pressed={selectedEventId === event.id} disabled={!mapReady} onClick={() => selectEvent(event.id, event.venue)}>
               <strong>{event.title}</strong>
               <time dateTime={event.date}>{event.displayDate} · {formatEventTime(event)} IST</time>
               <span>{event.speaker}</span>
               <span>{event.venue}</span>
+              <span className="event-map-select-action">View venue on map</span>
             </button>
             <div className="event-map-links">
               <a href={locationMapUrl(location)} target="_blank" rel="noopener noreferrer">Open location map<span className="sr-only"> (opens in a new tab)</span></a>
@@ -161,7 +165,7 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
         })}
       </div>
       {upcoming.length === 0 && <p className="calendar-empty event-map-empty" role="status">No upcoming events have confirmed venues yet.</p>}
-      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-map-events" onClick={showMore}>Load more map events</button></div>}
+      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-map-events" onClick={event => showMore(event.currentTarget)}>Load more map events</button></div>}
     </div>
     <p className="event-map-attribution">Map data and tiles © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors<span className="sr-only"> (opens in a new tab)</span></a>, available under the Open Database License (ODbL).</p>
   </section>;

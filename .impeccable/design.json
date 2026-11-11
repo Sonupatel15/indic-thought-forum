@@ -1,0 +1,329 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-10T20:33:45+05:30",
+  "title": "Design System: Indic Thought Forum",
+  "extensions": {
+    "colorMeta": {
+      "heritage-cream": {
+        "role": "neutral",
+        "displayName": "Heritage Cream",
+        "canonical": "#f7f5ef",
+        "tonalRamp": ["oklch(15% 0.0029 91.5)", "oklch(25% 0.0054 91.5)", "oklch(35% 0.0074 91.5)", "oklch(45% 0.0082 91.5)", "oklch(55% 0.0082 91.5)", "oklch(65% 0.0074 91.5)", "oklch(80% 0.0045 91.5)", "oklch(95% 0.0010 91.5)"]
+      },
+      "clear-white": {
+        "role": "neutral",
+        "displayName": "Clear White",
+        "canonical": "#ffffff",
+        "tonalRamp": ["oklch(15% 0.0000 89.9)", "oklch(25% 0.0000 89.9)", "oklch(35% 0.0000 89.9)", "oklch(45% 0.0000 89.9)", "oklch(55% 0.0000 89.9)", "oklch(65% 0.0000 89.9)", "oklch(80% 0.0000 89.9)", "oklch(95% 0.0000 89.9)"]
+      },
+      "deep-blue-charcoal": {
+        "role": "neutral",
+        "displayName": "Deep Blue-Charcoal",
+        "canonical": "#182b36",
+        "tonalRamp": ["oklch(15% 0.0112 235.0)", "oklch(25% 0.0209 235.0)", "oklch(35% 0.0289 235.0)", "oklch(45% 0.0321 235.0)", "oklch(55% 0.0321 235.0)", "oklch(65% 0.0289 235.0)", "oklch(80% 0.0177 235.0)", "oklch(95% 0.0039 235.0)"]
+      },
+      "muted-slate": {
+        "role": "neutral",
+        "displayName": "Muted Slate",
+        "canonical": "#58656d",
+        "tonalRamp": ["oklch(15% 0.0072 234.9)", "oklch(25% 0.0133 234.9)", "oklch(35% 0.0184 234.9)", "oklch(45% 0.0204 234.9)", "oklch(55% 0.0204 234.9)", "oklch(65% 0.0184 234.9)", "oklch(80% 0.0112 234.9)", "oklch(95% 0.0025 234.9)"]
+      },
+      "saffron-orange": {
+        "role": "primary",
+        "displayName": "Saffron Orange",
+        "canonical": "#e97121",
+        "tonalRamp": ["oklch(15% 0.0405 48.5)", "oklch(25% 0.0675 48.5)", "oklch(35% 0.0945 48.5)", "oklch(45% 0.1216 48.5)", "oklch(55% 0.1486 48.5)", "oklch(65% 0.1538 48.5)", "oklch(80% 0.0940 48.5)", "oklch(95% 0.0205 48.5)"]
+      },
+      "burnt-saffron": {
+        "role": "secondary",
+        "displayName": "Burnt Saffron",
+        "canonical": "#a94309",
+        "tonalRamp": ["oklch(15% 0.0442 43.3)", "oklch(25% 0.0736 43.3)", "oklch(35% 0.1031 43.3)", "oklch(45% 0.1326 43.3)", "oklch(55% 0.1471 43.3)", "oklch(65% 0.1324 43.3)", "oklch(80% 0.0809 43.3)", "oklch(95% 0.0177 43.3)"]
+      },
+      "warm-stone": {
+        "role": "neutral",
+        "displayName": "Warm Stone",
+        "canonical": "#dedfd8",
+        "tonalRamp": ["oklch(15% 0.0033 113.2)", "oklch(25% 0.0062 113.2)", "oklch(35% 0.0085 113.2)", "oklch(45% 0.0095 113.2)", "oklch(55% 0.0095 113.2)", "oklch(65% 0.0085 113.2)", "oklch(80% 0.0052 113.2)", "oklch(95% 0.0011 113.2)"]
+      },
+      "sandstone": {
+        "role": "neutral",
+        "displayName": "Sandstone",
+        "canonical": "#eeeae1",
+        "tonalRamp": ["oklch(15% 0.0045 86.8)", "oklch(25% 0.0083 86.8)", "oklch(35% 0.0115 86.8)", "oklch(45% 0.0128 86.8)", "oklch(55% 0.0128 86.8)", "oklch(65% 0.0115 86.8)", "oklch(80% 0.0070 86.8)", "oklch(95% 0.0015 86.8)"]
+      },
+      "pale-stone": {
+        "role": "neutral",
+        "displayName": "Pale Stone",
+        "canonical": "#eeece5",
+        "tonalRamp": ["oklch(15% 0.0034 93.6)", "oklch(25% 0.0062 93.6)", "oklch(35% 0.0086 93.6)", "oklch(45% 0.0096 93.6)", "oklch(55% 0.0096 93.6)", "oklch(65% 0.0086 93.6)", "oklch(80% 0.0053 93.6)", "oklch(95% 0.0011 93.6)"]
+      },
+      "soft-ivory": {
+        "role": "neutral",
+        "displayName": "Soft Ivory",
+        "canonical": "#fbfaf6",
+        "tonalRamp": ["oklch(15% 0.0019 95.1)", "oklch(25% 0.0035 95.1)", "oklch(35% 0.0048 95.1)", "oklch(45% 0.0054 95.1)", "oklch(55% 0.0054 95.1)", "oklch(65% 0.0048 95.1)", "oklch(80% 0.0030 95.1)", "oklch(95% 0.0006 95.1)"]
+      },
+      "raised-porcelain": {
+        "role": "neutral",
+        "displayName": "Raised Porcelain",
+        "canonical": "#fdfcf9",
+        "tonalRamp": ["oklch(15% 0.0014 91.4)", "oklch(25% 0.0027 91.4)", "oklch(35% 0.0037 91.4)", "oklch(45% 0.0041 91.4)", "oklch(55% 0.0041 91.4)", "oklch(65% 0.0037 91.4)", "oklch(80% 0.0023 91.4)", "oklch(95% 0.0005 91.4)"]
+      },
+      "weathered-slate": {
+        "role": "neutral",
+        "displayName": "Weathered Slate",
+        "canonical": "#87908c",
+        "tonalRamp": ["oklch(15% 0.0042 167.6)", "oklch(25% 0.0078 167.6)", "oklch(35% 0.0108 167.6)", "oklch(45% 0.0120 167.6)", "oklch(55% 0.0120 167.6)", "oklch(65% 0.0108 167.6)", "oklch(80% 0.0066 167.6)", "oklch(95% 0.0014 167.6)"]
+      },
+      "dark-terracotta": {
+        "role": "neutral",
+        "displayName": "Dark Terracotta",
+        "canonical": "#8a3608",
+        "tonalRamp": ["oklch(15% 0.0440 43.3)", "oklch(25% 0.0737 43.3)", "oklch(35% 0.1031 43.3)", "oklch(45% 0.1258 43.3)", "oklch(55% 0.1258 43.3)", "oklch(65% 0.1132 43.3)", "oklch(80% 0.0692 43.3)", "oklch(95% 0.0151 43.3)"]
+      },
+      "pale-saffron": {
+        "role": "neutral",
+        "displayName": "Pale Saffron",
+        "canonical": "#ffcf94",
+        "tonalRamp": ["oklch(15% 0.0321 71.9)", "oklch(25% 0.0536 71.9)", "oklch(35% 0.0750 71.9)", "oklch(45% 0.0927 71.9)", "oklch(55% 0.0927 71.9)", "oklch(65% 0.0834 71.9)", "oklch(80% 0.0510 71.9)", "oklch(95% 0.0111 71.9)"]
+      },
+      "heritage-navy": {
+        "role": "tertiary",
+        "displayName": "Heritage Navy",
+        "canonical": "#162d3a",
+        "tonalRamp": ["oklch(15% 0.0132 235.0)", "oklch(25% 0.0244 235.0)", "oklch(35% 0.0339 235.0)", "oklch(45% 0.0376 235.0)", "oklch(55% 0.0376 235.0)", "oklch(65% 0.0339 235.0)", "oklch(80% 0.0207 235.0)", "oklch(95% 0.0045 235.0)"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Large hero headlines over the supplied heritage imagery."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Page and section headings."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card and subsection titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "General reading and supporting content."
+      },
+      "lead": {
+        "displayName": "Lead",
+        "purpose": "Introductory copy with extra emphasis."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Uppercase eyebrows and short category labels."
+      },
+      "button": {
+        "displayName": "Button",
+        "purpose": "Primary action labels."
+      },
+      "button-small": {
+        "displayName": "Button Small",
+        "purpose": "Compact navigation and secondary action labels."
+      },
+      "filter": {
+        "displayName": "Filter",
+        "purpose": "Quiet, unselected filter controls."
+      },
+      "navigation": {
+        "displayName": "Navigation",
+        "purpose": "Primary route links."
+      },
+      "serif-accent": {
+        "displayName": "Serif Accent",
+        "purpose": "Wordmark and occasional editorial quotation."
+      }
+    },
+    "shadows": [
+      {
+        "name": "mobile-nav-ambient",
+        "value": "0 16px 20px #13263310",
+        "purpose": "Soft separation beneath the open mobile navigation panel."
+      },
+      {
+        "name": "media-play-halo",
+        "value": "0 0 0 8px #fffaf027",
+        "purpose": "A subtle ring around the video play control."
+      },
+      {
+        "name": "map-marker-soft",
+        "value": "0 1px 5px #172a354d",
+        "purpose": "Lightly separates a map marker from the map."
+      }
+    ],
+    "motion": [
+      {
+        "name": "control-transition",
+        "value": "0.2s ease",
+        "purpose": "Short color, border, and transform transitions on interactive controls."
+      },
+      {
+        "name": "media-image-hover",
+        "value": "0.4s ease",
+        "purpose": "Gentle image scale transition in the gallery."
+      },
+      {
+        "name": "reduced-motion",
+        "value": "prefers-reduced-motion: reduce",
+        "purpose": "Disables animations and transitions and turns off smooth scrolling."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "wide-hero",
+        "value": "1500px",
+        "purpose": "Expands the hero on wide viewports."
+      },
+      {
+        "name": "compact-container",
+        "value": "1180px",
+        "purpose": "Tightens container gutters and section rhythm."
+      },
+      {
+        "name": "sankalpa-reflow",
+        "value": "1024px",
+        "purpose": "Changes the Sankalpa table into expandable mobile details."
+      },
+      {
+        "name": "mobile-navigation",
+        "value": "980px",
+        "purpose": "Switches the horizontal navigation to a menu."
+      },
+      {
+        "name": "single-column",
+        "value": "760px",
+        "purpose": "Stacks the principal grids and reduces page gutters."
+      },
+      {
+        "name": "small-phone",
+        "value": "480px",
+        "purpose": "Further adjusts hero typography, grid density, and header spacing."
+      },
+      {
+        "name": "narrow-phone",
+        "value": "360px",
+        "purpose": "Refines the brand and menu spacing at the narrowest tested widths."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Heritage Hero",
+      "kind": "custom",
+      "description": "Image-led homepage opening with an atmospheric dark overlay and a clear two-action hierarchy.",
+      "html": "<section class=\"ds-hero\"><div class=\"ds-hero-content\"><h1>Awakening Bharat.<br><span>Inspiring the future.</span></h1><p>A timeless civilization. A new generation of thinkers.</p><a class=\"ds-hero-action\" href=\"#\">Explore our Sankalpas <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></a></div></section>",
+      "css": ".ds-hero { display:flex; align-items:center; min-height:665px; padding:48px; color:#fff; background:linear-gradient(90deg,#0d202ce8 0%,#142430b8 36%,#13253435 77%),linear-gradient(0deg,#142735bd,transparent 40%),url(/images/heritage-hero.webp) center/cover; } .ds-hero-content { max-width:760px; } .ds-hero h1 { margin:0; color:#fff; font:600 clamp(2.5rem,5.25vw,4.75rem)/1.16 var(--font-manrope),sans-serif; letter-spacing:-.055em; } .ds-hero h1 span { color:#ffba78; } .ds-hero p { margin:25px 0 30px; color:#e1e4e3; } .ds-hero-action { display:inline-flex; align-items:center; gap:20px; min-height:51px; padding:13px 25px; border:1px solid var(--orange); border-radius:var(--radius); background:var(--orange); color:#142a36; font:800 .8125rem/1.5 var(--font-manrope),sans-serif; text-decoration:none; transition:background .2s,transform .2s,border-color .2s; } .ds-hero-action svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; } .ds-hero-action:hover { transform:translateY(-2px); background:#f58b3d; border-color:#f58b3d; } .ds-hero-action:focus-visible { outline:3px solid #ffcf94; outline-offset:4px; }"
+    },
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Confident saffron action used for the most important next step.",
+      "html": "<button class=\"ds-button\">Explore our Sankalpas <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M7 17 17 7M7 7h10v10\"/></svg></button>",
+      "css": ".ds-button { display:inline-flex; align-items:center; justify-content:center; gap:20px; min-height:51px; padding:13px 25px; border:1px solid var(--orange); border-radius:var(--radius); background:var(--orange); color:#142a36; font:800 .8125rem/1.5 var(--font-manrope),sans-serif; cursor:pointer; transition:background .2s,transform .2s,border-color .2s; } .ds-button svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; } .ds-button:hover:not(:disabled) { background:#f58b3d; border-color:#f58b3d; transform:translateY(-2px); } .ds-button:focus-visible { outline:3px solid var(--focus-ring); outline-offset:4px; } .ds-button:disabled { background:#d7d4cb; color:#565b5c; border-color:#d7d4cb; cursor:not-allowed; }"
+    },
+    {
+      "name": "Hero Outline Button",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Secondary action for use over the dark image-led hero.",
+      "html": "<a class=\"ds-button-outline\" href=\"#\">Join the Movement <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><path d=\"M5 12h14m-6-6 6 6-6 6\"/></svg></a>",
+      "css": ".ds-button-outline { display:inline-flex; align-items:center; justify-content:center; gap:14px; min-height:51px; padding:13px 25px; border:1px solid #ffffff75; border-radius:var(--radius); background:transparent; color:#fff; font:800 .8125rem/1.5 var(--font-manrope),sans-serif; text-decoration:none; transition:background .2s,border-color .2s,transform .2s; } .ds-button-outline svg { width:18px; height:18px; fill:none; stroke:currentColor; stroke-width:1.8; } .ds-button-outline:hover { background:#ffffff17; border-color:#fff; } .ds-button-outline:focus-visible { outline:3px solid var(--focus-ring-on-dark); outline-offset:4px; }"
+    },
+    {
+      "name": "Light Button",
+      "kind": "button",
+      "refersTo": "button-light",
+      "description": "Light action variant for dark navy sections.",
+      "html": "<button class=\"ds-button-light\">Find your way</button>",
+      "css": ".ds-button-light { display:inline-flex; align-items:center; justify-content:center; min-height:51px; padding:13px 25px; border:1px solid #fbf6ed; border-radius:var(--radius); background:#fbf6ed; color:var(--ink); font:800 .8125rem/1.5 var(--font-manrope),sans-serif; cursor:pointer; transition:background .2s,border-color .2s,transform .2s; } .ds-button-light:hover { background:#fff; border-color:#fff; } .ds-button-light:focus-visible { outline:3px solid var(--focus-ring-on-dark); outline-offset:4px; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "filter-chip",
+      "description": "Compact filter control with an unmistakable pressed state.",
+      "html": "<div class=\"ds-filter\"><button class=\"ds-chip\" aria-pressed=\"false\">All events</button><button class=\"ds-chip\" aria-pressed=\"true\">History</button></div>",
+      "css": ".ds-filter { display:flex; flex-wrap:wrap; gap:9px; } .ds-chip { min-height:44px; padding:9px 18px; border:1px solid var(--line); border-radius:var(--radius); background:transparent; color:var(--ink); font:600 .75rem/1.5 var(--font-manrope),sans-serif; cursor:pointer; } .ds-chip[aria-pressed=true] { border-color:var(--ink); background:var(--ink); color:#fff; } .ds-chip:hover:not([aria-pressed=true]) { border-color:#a28a69; } .ds-chip:focus-visible { outline:3px solid var(--focus-ring); outline-offset:3px; }"
+    },
+    {
+      "name": "Sankalpa Pathway Card",
+      "kind": "card",
+      "refersTo": "card-default",
+      "description": "Quiet, bordered surface for a compact idea or participation pathway.",
+      "html": "<article class=\"ds-card\"><span class=\"ds-eyebrow\">From intention to action</span><h3>Sankalpas</h3><p>Choose a meaningful commitment that reflects your interests and the change you want to contribute to.</p><a href=\"#\">Explore all Sankalpas</a></article>",
+      "css": ".ds-card { padding:30px; border:1px solid var(--line); border-radius:var(--radius); background:var(--surface-card); color:var(--ink); } .ds-eyebrow { display:block; margin-bottom:18px; color:var(--orange-dark); font:800 .75rem/1.6 var(--font-manrope),sans-serif; letter-spacing:.16em; text-transform:uppercase; } .ds-card h3 { margin:0 0 18px; color:var(--ink); font:600 1.375rem/1.25 var(--font-manrope),sans-serif; letter-spacing:-.035em; } .ds-card p { margin:0 0 22px; color:var(--muted); font:400 .875rem/1.8 var(--font-manrope),sans-serif; } .ds-card a { color:var(--ink); font:800 .875rem/1.7 var(--font-manrope),sans-serif; text-underline-offset:5px; } .ds-card a:hover { text-decoration:underline; } .ds-card a:focus-visible { outline:3px solid var(--focus-ring); outline-offset:4px; }"
+    },
+    {
+      "name": "Form Field",
+      "kind": "input",
+      "refersTo": "field-default",
+      "description": "Legible labeled field with a strong, high-contrast keyboard focus treatment.",
+      "html": "<div class=\"ds-field\"><label for=\"ds-name\">Full name <span aria-hidden=\"true\">*</span></label><input id=\"ds-name\" type=\"text\" placeholder=\"Your full name\"></div>",
+      "css": ".ds-field label { display:block; margin-bottom:8px; color:var(--ink); font:700 .75rem/1.6 var(--font-manrope),sans-serif; } .ds-field label span { color:var(--orange-dark); } .ds-field input { display:block; width:100%; min-height:45px; padding:12px 13px; border:1px solid var(--control-border); border-radius:var(--radius); background:#fff; color:var(--ink); font:400 1rem/1.6 var(--font-manrope),sans-serif; } .ds-field input::placeholder { color:#687379; } .ds-field input:focus-visible { outline:3px solid var(--focus-ring); outline-offset:2px; border-color:var(--focus-ring); }"
+    },
+    {
+      "name": "Primary Navigation",
+      "kind": "nav",
+      "refersTo": "navigation-active",
+      "description": "Compact route links with color and underline reinforcing the active page.",
+      "html": "<nav class=\"ds-nav\" aria-label=\"Main navigation\"><a href=\"#\">Home</a><a href=\"#\" aria-current=\"page\">About</a><a href=\"#\">Sankalpas</a></nav>",
+      "css": ".ds-nav { display:flex; align-items:center; gap:18px; } .ds-nav a { position:relative; padding:13px 0; color:var(--ink); font:600 .8125rem/1.5 var(--font-manrope),sans-serif; text-decoration:none; } .ds-nav a::after { position:absolute; right:0; bottom:5px; left:0; height:2px; background:var(--orange); content:\"\"; transform:scaleX(0); transform-origin:left; transition:transform .2s; } .ds-nav a:hover::after,.ds-nav a[aria-current=page]::after { transform:scaleX(1); } .ds-nav a[aria-current=page] { color:var(--orange-dark); } .ds-nav a:focus-visible { outline:3px solid var(--focus-ring); outline-offset:4px; }"
+    },
+    {
+      "name": "Icon Tile",
+      "kind": "custom",
+      "refersTo": "icon-tile",
+      "description": "Small warm tile that gives section icons a consistent, quiet home.",
+      "html": "<span class=\"ds-icon-tile\" aria-hidden=\"true\"><svg viewBox=\"0 0 24 24\"><path d=\"M12 3v18M3 12h18M5.64 5.64l12.72 12.72m0-12.72L5.64 18.36\"/></svg></span>",
+      "css": ".ds-icon-tile { display:inline-flex; width:55px; height:55px; align-items:center; justify-content:center; border-radius:var(--radius); background:#f2e7d8; color:var(--orange-dark); } .ds-icon-tile svg { width:27px; height:27px; fill:none; stroke:currentColor; stroke-width:1.8; stroke-linecap:round; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Living Heritage Forum",
+    "overview": "Indic Thought Forum's visual language makes heritage feel active and open to inquiry, rather than frozen as display. Warm paper surfaces, blue-charcoal typography, saffron actions, and the site's cultural imagery frame a contemporary space for learning, dialogue, and purposeful participation.\n\nThe system should help a broad, young audience learn and understand. Use serious, knowledge-led hierarchy, and present data clearly when the content calls for it; visualization should explain real information, not decorate the page or imply unsupported impact. Controls are clear and confident, while cards remain quiet and well structured.",
+    "keyCharacteristics": [
+      "Living heritage expressed through contemporary content and real community imagery.",
+      "Warm neutrals, a focused saffron accent, and deep navy anchors.",
+      "Clear, serious information hierarchy with purposeful calls to action.",
+      "Quiet, lightly bordered surfaces with restrained ambient depth."
+    ],
+    "rules": [
+      {
+        "name": "The Action Accent Rule",
+        "body": "Use bright saffron for primary actions and short signals; use the deeper accent for supporting text and icon details. Let neutral text and surfaces carry the reading experience.",
+        "section": "colors"
+      },
+      {
+        "name": "The One Sans Voice Rule",
+        "body": "Keep Manrope as the display and body workhorse. Use serif type only for the existing brand and editorial accents, never for long-form body copy.",
+        "section": "typography"
+      },
+      {
+        "name": "The Ambient-Only Shadow Rule",
+        "body": "Shadows separate floating or interactive elements from their surroundings; do not use heavy elevation as the default card hierarchy.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do preserve the official logo, heritage artwork, and actual community photography.",
+      "Do use the established Manrope hierarchy, warm neutral surfaces, saffron action accent, and deep navy anchors.",
+      "Do keep data displays serious and legible, with clear labels, units, and context; use only confirmed information.",
+      "Do maintain readable text, visible focus, and clear state distinctions across light and dark surfaces.",
+      "Do use generous container alignment and reflow layouts instead of introducing horizontal overflow."
+    ],
+    "donts": [
+      "Don't introduce a new color family, display typeface, or competing visual identity without an explicit redesign decision.",
+      "Don't replace the heritage hero with a gradient-only banner or add decorative data charts without real information to explain.",
+      "Don't use heavy shadows, pill-shaped cards, or ornamental borders as a default treatment.",
+      "Don't invent metrics, endorsements, event details, or outcomes to make the site appear more authoritative."
+    ]
+  }
+}

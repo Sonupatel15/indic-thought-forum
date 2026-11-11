@@ -25,22 +25,22 @@ export function EventSchedule({ asOfDate, period, showCalendarNotes = true }: { 
   const inPeriod = (event: ForumEvent) => !period || (event.date >= period.start && event.date <= period.end);
   const upcoming = !period && filter === "past" ? [] : groups.upcoming.filter(inPeriod);
   const past = !period && filter === "upcoming" ? [] : groups.past.filter(inPeriod);
-  const upcomingList = useIncrementalList(upcoming, 3);
-  const pastList = useIncrementalList(past, 3);
+  const upcomingList = useIncrementalList<ForumEvent, HTMLOListElement>(upcoming, 3);
+  const pastList = useIncrementalList<ForumEvent, HTMLOListElement>(past, 3);
   const visibleUpcoming = period ? upcoming : filter === "past" ? [] : upcomingList.visibleItems;
   const visiblePast = period ? past : filter === "upcoming" ? [] : pastList.visibleItems;
   const visible = [...visibleUpcoming, ...visiblePast];
   const media = visible.map(event => ({
-    src: event.image, title: event.title,
-    alt: `Original event poster: ${event.title}, ${event.speaker}, ${event.displayDate}`,
+    src: event.previewImage, title: event.title,
+    alt: `Event poster: ${event.title}, ${event.speaker}, ${event.displayDate}`,
   }));
 
-  function renderGroup(title: string, items: ForumEvent[], isPast: boolean, hasMore: boolean, showMore: () => void) {
+  function renderGroup(title: string, items: ForumEvent[], isPast: boolean, hasMore: boolean, showMore: (button: HTMLButtonElement) => void) {
     if (items.length === 0) return null;
     const listId = `schedule-list${period ? "-period" : ""}-${isPast ? "past" : "upcoming"}`;
     return <section className="schedule-group" aria-label={title}>
       <div className="schedule-group-heading"><h3>{title}</h3><span>{isPast ? "Most recent first" : "Earliest first"}</span></div>
-      <ol className="schedule-list" id={listId}>{items.map(event => {
+      <ol ref={isPast ? pastList.gridRef : upcomingList.gridRef} className="schedule-list" id={listId}>{items.map(event => {
         const start = getEventStart(event);
         const month = new Intl.DateTimeFormat("en-IN", { timeZone: eventTimeZone, month: "short", year: "numeric" }).format(start);
         return <li key={event.id} className="schedule-item">
@@ -54,7 +54,7 @@ export function EventSchedule({ asOfDate, period, showCalendarNotes = true }: { 
           <button type="button" className="text-link schedule-poster" onClick={click => { returnFocusRef.current = click.currentTarget; setSelected(visible.findIndex(item => item.id === event.id)); }} aria-label={`View poster for ${event.title}`}>View poster <ArrowUpRight size={17} aria-hidden="true" /></button>
         </li>;
       })}</ol>
-      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls={listId} onClick={showMore}>Load more {isPast ? "past" : "upcoming"} events</button></div>}
+      {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls={listId} onClick={event => showMore(event.currentTarget)}>Load more {isPast ? "past" : "upcoming"} events</button></div>}
     </section>;
   }
 

@@ -41,6 +41,12 @@ On Windows, the build also runs `scripts/finalize-export.mjs`. Next.js 16.4's ex
 - A preloaded self-hosted variable font, responsive WebP hero, local podcast thumbnails, and no third-party media connection before opt-in
 - Reduced-motion support, keyboard interactions, and deployment security-header templates
 
+The mobile header also provides ordinary navigation links when JavaScript is
+disabled. Interactive calendars, image viewers, players, and form submissions
+still require JavaScript. Venue links remain available if the map or its tile
+background fails. The image viewer reports unavailable images and keeps its
+44px controls reachable in short viewports.
+
 The project has **no database, admin dashboard, authentication, payment processing, or form backend**, in accordance with the selected public-website scope.
 
 **About** combines About Us and Philosophy at `/about/`. **Updates** combines Events, Gallery, Podcasts, community posts, and social channels at `/events/`, with section links for easy navigation. The short labels are consistent across navigation, footer, breadcrumbs, and page titles; the existing URLs are unchanged. The old `/philosophy/`, `/gallery/`, and `/media/` URLs remain static compatibility pages that render the same combined content, with canonical metadata pointing to the combined route. Navigation and the sitemap use the combined routes.
@@ -63,6 +69,11 @@ The automated production-export suite uses these six profiles:
 | iPad Mini-style | WebKit with tablet emulation | Tablet layout, touch controls, and navigation |
 
 Shared typography scales cover hero titles, section headings, subheadings, body copy, captions, and labels; cards and boxes use one 5px corner radius. Responsive reflow tests cover **320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS pixels** on all 12 public routes, including compatibility URLs. They check horizontal overflow and heading fit at every width, shared hero/content alignment on About, Sankalpas, Updates, Calendar, and Contact, and image aspect ratios. Automated WCAG A/AA checks include all 12 public routes. Coarse-pointer devices get at least 44px image-viewer controls and 16px form inputs to reduce unwanted focus zoom on iOS.
+
+Additional regression checks cover doubled text size at 360, 390, 768, 1024,
+1280, and 1440px, mobile navigation
+without JavaScript, the image viewer at 390x400, failed viewer images, and failed
+map tiles. Gallery source sizes follow the preview and full-gallery layouts.
 
 These are **automated engine tests and emulated devices on the development machine**, not tests on physical Android/iOS hardware or shipping macOS Safari. Modern Edge and other Chromium browsers are expected to behave similarly, but their branded browser distributions are not separately certified here. Internet Explorer, obsolete browsers without native dialog support, smart TVs, and embedded in-app browsers are not declared supported.
 

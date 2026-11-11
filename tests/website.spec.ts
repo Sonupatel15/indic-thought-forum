@@ -2,9 +2,69 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 import { sendSubmission, type Submission } from "../src/lib/forms";
 import { events, gallery, principles, steps } from "../src/lib/site";
-import { podcasts, socialPosts } from "../src/lib/media";
+import { podcasts, socialProfiles } from "../src/lib/media";
 
 const routes = ["/", "/about/", "/philosophy/", "/sankalpas/", "/events/", "/calendar/", "/gallery/", "/media/", "/contact-us/", "/support/", "/privacy/", "/accessibility/"];
+
+test("public routes reflow at doubled text size without horizontal scrolling", async ({ page }) => {
+  test.setTimeout(180000);
+  for (const width of [360, 390, 768, 1024, 1280, 1440]) {
+    await page.setViewportSize({ width, height: 844 });
+    for (const route of routes) {
+      await page.goto(route);
+      await page.waitForLoadState("networkidle");
+      await page.evaluate(() => { document.documentElement.style.fontSize = "200%"; });
+      expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${route} at ${width}px`).toBe(true);
+      await page.evaluate(() => { document.documentElement.style.removeProperty("font-size"); });
+    }
+  }
+});
+
+test("mobile navigation works without JavaScript", async ({ browser }) => {
+  const context = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  await page.goto("/");
+  const navigation = page.getByRole("navigation", { name: "Site navigation without JavaScript" });
+  await expect(navigation).toBeVisible();
+  await expect(page.locator(".menu-toggle")).toBeHidden();
+  await navigation.getByRole("link", { name: "About", exact: true }).click();
+  await expect(page).toHaveURL(/\/about\/$/);
+  await expect(page.locator("main h1")).toHaveText("Rooted in a civilization. Looking to the future.");
+  await context.close();
+});
+
+test("image viewer fits short viewports with visible, high-contrast keyboard controls", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 400 });
+  await page.goto("/events/");
+  await page.locator(".event-image").first().click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog).toBeVisible();
+  await page.keyboard.press("Tab");
+  for (const label of ["Close image viewer", "Previous image", "Next image"]) {
+    const control = dialog.getByRole("button", { name: label });
+    await control.focus();
+    await expect(control).toHaveCSS("outline-color", "rgb(255, 207, 148)");
+    const bounds = await control.boundingBox();
+    expect(bounds).not.toBeNull();
+    if (!bounds) throw new Error("The image viewer control must have a visible bounding box.");
+    expect(bounds.height).toBeGreaterThanOrEqual(44);
+    expect(bounds.y).toBeGreaterThanOrEqual(0);
+    expect(bounds.y + bounds.height).toBeLessThanOrEqual(400);
+  }
+  await page.keyboard.press("Escape");
+  await expect(page.locator(".event-image").first()).toBeFocused();
+});
+
+test("image viewer explains failed images and can still be closed", async ({ page }) => {
+  await page.route(`**${events[0].previewImage}`, route => route.abort());
+  await page.goto("/events/");
+  await page.locator(".event-image").first().click();
+  const dialog = page.getByRole("dialog");
+  await expect(dialog.getByRole("status")).toContainText("This image could not be loaded.");
+  await dialog.getByRole("button", { name: "Close image viewer" }).click();
+  await expect(dialog).not.toBeVisible();
+  await expect(page.locator(".event-image").first()).toBeFocused();
+});
 
 test.beforeEach(async ({ page }) => {
   await page.route(/^https:\/\/[abc]\.tile\.openstreetmap\.org\//, route => route.fulfill({
@@ -88,16 +148,31 @@ test("home calls to action go to complete pages", async ({ page }) => {
 test("mobile menu opens, navigates, and closes with Escape", async ({ page }, testInfo) => {
   test.skip(!testInfo.project.use.isMobile, "Mobile-only interaction");
   await page.goto("/");
-  const toggle = page.getByRole("button", { name: "Open menu" });
+  const toggle = page.locator(".menu-toggle");
   await toggle.click();
   await expect(page.getByRole("button", { name: "Close menu" })).toHaveAttribute("aria-expanded", "true");
+  const navigation = page.getByRole("navigation", { name: "Main navigation" });
+  const links = navigation.getByRole("link");
+  await page.keyboard.press("Shift+Tab");
+  await expect(links.last()).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(toggle).toBeFocused();
   await page.keyboard.press("Escape");
   await expect(toggle).toBeFocused();
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
   await toggle.click();
-  await page.getByRole("navigation", { name: "Main navigation" }).getByRole("link", { name: "About", exact: true }).click();
+  await navigation.getByRole("link", { name: "About", exact: true }).click();
   await expect(page).toHaveURL(/\/about\/$/);
   await expect(toggle).toHaveAttribute("aria-expanded", "false");
+});
+
+test("desktop navigation stays visible at tablet widths", async ({ page }) => {
+  for (const width of [981, 1024, 1180]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/");
+    await expect(page.getByRole("navigation", { name: "Main navigation" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Open menu" })).toBeHidden();
+  }
 });
 
 test("Updates has one gallery, image navigation, Escape, and focus restoration work", async ({ page }) => {
@@ -333,8 +408,10 @@ test("combined sections preserve editorial content and all existing archive and 
     await page.getByRole("button", { name: "Load more podcasts" }).click();
   }
   for (const podcast of podcasts) await expect(page.locator("#podcasts")).toContainText(podcast.title);
-  await page.getByRole("button", { name: "Load more posts" }).click();
-  for (const post of socialPosts) await expect(page.locator("#posts")).toContainText(post.title);
+  const instagramProfile = socialProfiles.find(profile => profile.platform === "Instagram");
+  if (!instagramProfile) throw new Error("The official Instagram profile must be configured.");
+  await expect(page.locator("#posts .instagram-profile-link a")).toHaveAttribute("href", instagramProfile.url);
+  for (const profile of socialProfiles) await expect(page.locator(`#social-channels a[href="${profile.url}"]`)).toHaveCount(1);
   await expect(page.locator("main")).not.toContainText("Blogs");
 });
 

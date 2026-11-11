@@ -2,17 +2,14 @@ import { existsSync } from "node:fs";
 import { join } from "node:path";
 import sharp from "sharp";
 import { test, expect } from "@playwright/test";
-import { events, gallery, site } from "../src/lib/site";
+import { events, gallery } from "../src/lib/site";
 import { getYouTubeEmbedUrl, homeFeaturedPodcast } from "../src/lib/media";
 
-test("Home has real-text branding, unnumbered sections, updated goals, and no purpose photo", async ({ page }) => {
+test("Home has real-text branding, unnumbered sections, clearly stated goals, and no purpose photo", async ({ page }) => {
   await page.goto("/");
   const main = page.locator("main");
-  await expect(page.locator(".hero-eyebrow, .hero-signature img, #our-purpose img, .principle-card .card-number")).toHaveCount(0);
-  await expect(page.locator(".hero-signature .signature-line")).toHaveCount(0);
+  await expect(page.locator(".hero-signature, #our-purpose img, .principle-card .card-number")).toHaveCount(0);
   await expect(main).not.toContainText("Rooted in heritage. Driven by purpose.");
-  await expect(page.locator(".hero-signature strong")).toHaveText(site.name);
-  await expect(page.locator(".hero-signature > div > span")).toHaveText(site.tagline);
   await expect(page.locator("#our-purpose .eyebrow")).toHaveText("Our Purpose");
   expect(await main.locator(".eyebrow").allTextContents()).not.toContainEqual(expect.stringMatching(/^\d{2}\s*\//));
   await expect(page.locator(".principle-card")).toHaveCount(3);
@@ -20,6 +17,7 @@ test("Home has real-text branding, unnumbered sections, updated goals, and no pu
   await expect(page.locator(".pathway-card .lucide-list-checks")).toHaveCount(1);
   await expect(page.locator(".pathway-card .lucide-calendar-days")).toHaveCount(1);
   expect(await page.locator(".goal > strong").allTextContents()).toEqual(["500+", "10+", "30+"]);
+  await expect(page.locator(".lakshya")).toContainText("Shared goals for the work ahead, not completed milestones.");
   await expect(page.locator(".gallery-grid--preview .gallery-photo")).toHaveCount(4);
   await expect(main).not.toContainText("Privacy-first preview");
   await expect(main).not.toContainText("Choosing Load connects to YouTube/Google");
@@ -27,10 +25,11 @@ test("Home has real-text branding, unnumbered sections, updated goals, and no pu
   const mediaSection = page.locator('main section[aria-label="Podcasts and social media"]');
   await expect(mediaSection.locator(".social-channel-links, .social-channel-grid")).toHaveCount(0);
   await expect(mediaSection.locator(".youtube-load")).toHaveCount(1);
+  await expect(mediaSection.getByRole("link", { name: /Visit Instagram/ })).toHaveCount(1);
   await expect(page.locator(".footer-about .social-channel-link")).toHaveCount(5);
 });
 
-test("Home conversation heading and eyebrow are 75% size across viewport breakpoints", async ({ page }) => {
+test("Home conversation heading and eyebrow use the shared type scale across viewport breakpoints", async ({ page }) => {
   for (const width of [320, 360, 361, 393, 480, 481, 760, 761, 768, 1024, 1180, 1200, 1440, 1920, 2560, 3840]) {
     await page.setViewportSize({ width, height: width >= 2560 ? 2160 : 900 });
     await page.goto("/");
@@ -55,8 +54,8 @@ test("Home conversation heading and eyebrow are 75% size across viewport breakpo
         eyebrowBase,
       };
     });
-    expect(sizes.heading, `Heading at ${width}px`).toBeCloseTo(sizes.headingBase * 0.75, 1);
-    expect(sizes.eyebrow, `Eyebrow at ${width}px`).toBeCloseTo(sizes.eyebrowBase * 0.75, 1);
+    expect(sizes.heading, `Heading at ${width}px`).toBeCloseTo(sizes.headingBase, 1);
+    expect(sizes.eyebrow, `Eyebrow at ${width}px`).toBeCloseTo(sizes.eyebrowBase, 1);
   }
 });
 
@@ -86,11 +85,12 @@ test("Home shows exactly the latest three events including upcoming dates with c
   const poster = cards.first().getByRole("button", { name: `View poster for ${events[0].title}`, exact: true });
   await poster.click();
   await expect(page.getByRole("dialog")).toBeVisible();
-  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[0].image);
+  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[0].previewImage);
   await expect(page.getByRole("dialog").locator("img")).toHaveJSProperty("complete", true);
-  expect(posterRequests).toContain(events[0].image);
+  expect(posterRequests).not.toContain(events[0].image);
+  expect(posterRequests).toContain(events[0].previewImage);
   await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[1].image);
+  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[1].previewImage);
   await page.keyboard.press("Escape");
   await expect(poster).toBeFocused();
   await page.clock.setFixedTime(new Date("2026-11-29T12:00:00Z"));
@@ -124,6 +124,18 @@ test("every supplied poster has correct intrinsic dimensions and all event photo
     expect(photo.src).toMatch(/^\/images\/sankrant-sanu\/event-photos\/[a-z-]+\.webp$/);
     expect(existsSync(join("public", ...photo.src.slice(1).split("/")))).toBe(true);
     expect((await request.get(photo.src)).status()).toBe(200);
+    const sourceMetadata = await sharp(join("public", ...photo.src.slice(1).split("/"))).metadata();
+    if (!sourceMetadata.width || !sourceMetadata.height) throw new Error(`Missing source dimensions for ${photo.src}.`);
+    for (const width of [360, 720]) {
+      const variant = photo.src.replace(".webp", `-${width}.webp`);
+      const metadata = await sharp(join("public", ...variant.slice(1).split("/"))).metadata();
+      expect(metadata.width).toBe(width);
+      expect(metadata.height).toBe(Math.round(width * sourceMetadata.height / sourceMetadata.width));
+      expect(metadata.format).toBe("webp");
+      const response = await request.get(variant);
+      expect(response.status()).toBe(200);
+      expect((await response.body()).byteLength).toBeLessThanOrEqual(180 * 1024);
+    }
   }
 });
 
@@ -134,10 +146,10 @@ test("Home posters stay uncropped and aligned with readable copy from phones thr
     await page.goto("/");
     await page.evaluate(() => document.fonts.ready);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `Home overflow at ${width}px`).toBe(true);
-    const signature = await page.locator(".hero-signature").boundingBox();
+    const heroActions = await page.locator(".hero-actions").boundingBox();
     const heroBottom = await page.locator(".hero-bottom").boundingBox();
-    if (!signature || !heroBottom) throw new Error("Hero branding and bottom navigation must remain visible.");
-    expect(signature.y + signature.height, `Hero branding overlap at ${width}px`).toBeLessThanOrEqual(heroBottom.y);
+    if (!heroActions || !heroBottom) throw new Error("Hero actions and bottom navigation must remain visible.");
+    expect(heroActions.y + heroActions.height, `Hero actions overlap bottom navigation at ${width}px`).toBeLessThanOrEqual(heroBottom.y);
     expect(await page.locator(".philosophy-footnote").evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(14);
     const gridColumns = await page.locator(".event-grid").evaluate(element => getComputedStyle(element).gridTemplateColumns.split(" ").length);
     expect(gridColumns).toBe(width <= 480 ? 1 : width <= 760 ? 2 : 3);

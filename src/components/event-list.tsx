@@ -17,7 +17,7 @@ export function EventList({ compact = false, asOfDate }: { compact?: boolean; as
   const available = compact ? [...upcoming].reverse().concat(past).slice(0, 3) : [...events].sort((a, b) => b.date.localeCompare(a.date));
   const { gridRef, visibleItems, hasMore, showMore } = useIncrementalList(available, 3, 3, !compact);
   const visible = compact ? available : visibleItems;
-  const media = visible.map(event => ({ src: event.image, title: event.title, alt: `Original event poster: ${event.title}, ${event.speaker}, ${event.displayDate}` }));
+  const media = visible.map(event => ({ src: event.previewImage, title: event.title, alt: `Event poster: ${event.title}, ${event.speaker}, ${event.displayDate}` }));
 
   return <>
     <div ref={gridRef} className="event-grid" id={compact ? undefined : "event-list"}>{visible.map((event, index) => <article className="event-card" key={event.id}>
@@ -27,7 +27,7 @@ export function EventList({ compact = false, asOfDate }: { compact?: boolean; as
       </button>
       <div className="event-body"><div className="event-date"><CalendarDays size={14} aria-hidden="true" /><time dateTime={event.date}>{event.displayDate}</time><span>{event.date < today ? "Archive" : event.date === today ? "Today" : "Upcoming"}</span></div><h3><button type="button" onClick={click => { returnFocusRef.current = click.currentTarget; setSelected(index); }}>{event.title}</button></h3><p className="event-speaker">{event.speaker}</p><div className="event-location"><MapPin size={14} aria-hidden="true" />{event.venue}</div></div>
     </article>)}</div>
-    {!compact && hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-list" onClick={showMore}>Load more events</button></div>}
+    {!compact && hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-list" onClick={event => showMore(event.currentTarget)}>Load more events</button></div>}
     <MediaDialog items={media} selected={selected} onSelect={setSelected} returnFocusRef={returnFocusRef} />
   </>;
 }
