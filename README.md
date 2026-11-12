@@ -4,8 +4,8 @@ A complete, responsive public website built with **Next.js App Router, React, an
 
 ## Requirements and quick start
 
-- Node.js 22.18+ (Node.js 24 LTS recommended)
-- npm 10+
+- Node.js 24.22.3+ (Node.js 24 LTS recommended)
+- npm 11+
 
 TypeScript is pinned to 6.0.3 because the current Next.js ESLint integration does not yet support the TypeScript 7 compiler API.
 
@@ -14,16 +14,17 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000`. To preview the **production static export**:
+Open `http://127.0.0.1:3000`. To build and preview the **production Cloudflare Worker**:
 
 ```powershell
-npm run build
 npm run preview
 ```
 
-Open `http://127.0.0.1:4173`. The deployable website is generated in `out`. Do not use `next start`: this project intentionally exports static HTML.
+Open `http://127.0.0.1:4173`. This builds Next.js and the OpenNext adapter, then serves the result in Cloudflare's local Workers runtime. To build without starting a server, run `npm run build:cloudflare`; to preview an existing build, run `npm run preview:cloudflare`. `npm run build` alone builds Next.js but does **not** create a deployable Worker.
 
-On Windows, the build also runs `scripts/finalize-export.mjs`. Next.js 16.4's exporter creates nested route-segment files using Windows separators, while its browser router requests dotted filenames. The finalizer corrects only those generated `__next.*` segment paths, refuses filename collisions, and leaves framework source untouched. It is a no-op on other platforms. Route, network-error, and navigation tests exercise the finalized export; publish the result of **`npm run build`**, not a direct `next build`.
+The deployment target is **Cloudflare Workers, not Pages**. OpenNext writes `.open-next/worker.js` and `.open-next/assets`; there is no `out` static export. Routes remain pre-rendered where possible, while the Worker supports future server routes. The old `scripts/finalize-export.mjs` static-export workaround is no longer part of the build.
+
+OpenNext warns that native Windows support is incomplete. Use Cloudflare's Linux Workers Builds or WSL if a local adapter build encounters platform-specific errors. Do not copy Windows `node_modules` into WSL; install dependencies in the Linux checkout.
 
 ## Included pages and behavior
 
@@ -57,7 +58,7 @@ Contact has separate Join the Community and Contribute to the Community forms. W
 
 The website targets **current, JavaScript-enabled browsers on phones, tablets, laptops, and desktops**. Responsive design is not a guarantee of compatibility with every physical device, operating-system version, embedded browser, or accessibility configuration.
 
-The automated production-export suite uses these six profiles:
+The automated production-Worker suite uses these six profiles:
 
 | Profile | Engine | What this verifies |
 | --- | --- | --- |
@@ -238,19 +239,21 @@ To publish a new confirmed event, add its approved record and optimized poster, 
 ```powershell
 npm run lint
 npm run typecheck
-npm run build
+npm run build:cloudflare
 npm test
 ```
 
-If Playwright reports that a browser is missing, run `npx playwright install chromium firefox webkit`, then retry. Tests serve the actual production export and cover public routes, browser/network errors, navigation, responsive overflow, gallery controls, archive/schedule filters, focus restoration, the separate Join/Contribute forms, conditional custom interest, validation/reset, explicit disconnected-service behavior, links, metadata, and mocked form payload/response handling. Calendar tests verify current IST day/month/year defaults, every month selection, previous/next month and day transitions across years, leap February, year navigation and drill-down, Today reset, midnight rollover, invalid year/date rejection, month-upcoming updates, independent schedule pagination, upcoming-only map filtering, map selection/centering/popups, and correct sorting without modifying the shared data. Combined-section tests check retained editorial text, event/gallery/media records, compatibility URLs, and section anchors. Responsive tests also check narrow calendar selector widths and alignment. Media tests verify zero external requests before consent, keyboard activation, player removal and focus restoration, source links, permitted embed origin, responsive image selection, and the single font preload. Automated player tests use a mocked provider frame rather than contacting Google; they do not verify live external playback availability.
+If Playwright reports that a browser is missing, run `npx playwright install chromium firefox webkit`, then retry. Tests serve the production Worker and cover public routes, browser/network errors, navigation, responsive overflow, gallery controls, archive/schedule filters, focus restoration, the separate Join/Contribute forms, conditional custom interest, validation/reset, explicit disconnected-service behavior, links, metadata, and mocked form payload/response handling. A deployment regression checks deep links, security headers on HTML and missing pages, a real 404 response, and immutable JavaScript caching. Calendar tests verify current IST day/month/year defaults, every month selection, previous/next month and day transitions across years, leap February, year navigation and drill-down, Today reset, midnight rollover, invalid year/date rejection, month-upcoming updates, independent schedule pagination, upcoming-only map filtering, map selection/centering/popups, and correct sorting without modifying the shared data. Combined-section tests check retained editorial text, event/gallery/media records, compatibility URLs, and section anchors. Responsive tests also check narrow calendar selector widths and alignment. Media tests verify zero external requests before consent, keyboard activation, player removal and focus restoration, source links, permitted embed origin, responsive image selection, and the single font preload. Automated player tests use a mocked provider frame rather than contacting Google; they do not verify live external playback availability.
 
 For focused checks, use `npx playwright test media.spec.ts --project=desktop` or `npx playwright test schedule.spec.ts --project=desktop`, and select `--project=firefox`, `--project=webkit`, `--project=mobile`, `--project=ios`, or `--project=tablet` as needed. Mobile-menu tests are intentionally skipped in the three desktop profiles.
 
-Build before testing. Automated axe checks run against every public page at WCAG A/AA rule levels. The unconfigured-service test is skipped when real integration environment variables are set. Do not send test submissions to real services; use a test endpoint. The test runner starts and stops its own preview server unless a preview is already running on port 4173.
+Run `npm run build:cloudflare` before testing. Automated axe checks run against every public page at WCAG A/AA rule levels. The unconfigured-service test is skipped when real integration environment variables are set. Do not send test submissions to real services; use a test endpoint. The test runner starts and stops its own preview server unless a preview is already running on port 4173.
+
+Full-project lint currently also scans bundled `.github/skills/impeccable/scripts` tools with existing warnings; those are not application or deployment changes. To check application and deployment code without that tooling, use `npx eslint src tests scripts *.ts *.mjs --max-warnings=0`. Do not treat a failing full lint command as a passing release check.
 
 ## Performance and the Astro decision
 
-**Recommendation: keep the current Next.js static export for this release.** It already serves pre-rendered HTML without a Next.js runtime server. A framework change is not needed to add podcasts, social content, SEO, or responsive layouts.
+**Recommendation: keep Next.js rather than rewrite the site.** The current Cloudflare Workers deployment retains build-time pre-rendering and uses OpenNext's read-only static-assets cache. A framework change is not needed to add podcasts, social content, SEO, or responsive layouts.
 
 The UI improvements include more readable body/supporting copy, less compressed navigation with an earlier mobile breakpoint, consistent media-card hierarchy, and an aspect-ratio-reserved video frame that does not shift when a player is enabled. Performance changes include:
 
@@ -279,13 +282,13 @@ The existing Playwright Chromium installation is used. Each measurement makes th
 | Median layout shift (CLS) | 0.001 | 0 |
 | JavaScript resource bodies | 493 KiB | 489 KiB |
 
-These are **local lab results**, not Lighthouse scores, production CDN transfer sizes, real-user Core Web Vitals, or a guarantee of performance on every device. The preview serves uncompressed static resources. The observed improvement is approximately 45% in local median LCP and 30% in resource bodies; client JavaScript remains a meaningful part of the payload. The measured LCP is still above the 2.5-second good threshold under this deliberately throttled profile. Validate the deployed CDN with compression/caching and measure real-user p75 LCP, INP, and CLS before claiming Core Web Vitals compliance.
+These are **historical local lab results from the previous static-export preview**, not measurements of the Workers deployment, Lighthouse scores, production CDN transfer sizes, real-user Core Web Vitals, or a guarantee of performance on every device. That preview served uncompressed static resources. The observed improvement was approximately 45% in local median LCP and 30% in resource bodies; client JavaScript remains a meaningful part of the payload. The measured LCP was still above the 2.5-second good threshold under this deliberately throttled profile. Re-measure the Workers deployment with compression/caching and real-user p75 LCP, INP, and CLS before claiming Core Web Vitals compliance.
 
 ### When Astro would help
 
-| Consideration | Current Next.js export | Astro alternative |
+| Consideration | Current Next.js Worker | Astro alternative |
 | --- | --- | --- |
-| Hosting | Static HTML/assets, no application server needed | Also supports static HTML/assets |
+| Hosting | OpenNext Worker with pre-rendered routes and static assets | Can support static HTML/assets or server rendering |
 | Interactive features | Existing React navigation, filters, date updates, image viewers, and consent controls | React or smaller islands can hydrate selectively, potentially lowering initial JavaScript |
 | Content-heavy pages | Already pre-rendered, but the Next/React client runtime remains | A strong fit for mostly static editorial pages with limited interactive islands |
 | SEO and accessibility | Already implemented and tested; still requires approved content and manual QA | Not automatically better; metadata, semantic structure, and accessible interactions still need implementation |
@@ -294,21 +297,119 @@ These are **local lab results**, not Lighthouse scores, production CDN transfer 
 
 If low-end mobile performance remains a problem after deployment, prototype the home and media pages in Astro, using the same assets, content, and privacy behavior. Compare **compressed JavaScript, the same throttled lab metrics, real-user results when available, and maintenance cost**. Migrate only if the measured improvement and content-first workflow justify the rewrite. Do not migrate merely to change the framework name.
 
-## Deployment
+## Cloudflare Workers deployment
 
-### Netlify
+### Architecture and files
 
-The included `netlify.toml` runs `npm run build` and publishes `out`. `public/_headers` supplies security headers and immutable caching for hashed framework assets.
+- [next.config.ts](./next.config.ts): standard Next.js server build, trailing-slash routes, security headers for Worker responses, and local Cloudflare bindings support. Images remain locally prepared and unoptimized; no paid image service is needed.
+- [open-next.config.ts](./open-next.config.ts): OpenNext adapter with a **read-only Workers Static Assets incremental cache** and cache interception for existing pre-rendered pages.
+- [wrangler.jsonc](./wrangler.jsonc): Worker entry point, assets binding, Node.js compatibility, a self-reference service binding, source maps, and observability.
+- [public/_headers](./public/_headers): security headers on assets and one-year immutable caching **only** for hashed `/_next/static/*` files. It does not apply to Worker-generated responses, so the matching Next.js headers are also required. Keep these policies consistent when editing them.
+- No R2 bucket, D1 database, KV namespace, queue, or Durable Object is required for the current site. This cache does **not** support ISR/revalidation; content changes require rebuilding and redeploying.
+- Generated `.open-next`, `.wrangler`, local environment files, and binding declarations are ignored by Git and lint.
 
-### Vercel
+The existing Netlify/Vercel files are legacy host templates, not part of this deployment. In particular, the old Netlify `publish = "out"` setup no longer works with this server build. Do not upload `.next`, `public`, or an old `out` directory as a substitute for deploying the OpenNext Worker.
 
-Import as a Next.js project, use `npm run build`, and set the public environment variables. Next.js static export is supported; `vercel.json` supplies the corresponding security headers.
+### 1. Prepare the account and configuration
 
-### Other static hosting
+1. Create/sign in to a Cloudflare account with permission to deploy Workers. Review [Workers limits](https://developers.cloudflare.com/workers/platform/limits/) and pricing for the intended traffic; the application needs a Worker even though most routes are pre-rendered.
+2. Use Node.js 24.22.3+ and npm 11+, then run `npm ci`. Keep development dependencies installed: OpenNext and Wrangler are build/deploy tools.
+3. Copy `.env.example` to `.env.local` for local builds:
 
-Upload the **contents** of `out` to an HTTPS static host. Preserve route directories and configure directory index serving and `404.html` as the missing-page response. Do not rewrite every request to the home page: each route has its own generated HTML. Translate the headers from `public/_headers` into the host's configuration.
+   ```powershell
+   Copy-Item .env.example .env.local
+   ```
 
-The CSP template permits inline framework hydration scripts/styles, HTTPS connections for the future form service, and frames only from `https://www.youtube-nocookie.com`. Third-party frame permissions do not load a player by themselves; the consent component controls creation. A stricter deployment can generate script hashes and restrict `connect-src` to the verified endpoint. Review deployment-specific headers and ensure HTML is revalidated while hashed framework files are cached immutably. HSTS should be configured by the operator only after HTTPS and subdomain readiness are confirmed.
+4. Set `NEXT_PUBLIC_SITE_URL` to the actual canonical HTTPS origin, for example `https://www.indicthoughtforum.org`. Leave `NEXT_PUBLIC_FORMS_ENDPOINT` and `NEXT_PUBLIC_DONATION_URL` empty as selected; add `NEXT_PUBLIC_CONTACT_EMAIL` only when verified.
+5. These `NEXT_PUBLIC_*` values are **public, build-time configuration**. In hosted builds, set them under **Settings > Build > Build variables and secrets**, not just the Worker's runtime Variables & Secrets. Changing a runtime variable cannot change a pre-rendered page or compiled browser bundle; rebuild and redeploy.
+
+No Cloudflare account ID, API token, custom domain, or service credentials are committed. Do not paste credentials into source or public build variables.
+
+### 2. Validate and deploy from the command line
+
+```powershell
+npm run build:cloudflare
+npm run typecheck
+npx playwright install chromium
+npx playwright test website.spec.ts --project=desktop --grep "Workers serves|every public page|home calls|unconfigured"
+
+# Optional: inspect the upload without publishing or logging in.
+npm run deploy:cloudflare -- --dry-run
+
+# Authenticate in your browser, then publish the already-built Worker.
+npx wrangler login
+npx wrangler whoami
+npm run deploy:cloudflare
+```
+
+For subsequent releases, `npm run deploy` rebuilds and deploys in one command. `deploy:cloudflare` alone intentionally deploys the **existing** `.open-next` build, so rebuild after any code, content, or public-variable change.
+
+Wrangler prints the real `https://indic-thought-forum.<your-subdomain>.workers.dev` URL. Open it and test deep links before attaching a domain. If you change the Worker name, update both `name` and `services[0].service` in `wrangler.jsonc` to the same value.
+
+For non-interactive CI outside Workers Builds, supply `CLOUDFLARE_ACCOUNT_ID` and an account-scoped `CLOUDFLARE_API_TOKEN` using the **Edit Cloudflare Workers** token template, restricted to the intended account. Store these only as CI secrets. Custom-domain management may additionally require zone/DNS permissions; use the dashboard flow below instead of widening a deployment token unnecessarily.
+
+### 3. Automatic Git deployments with Workers Builds
+
+After the initial CLI deployment, open **Workers & Pages > indic-thought-forum > Settings > Build**, connect the GitHub repository, and configure:
+
+| Setting | Value |
+| --- | --- |
+| Repository | `Sonupatel15/indic-thought-forum` |
+| Production branch | Your release branch (currently `main`) |
+| Root directory | Repository root |
+| Build command | `npm run build:cloudflare` |
+| Deploy command | `npm run deploy:cloudflare` |
+| Non-production / preview command, if enabled | `npm run upload:cloudflare` |
+| Build variable `NODE_VERSION` | `24.22.3` (or a newer supported Node.js 24 LTS patch) |
+| Build variable `NPM_VERSION` | `11` |
+| Public build variables | The `NEXT_PUBLIC_*` values described above |
+
+Use the committed lockfile for installs; if configuring an explicit install step, use `npm ci`. Do not omit dev dependencies. Do not use the default bare `wrangler deploy`/`wrangler versions upload` commands: the adapter's deploy/upload commands prepare its static-assets cache first. Do not set both commands to build the app, which would build twice.
+
+Workers Builds can manage its deployment token. Keep production credentials and private data out of untrusted preview branches. `upload:cloudflare` uploads a version without promoting it to production; enable version preview URLs in the dashboard if you need to open those versions. Protect preview URLs with Cloudflare Access and/or configure `X-Robots-Tag: noindex` for preview hosts before sharing them publicly. By default canonical URLs still point to `NEXT_PUBLIC_SITE_URL`.
+
+### 4. Attach the custom domain and HTTPS
+
+1. Add your domain to Cloudflare and complete its DNS/nameserver setup if it is not already active there.
+2. In the Worker, open **Settings > Domains & Routes > Add > Custom Domain** and enter the canonical hostname, for example `www.indicthoughtforum.org`. Verify any existing DNS record before replacing it; do not interrupt a live site without a cutover plan.
+3. Wait until Cloudflare's certificate is active and verify HTTPS.
+4. If both apex and `www` should work, configure the other hostname and a Cloudflare redirect rule that permanently redirects it to the canonical hostname, preserving the path and query string.
+5. Confirm `NEXT_PUBLIC_SITE_URL` matches that canonical hostname and rebuild/redeploy if it changed.
+6. This setup uses `workers.dev` for initial testing. After custom-domain verification, disable that public hostname in Wrangler (`workers_dev: false`) if you do not want a second public entry point.
+
+Use the dashboard for the domain-specific configuration because the actual owned domain/account has not been supplied. No invented custom-domain route is enabled in the repository.
+
+### 5. Production verification and operations
+
+Check the **deployed HTTPS site**, not only the local runtime:
+
+```powershell
+# Replace with the hostname that you actually deployed.
+curl.exe -I https://www.indicthoughtforum.org/about/
+curl.exe -I https://www.indicthoughtforum.org/not-a-public-route/
+curl.exe -I https://www.indicthoughtforum.org/robots.txt
+curl.exe -I https://www.indicthoughtforum.org/sitemap.xml
+```
+
+- Deep links must return 200; unknown routes must return **404**, not a 200 home-page fallback. Verify no-slash URLs redirect to their slash form.
+- Check HTML/404 security headers (`Content-Security-Policy`, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`) and immutable caching on an actual hashed JS/CSS URL from the deployed HTML. Do not add a blanket Cache Everything rule for HTML or future API routes.
+- Check canonical/social metadata and sitemap URLs, navigation, poster loading, map tiles, and opt-in YouTube playback on desktop and mobile.
+- Confirm disconnected forms and donations are still explicitly unavailable. No submissions or payments are processed by this deployment.
+- Observability and source maps are enabled. Review logs in the dashboard or run `npx wrangler tail`; configure uptime/error alerts and avoid logging form payloads, tokens, or personal data in future server code. Review log sampling, retention, access, and any cost before launch.
+- Keep a known-good deployment. Use the dashboard deployment history or `npx wrangler rollback` to restore one, then verify routes again and revert/fix the source change before the next automatic build. A Worker rollback does not roll back external databases or provider data.
+- Review the privacy page with the operator: its current hosting-provider disclosure is generic. Identify Cloudflare and document the actual logging/retention practices before launch; do not invent a retention period.
+
+The CSP permits inline framework hydration scripts/styles, HTTPS connections for a future form service, and frames only from `https://www.youtube-nocookie.com`. A stricter deployment can generate script hashes and restrict `connect-src` to the verified endpoint. Enable HSTS only after HTTPS and subdomain readiness are confirmed.
+
+### 6. Future backend enhancements (not enabled)
+
+- **Forms:** choose a verified HTTPS service or implement a Next.js route handler on the Worker. Keep the existing request/response contract and add server validation, consent checks, rate limiting, spam protection (for example Turnstile with server-side verification), durable acceptance, authorized access, delivery monitoring, and a retention policy before enabling the endpoint. The current public endpoint validator requires an absolute HTTPS URL.
+- **Secrets/bindings:** configure resources in `wrangler.jsonc`; use `npx wrangler secret put SECRET_NAME` for deployed secrets. For local bindings, optionally copy `.dev.vars.example` to `.dev.vars` and put local-only secrets there. Never use `NEXT_PUBLIC_*` for secrets.
+- **Binding types:** `npm run cf-typegen` generates `cloudflare-env.d.ts`. The current browser-oriented TypeScript project intentionally does not include that file: Workers' global HTMLRewriter `Element` conflicts with DOM `Element`. When adding binding-using server code, isolate that code and the generated runtime types in a server-only TypeScript project rather than adding Workers globals to the shared client compilation.
+- **ISR/CMS:** before adding `revalidate`, `revalidatePath`, or `revalidateTag`, replace the read-only cache with a supported writable cache such as R2 and configure the required queue/tag-cache bindings. Do not expect edits in a CMS or database to update these pre-rendered pages automatically.
+- **Donations:** use a verified hosted checkout; keep provider keys and webhook verification server-side. Do not add card collection to this frontend.
+
+Official references: [OpenNext setup](https://opennext.js.org/cloudflare/get-started), [SSG/cache configuration](https://opennext.js.org/cloudflare/caching), and [Workers Builds configuration](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
 ## Production launch checklist
 
