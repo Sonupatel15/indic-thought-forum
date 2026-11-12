@@ -69,6 +69,7 @@ The automated production-Worker suite uses these six profiles:
 | iPhone 13-style | WebKit with mobile emulation | iOS-style viewport/touch behavior and mobile interactions |
 | iPad Mini-style | WebKit with tablet emulation | Tablet layout, touch controls, and navigation |
 
+
 Shared typography scales cover hero titles, section headings, subheadings, body copy, captions, and labels; cards and boxes use one 5px corner radius. Responsive reflow tests cover **320, 375, 480, 768, 1024, 1180, 1200, 1440, 1920, 2560, and 3840 CSS pixels** on all 12 public routes, including compatibility URLs. They check horizontal overflow and heading fit at every width, shared hero/content alignment on About, Sankalpas, Updates, Calendar, and Contact, and image aspect ratios. Automated WCAG A/AA checks include all 12 public routes. Coarse-pointer devices get at least 44px image-viewer controls and 16px form inputs to reduce unwanted focus zoom on iOS.
 
 Additional regression checks cover doubled text size at 360, 390, 768, 1024,
