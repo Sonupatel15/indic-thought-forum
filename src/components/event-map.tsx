@@ -167,6 +167,5 @@ export function EventMap({ asOfDate }: { asOfDate: string }) {
       {upcoming.length === 0 && <p className="calendar-empty event-map-empty" role="status">No upcoming events have confirmed venues yet.</p>}
       {hasMore && <div className="load-more-control"><button className="button button--small" type="button" aria-controls="event-map-events" onClick={event => showMore(event.currentTarget)}>Load more map events</button></div>}
     </div>
-    <p className="event-map-attribution">Map data and tiles © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap contributors<span className="sr-only"> (opens in a new tab)</span></a>, available under the Open Database License (ODbL).</p>
   </section>;
 }

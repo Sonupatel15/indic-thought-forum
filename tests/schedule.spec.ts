@@ -227,7 +227,8 @@ test("calendar features the November gathering and an attributed interactive ven
   await expect(map.locator(".leaflet-marker-icon")).toHaveCount(1);
   await expect(page.locator(".event-map-event")).toHaveCount(1);
   await expect(page.locator(".event-map-event")).toContainText("Pepper, Potato, Mould and Gold");
-  await expect(page.locator(".event-map-attribution")).toContainText("OpenStreetMap contributors");
+  await expect(page.locator(".event-map-attribution")).toHaveCount(0);
+  await expect(map.locator(".leaflet-control-attribution")).toContainText("OpenStreetMap contributors");
   await expect(page.getByRole("link", { name: "Get directions" }).first()).toHaveAttribute("href", /openstreetmap\.org\/directions\?to=/);
   await page.getByRole("button", { name: /Pepper, Potato, Mould and Gold: How They Shaped Human History.*View venue on map/ }).click();
   await expect(page.locator(".leaflet-popup-content")).toContainText("Pepper, Potato, Mould and Gold");

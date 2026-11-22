@@ -16,11 +16,6 @@ export function Footer() {
               <SocialChannels compact />
             </nav>
           </div>
-          <ul className="footer-values">
-            <li>Rooted in our heritage.</li>
-            <li>United by purpose.</li>
-            <li>Moving from thought to action.</li>
-          </ul>
           <div className="footer-note">
             <h2>Begin with a thought.<br />Make it a movement.</h2>
             <p>Bring your curiosity, your perspective, and your willingness to contribute.</p>

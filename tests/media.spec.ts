@@ -250,8 +250,8 @@ test("Updates posters, social links and section gaps use the responsive scale", 
     expect(metrics.posterFit).toBe("contain");
     expect(metrics.instagramCalloutWidth).toBeLessThanOrEqual(760);
     expect(metrics.iconBox).toBe(25);
-    expect(metrics.footerTargetWidth).toBe(38);
-    expect(metrics.footerTargetHeight).toBe(38);
+    expect(metrics.footerTargetWidth).toBe(44);
+    expect(metrics.footerTargetHeight).toBe(44);
     expect(metrics.glyph).toBe(17);
     expect(metrics.footerGlyph).toBe(18);
     expect(metrics.targetHeight).toBeGreaterThanOrEqual(44);
@@ -281,5 +281,5 @@ test("video IDs cannot change the approved embed origin and both deployment poli
   expect(() => getYouTubeEmbedUrl("https://example.org")).toThrow("11");
   expect(() => getYouTubeEmbedUrl("../bad?id=1")).toThrow("11");
   expect(readFileSync(join("public", "_headers"), "utf8")).toContain("frame-src https://www.youtube-nocookie.com");
-  expect(readFileSync("vercel.json", "utf8")).toContain("frame-src https://www.youtube-nocookie.com");
+  expect(readFileSync("next.config.ts", "utf8")).toContain("frame-src https://www.youtube-nocookie.com");
 });

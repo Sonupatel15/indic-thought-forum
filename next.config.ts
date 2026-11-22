@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
   devIndicators: false,
   images: { unoptimized: true },
   async headers() {
+    const developmentEval = process.env.NODE_ENV === "development" ? " 'unsafe-eval'" : "";
     return [{
       source: "/:path*",
       headers: [
@@ -15,7 +16,7 @@ const nextConfig: NextConfig = {
         { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
         { key: "X-Frame-Options", value: "DENY" },
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
-        { key: "Content-Security-Policy", value: "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; font-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self' https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests" },
+        { key: "Content-Security-Policy", value: `default-src 'self'; script-src 'self' 'unsafe-inline'${developmentEval}; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://*.tile.openstreetmap.org; font-src 'self'; frame-src https://www.youtube-nocookie.com; connect-src 'self' https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none'; form-action 'self'; upgrade-insecure-requests` },
       ],
     }];
   },

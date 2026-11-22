@@ -28,13 +28,14 @@ export function SubmissionForm({ kind }: { kind: FormKind }) {
   const isJoin = kind === "join";
   const formId = isJoin ? "contact-form" : "contribute-form";
   const prefix = isJoin ? "join" : "contribute";
-  const [interest, setInterest] = useState("");
+  const [interest, setInterest] = useState<string | null>(null);
   const [area, setArea] = useState<string | null>(null);
   const [customInterest, setCustomInterest] = useState("");
   const [status, setStatus] = useState<Status>({ type: "idle", message: "" });
   const search = useSyncExternalStore(subscribeToLocation, getLocationSearch, getServerLocationSearch);
   const requestedArea = sankalpas.find(item => item.id === new URLSearchParams(search).get("area"))?.category ?? "";
   const selectedArea = area ?? requestedArea;
+  const selectedInterest = interest ?? requestedArea;
 
   function invalid() {
     setStatus({ type: "error", message: "Please complete all required fields and correct any invalid values." });
@@ -117,11 +118,11 @@ export function SubmissionForm({ kind }: { kind: FormKind }) {
       {isJoin ? <>
         <div className="field"><label htmlFor="join-city">City {requiredMark}</label><input id="join-city" name="city" autoComplete="address-level2" placeholder="Your city" minLength={2} maxLength={100} required /></div>
         <div className="field"><label htmlFor="join-referral">How did you hear about us? {requiredMark}</label><input id="join-referral" name="referralSource" placeholder="A friend, an event, online..." minLength={2} maxLength={200} required /></div>
-        <div className="field"><label htmlFor="join-interest">I&apos;m interested in {requiredMark}</label><select id="join-interest" name="interest" value={interest} onChange={event => {
+        <div className="field"><label htmlFor="join-interest">I&apos;m interested in {requiredMark}</label><select id="join-interest" name="interest" value={selectedInterest} onChange={event => {
           setInterest(event.target.value);
           if (event.target.value !== "Other") setCustomInterest("");
         }} required><option value="" disabled>Select an area</option>{sankalpas.map(item => <option key={item.id} value={item.category}>{item.category}</option>)}{interestOptions.map(option => <option key={option} value={option}>{option}</option>)}<option value="Other">Other</option></select></div>
-        {interest === "Other" && <div className="field"><label htmlFor="join-custom-interest">Please describe your interest {requiredMark}</label><input id="join-custom-interest" name="customInterest" value={customInterest} onChange={event => setCustomInterest(event.target.value)} minLength={2} maxLength={200} required /></div>}
+        {selectedInterest === "Other" && <div className="field"><label htmlFor="join-custom-interest">Please describe your interest {requiredMark}</label><input id="join-custom-interest" name="customInterest" value={customInterest} onChange={event => setCustomInterest(event.target.value)} minLength={2} maxLength={200} required /></div>}
         <div className="field field--full"><label htmlFor="join-message">Message <span>(optional)</span></label><textarea id="join-message" name="message" rows={4} placeholder="Anything else you would like us to know?" minLength={10} maxLength={3000} /></div>
       </> : <>
         <div className="field"><label htmlFor="contribute-area">Area of contribution {requiredMark}</label><select id="contribute-area" name="area" value={selectedArea} onChange={event => setArea(event.target.value)} required><option value="" disabled>Select an area</option>{sankalpas.map(item => <option key={item.id} value={item.category}>{item.category}</option>)}{interestOptions.map(option => <option key={option} value={option}>{option}</option>)}</select></div>

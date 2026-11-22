@@ -42,11 +42,12 @@ test("Sankalpas keeps one shared hero and removes only its intro and CTA ornamen
   await expect(page.locator(".page-intro .intro-ornament, .community-cta .cta-decoration")).toHaveCount(0);
 });
 
-test("Sankalpa tracker contains exactly seven columns and the twenty approved source rows", async ({ page }) => {
+test("Sankalpa tracker keeps seven columns and omits deprioritised rows", async ({ page }) => {
   await page.goto("/sankalpas/");
   const table = page.getByRole("table");
   await expect(table.getByRole("columnheader")).toHaveText(["Talk date", "Talk topic", "Speaker", "Sankalpa", "Status", "Owner", "Notes"]);
-  await expect(table.locator("tbody tr")).toHaveCount(20);
+  const publishedRows = expectedRows.filter(row => row[5] !== "Deprioritised");
+  await expect(table.locator("tbody tr")).toHaveCount(publishedRows.length);
   const actual = await table.locator("tbody tr").evaluateAll(rows => rows.map(row => [
     Number(row.id.replace("sankalpa-", "")),
     ...Array.from(row.querySelectorAll("td")).slice(0, 6).map((cell, index) => {
@@ -54,7 +55,7 @@ test("Sankalpa tracker contains exactly seven columns and the twenty approved so
       return (desktopTitle ?? cell).textContent?.trim();
     }),
   ]));
-  expect(actual).toEqual(expectedRows);
+  expect(actual).toEqual(publishedRows);
   for (const row of await table.locator("tbody tr").all()) await expect(row.locator("td")).toHaveCount(7);
   await expect(table.locator("#sankalpa-20, #sankalpa-21")).toHaveCount(0);
   await expect(table.locator("tbody")).not.toContainText(/\bDJ\b/i);
@@ -75,7 +76,7 @@ test("notes are intentionally empty and do not imply an editing or saving servic
   expect(sankalpaRecords.every(entry => entry.notes.length === 0)).toBe(true);
   await page.goto("/sankalpas/");
   const table = page.getByRole("table");
-  await expect(table.locator(".sankalpa-notes-cell")).toHaveCount(20);
+  await expect(table.locator(".sankalpa-notes-cell")).toHaveCount(17);
   await expect(table.locator(".sankalpa-notes-cell").first()).toContainText("No notes yet");
   await expect(table.locator(".sankalpa-latest-note, .sankalpa-note-history")).toHaveCount(0);
   await expect(table.getByRole("button", { name: /add note/i })).toHaveCount(0);
@@ -166,7 +167,7 @@ test("existing personal contribution pathways still link to the correct membersh
     await expect(card.getByRole("link")).toHaveAttribute("href", `/contact-us/?area=${pathway.id}`);
     await card.getByRole("link").click();
     await expect(page).toHaveURL(new RegExp(`/contact-us/\\?area=${pathway.id}$`));
-    await expect(page.getByRole("form", { name: "Contribute to the Community" }).getByLabel("Area of contribution")).toHaveValue(pathway.category);
+    await expect(page.getByRole("form", { name: "Join the Community" }).getByLabel("I'm interested in")).toHaveValue(pathway.category);
     await page.goto("/sankalpas/");
   }
 });

@@ -142,7 +142,7 @@ test("home calls to action go to complete pages", async ({ page }) => {
   await expect(page).toHaveURL(/\/sankalpas\/$/);
   await page.getByRole("link", { name: "I'd like to contribute" }).first().click();
   await expect(page).toHaveURL(/\/contact-us\/\?area=heritage$/);
-  await expect(page.getByRole("form", { name: "Contribute to the Community" }).getByLabel("Area of contribution")).toHaveValue("Culture & heritage");
+  await expect(page.getByRole("form", { name: "Join the Community" }).getByLabel("I'm interested in")).toHaveValue("Culture & heritage");
 });
 
 test("mobile menu opens, navigates, and closes with Escape", async ({ page }, testInfo) => {
@@ -214,13 +214,12 @@ test("event archive loads every event newest first without category filters", as
   await expect(page.getByRole("dialog")).not.toBeVisible();
 });
 
-test("Contact separates Join and Contribute forms with validation, conditional interest, and reset", async ({ page }) => {
+test("Contact keeps one Join form with pathway prefill, validation, conditional interest, and reset", async ({ page }) => {
   await page.goto("/contact-us/?area=learning");
   const joinForm = page.getByRole("form", { name: "Join the Community" });
-  const contributionForm = page.getByRole("form", { name: "Contribute to the Community" });
-  await expect(page.locator("form")).toHaveCount(2);
-  expect(await page.locator("form").evaluateAll(forms => forms.map(form => form.id))).toEqual(["contact-form", "contribute-form"]);
-  await expect(contributionForm.getByLabel("Area of contribution")).toHaveValue("Knowledge & dialogue");
+  await expect(page.locator("form")).toHaveCount(1);
+  await expect(joinForm).toHaveAttribute("id", "contact-form");
+  await expect(joinForm.getByLabel("I'm interested in")).toHaveValue("Knowledge & dialogue");
   expect(await joinForm.evaluate(form => (form as HTMLFormElement).checkValidity())).toBe(false);
   await joinForm.evaluate(form => (form as HTMLFormElement).requestSubmit());
   await expect(joinForm.getByRole("alert")).toContainText("Please complete all required fields");
@@ -243,14 +242,6 @@ test("Contact separates Join and Contribute forms with validation, conditional i
   await expect(joinForm.getByLabel("Please describe your interest")).toHaveCount(0);
   await expect(joinForm.getByRole("checkbox")).not.toBeChecked();
 
-  await contributionForm.getByLabel("Full name").fill("Test Contributor");
-  await contributionForm.getByLabel("Email address").fill("contributor@example.com");
-  await contributionForm.getByLabel("Availability").fill("Weekends");
-  await contributionForm.getByLabel("How would you like to contribute?").fill("I can help with community reading circles.");
-  await contributionForm.getByRole("checkbox").check();
-  expect(await contributionForm.evaluate(form => (form as HTMLFormElement).checkValidity())).toBe(true);
-  await contributionForm.getByRole("button", { name: "Reset contribution form" }).click();
-  await expect(contributionForm.getByLabel("Full name")).toHaveValue("");
   expect(await page.evaluate(() => localStorage.length)).toBe(0);
 });
 
@@ -258,12 +249,9 @@ test("unconfigured services never imply a successful message or take a payment",
   test.skip(Boolean(process.env.NEXT_PUBLIC_FORMS_ENDPOINT || process.env.NEXT_PUBLIC_DONATION_URL), "This check covers an unconfigured deployment");
   await page.goto("/contact-us/");
   const joinForm = page.getByRole("form", { name: "Join the Community" });
-  const contributionForm = page.getByRole("form", { name: "Contribute to the Community" });
   await expect(joinForm.getByRole("status")).toContainText("Sending unavailable: service connection required.");
-  await expect(contributionForm.getByRole("status")).toContainText("Sending unavailable: service connection required.");
   await expect(page.locator("main")).not.toContainText("Online messaging is not available yet.");
   await expect(joinForm.getByRole("button", { name: "Send Join enquiry" })).toBeDisabled();
-  await expect(contributionForm.getByRole("button", { name: "Send contribution enquiry" })).toBeDisabled();
   await expect(page.locator(".intro-ornament")).toHaveCount(0);
   await page.goto("/support/");
   await expect(page.getByRole("button", { name: "Online donations opening soon" })).toBeDisabled();
@@ -464,7 +452,6 @@ test("disconnected Contact validates and resets without sending or storing data"
   page.on("request", request => { if (request.method() === "POST") submissions.push(request.url()); });
   await page.goto("/contact-us/");
   const joinForm = page.getByRole("form", { name: "Join the Community" });
-  const contributionForm = page.getByRole("form", { name: "Contribute to the Community" });
   await joinForm.getByLabel("Full name").fill("Test Contact");
   await joinForm.getByLabel("Email address").fill("contact@example.com");
   await joinForm.getByLabel("City").fill("Bengaluru");
@@ -476,15 +463,6 @@ test("disconnected Contact validates and resets without sending or storing data"
   await joinForm.evaluate(element => element.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })));
   await expect(joinForm.getByRole("alert")).toContainText("a form service connection is required");
 
-  await contributionForm.getByLabel("Full name").fill("Test Contributor");
-  await contributionForm.getByLabel("Email address").fill("contributor@example.com");
-  await contributionForm.getByLabel("Area of contribution").selectOption("Community & seva");
-  await contributionForm.getByLabel("Availability").fill("Weekends");
-  await contributionForm.getByLabel("How would you like to contribute?").fill("A test enquiry that must not be transmitted.");
-  await contributionForm.getByRole("checkbox").check();
-  expect(await contributionForm.evaluate(element => (element as HTMLFormElement).checkValidity())).toBe(true);
-  await contributionForm.evaluate(element => element.dispatchEvent(new Event("submit", { bubbles: true, cancelable: true })));
-  await expect(contributionForm.getByRole("alert")).toContainText("a form service connection is required");
   expect(submissions).toEqual([]);
   expect(await page.evaluate(() => ({ local: localStorage.length, session: sessionStorage.length }))).toEqual({ local: 0, session: 0 });
   await joinForm.getByRole("button", { name: "Reset Join form", exact: true }).click();
@@ -492,7 +470,7 @@ test("disconnected Contact validates and resets without sending or storing data"
   await expect(joinForm.getByRole("alert")).toHaveCount(0);
 });
 
-test("configured Contact forms send their fields to the existing endpoint", async ({ page }) => {
+test("configured Contact Join form sends its fields to the existing endpoint", async ({ page }) => {
   const endpoint = process.env.NEXT_PUBLIC_FORMS_ENDPOINT;
   test.skip(!endpoint, "The form endpoint is intentionally unconfigured in this deployment.");
   const target = endpoint ?? "https://forms.example.org/submit";
@@ -525,26 +503,7 @@ test("configured Contact forms send their fields to the existing endpoint", asyn
     website: "",
   });
 
-  const contributionForm = page.getByRole("form", { name: "Contribute to the Community" });
-  await contributionForm.getByLabel("Full name").fill("Test Contributor");
-  await contributionForm.getByLabel("Email address").fill("contributor@example.com");
-  await contributionForm.getByLabel("Area of contribution").selectOption("Community & seva");
-  await contributionForm.getByLabel("Availability").fill("Weekends");
-  await contributionForm.getByLabel("How would you like to contribute?").fill("I can help with community reading circles.");
-  await contributionForm.getByRole("checkbox").check();
-  await contributionForm.getByRole("button", { name: "Send contribution enquiry" }).click();
-  await expect(contributionForm.getByRole("status")).toContainText("contribution enquiry has been received");
-  expect(submissions[1]).toMatchObject({
-    type: "contact",
-    name: "Test Contributor",
-    email: "contributor@example.com",
-    area: "Community & seva",
-    availability: "Weekends",
-    message: "I can help with community reading circles.",
-    consent: true,
-    website: "",
-  });
-  expect(submissions).toHaveLength(2);
+  expect(submissions).toHaveLength(1);
 });
 
 const payload: Submission = { type: "membership", name: "Test", email: "test@example.com", phone: "9876543210", area: "Other", message: "", city: "Bengaluru", referralSource: "A friend", customInterest: "Community reading circles", consent: true, website: "" };
