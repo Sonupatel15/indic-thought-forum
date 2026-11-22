@@ -42,7 +42,7 @@ jobs:
         run: npm run typecheck
 
       - name: Lint application code
-        run: npx eslint src tests scripts *.ts *.mjs --max-warnings=0
+        run: npx eslint src tests scripts *.ts *.mjs --max-warnings=0 --no-warn-ignored
 
       - name: Build Worker
         run: npm run build:cloudflare
