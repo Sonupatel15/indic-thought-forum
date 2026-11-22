@@ -1,35 +1,23 @@
-name: Production deployment
+name: Deploy to Cloudflare
 
 on:
   push:
-    branches: [master]
+    branches:
+      - master
   workflow_dispatch:
-
-concurrency:
-  group: production
-  cancel-in-progress: false
 
 permissions:
   contents: read
   deployments: write
 
+concurrency:
+  group: cloudflare-production
+  cancel-in-progress: true
+
 jobs:
   deploy:
-    name: Build and deploy to production
+    name: Build and deploy production
     runs-on: ubuntu-latest
-
-    environment:
-      name: production
-      url: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://www.indicthoughtforum.org' }}
-
-    env:
-      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
-      NEXT_PUBLIC_FORMS_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORMS_ENDPOINT }}
-      NEXT_PUBLIC_DONATION_URL: ${{ vars.NEXT_PUBLIC_DONATION_URL }}
-      NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      NEXT_TELEMETRY_DISABLED: "1"
 
     steps:
       - name: Checkout repository
@@ -47,13 +35,25 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Lint application code
+      - name: Lint
         run: npx eslint src tests scripts *.ts *.mjs --max-warnings=0 --no-warn-ignored
 
-      - name: Build Worker
+      - name: Build for Cloudflare
         run: npm run build:cloudflare
+        env:
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_FORMS_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORMS_ENDPOINT }}
+          NEXT_PUBLIC_DONATION_URL: ${{ vars.NEXT_PUBLIC_DONATION_URL }}
+          NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
+          NEXT_TELEMETRY_DISABLED: 1
 
       - name: Deploy to Cloudflare
-        run: |
-          SHORT_SHA="${GITHUB_SHA:0:7}"
-          npx opennextjs-cloudflare deploy "--message=master @ ${SHORT_SHA}"
+        run: npx opennextjs-cloudflare deploy "--message=master @ ${GITHUB_SHA:0:7}"
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+          NEXT_PUBLIC_FORMS_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORMS_ENDPOINT }}
+          NEXT_PUBLIC_DONATION_URL: ${{ vars.NEXT_PUBLIC_DONATION_URL }}
+          NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
+          NEXT_TELEMETRY_DISABLED: 1
