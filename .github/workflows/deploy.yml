@@ -1,0 +1,51 @@
+name: Production deployment
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+concurrency:
+  group: production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  deployments: write
+
+jobs:
+  deploy:
+    name: Build and deploy to production
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: ${{ vars.NEXT_PUBLIC_SITE_URL || 'https://www.indicthoughtforum.org' }}
+    env:
+      NEXT_PUBLIC_SITE_URL: ${{ vars.NEXT_PUBLIC_SITE_URL }}
+      NEXT_PUBLIC_FORMS_ENDPOINT: ${{ vars.NEXT_PUBLIC_FORMS_ENDPOINT }}
+      NEXT_PUBLIC_DONATION_URL: ${{ vars.NEXT_PUBLIC_DONATION_URL }}
+      NEXT_PUBLIC_CONTACT_EMAIL: ${{ vars.NEXT_PUBLIC_CONTACT_EMAIL }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      NEXT_TELEMETRY_DISABLED: "1"
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint application code
+        run: npx eslint src tests scripts *.ts *.mjs --max-warnings=0
+
+      - name: Build Worker
+        run: npm run build:cloudflare
+
+      - name: Deploy
+        run: npx opennextjs-cloudflare deploy --message "master @ ${GITHUB_SHA::7}"

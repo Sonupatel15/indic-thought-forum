@@ -15,3 +15,5 @@ cloudflare-env.d.ts
 /temp/*
 !/temp/file-changed.md
 !/temp/cloudflare-domains.md
+
+.wrangler/
