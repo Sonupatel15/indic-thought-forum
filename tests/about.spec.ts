@@ -1,7 +1,7 @@
 import { test, expect } from "@playwright/test";
 import { gallery, principles, steps } from "../src/lib/site";
 
-test("About and Philosophy retain the shared hero and original content without photos, sparkles or principle numbers", async ({ page, request }) => {
+test("About and Philosophy retain the shared hero and copy with an uncaptioned manuscript and no extra ornaments", async ({ page, request }) => {
   for (const route of ["/about/", "/philosophy/"]) {
     expect((await page.goto(route))?.status()).toBe(200);
     await expect(page).toHaveTitle("About | Indic Thought Forum");
@@ -10,10 +10,13 @@ test("About and Philosophy retain the shared hero and original content without p
     await expect(page.locator("main h1")).toHaveText("Rooted in a civilization. Looking to the future.");
     await expect(page.locator(".page-intro p")).toHaveText("We are a community of curious minds, connected by our heritage and a shared belief in meaningful action.");
     await expect(page.locator(".breadcrumb > span").last()).toHaveText("About");
-    await expect(page.locator('main img, main .intro-ornament, main .cta-decoration, main .card-number')).toHaveCount(0);
+    await expect(page.locator("main .intro-ornament, main .cta-decoration, main .card-number")).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText("\u2726");
     const thought = page.getByRole("region", { name: "The thought behind the forum", exact: true });
-    await expect(thought).toHaveClass(/reading-width/);
+    await expect(thought.locator(".reading-width")).toHaveCount(1);
+    await expect(thought.getByRole("img", { name: /Sanskrit verses/ })).toHaveAttribute("src", "/images/about-rigveda.webp");
+    await expect(thought).not.toContainText("Early 19th-century Rigveda manuscript");
+    await expect(thought.getByRole("link", { name: /Wikimedia Commons/ })).toHaveCount(0);
     await expect(thought.locator("p")).toHaveText([
       "Indic Thought Forum (ITF) is a platform dedicated to promoting Bharateeya Sabhyata and its timeless values.",
       "We aim to reconnect individuals with India's rich cultural and intellectual heritage through awareness, education, and community initiatives. Our goal is to bridge tradition and modern life, making cultural knowledge accessible, relevant, and impactful for today's society.",
@@ -111,7 +114,7 @@ test("About heroes, reading columns and continuing quote panels reflow from phon
         return {
           overflow: document.documentElement.scrollWidth > innerWidth,
           heroFits: titleBox.top >= introBox.top && titleBox.bottom <= introBox.bottom && title.scrollWidth <= title.clientWidth + 1,
-          thoughtWidth: thought.getBoundingClientRect().width,
+          thoughtWidth: thought.querySelector(".reading-width")?.getBoundingClientRect().width ?? thought.getBoundingClientRect().width,
           thoughtOverflow: thought.scrollWidth > thought.clientWidth + 1,
           quoteLeft: box.left, quoteRightInset: innerWidth - box.right, quoteWidth: box.width,
           quoteOverflow: quote.scrollWidth > quote.clientWidth + 1,

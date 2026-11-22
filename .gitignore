@@ -1,9 +1,17 @@
 node_modules/
 .next/
+.open-next/
+.wrangler/
 out/
 playwright-report/
 test-results/
 *.tsbuildinfo
 .env*
 !.env.example
+.dev.vars
+cloudflare-env.d.ts
 .DS_Store
+
+/temp/*
+!/temp/file-changed.md
+!/temp/cloudflare-domains.md

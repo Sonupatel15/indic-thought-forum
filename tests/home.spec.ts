@@ -22,10 +22,12 @@ test("Home has real-text branding, unnumbered sections, clearly stated goals, an
   await expect(main).not.toContainText("Privacy-first preview");
   await expect(main).not.toContainText("Choosing Load connects to YouTube/Google");
   await expect(page.locator(".youtube-label, .youtube-disclosure, iframe")).toHaveCount(0);
-  const mediaSection = page.locator('main section[aria-label="Podcasts and social media"]');
+  await expect(page.locator(".philosophy-footnote")).toHaveText("Because an idea finds its purpose only when it becomes action.");
+  await expect(page.locator(".tiny-dot")).toHaveCount(0);
+  const mediaSection = page.locator('main section[aria-label="Podcasts"]');
   await expect(mediaSection.locator(".social-channel-links, .social-channel-grid")).toHaveCount(0);
   await expect(mediaSection.locator(".youtube-load")).toHaveCount(1);
-  await expect(mediaSection.getByRole("link", { name: /Visit Instagram/ })).toHaveCount(1);
+  await expect(mediaSection.getByRole("link", { name: /Visit Instagram/ })).toHaveCount(0);
   await expect(page.locator(".footer-about .footer-social .social-channel-link")).toHaveCount(5);
 });
 
@@ -59,7 +61,7 @@ test("Home conversation heading and eyebrow use the shared type scale across vie
   }
 });
 
-test("Home shows exactly the latest three events including upcoming dates with correct posters and venues", async ({ page }) => {
+test("Home shows one row of latest events including upcoming dates with correct posters and venues", async ({ page }) => {
   const posterRequests: string[] = [];
   page.on("request", request => {
     const path = new URL(request.url()).pathname;
@@ -68,12 +70,14 @@ test("Home shows exactly the latest three events including upcoming dates with c
   await page.clock.setFixedTime(new Date("2026-11-09T12:00:00Z"));
   await page.goto("/");
   const cards = page.locator(".event-card");
-  await expect(cards).toHaveCount(3);
+  const columns = await page.locator(".event-grid").evaluate(grid => getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length);
+  const displayedEvents = events.slice(0, columns);
+  await expect(cards).toHaveCount(displayedEvents.length);
   expect(await cards.locator(".event-date time").evaluateAll(items => items.map(item => item.getAttribute("datetime")))).toEqual([
     "2026-11-29", "2026-10-25", "2026-07-11",
-  ]);
-  expect(await cards.locator(".event-date > span").allTextContents()).toEqual(["Upcoming", "Archive", "Archive"]);
-  for (const [index, event] of events.slice(0, 3).entries()) {
+  ].slice(0, columns));
+  expect(await cards.locator(".event-date > span").allTextContents()).toEqual(["Upcoming", "Archive", "Archive"].slice(0, columns));
+  for (const [index, event] of displayedEvents.entries()) {
     await expect(cards.nth(index).locator("img")).toHaveAttribute("src", event.previewImage);
     await expect(cards.nth(index).locator(".event-location")).toHaveText(event.venue);
   }
@@ -81,16 +85,16 @@ test("Home shows exactly the latest three events including upcoming dates with c
     await image.scrollIntoViewIfNeeded();
     await expect(image).toHaveJSProperty("complete", true);
   }
-  expect([...new Set(posterRequests)].sort()).toEqual(events.slice(0, 3).map(event => event.previewImage).sort());
+  expect([...new Set(posterRequests)].sort()).toEqual(displayedEvents.map(event => event.previewImage).sort());
   const poster = cards.first().getByRole("button", { name: `View poster for ${events[0].title}`, exact: true });
   await poster.click();
   await expect(page.getByRole("dialog")).toBeVisible();
   await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[0].previewImage);
   await expect(page.getByRole("dialog").locator("img")).toHaveJSProperty("complete", true);
-  expect(posterRequests).not.toContain(events[0].image);
+  expect(posterRequests).not.toContain(events[0].previewImage.replace(/\.webp$/, ".png"));
   expect(posterRequests).toContain(events[0].previewImage);
   await page.keyboard.press("ArrowRight");
-  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", events[1].previewImage);
+  await expect(page.getByRole("dialog").locator("img")).toHaveAttribute("src", (displayedEvents[1] ?? displayedEvents[0]).previewImage);
   await page.keyboard.press("Escape");
   await expect(poster).toBeFocused();
   await page.clock.setFixedTime(new Date("2026-11-29T12:00:00Z"));
@@ -105,13 +109,13 @@ test("every supplied poster has correct intrinsic dimensions and all event photo
   expect(events).toHaveLength(7);
   expect(gallery).toHaveLength(5);
   for (const event of events) {
-    expect(event.image).toMatch(/\/event-poster\/[a-z0-9-]+-2026-\d{2}-\d{2}\.png$/);
-    const metadata = await sharp(join("public", ...event.image.slice(1).split("/"))).metadata();
+    expect(event.previewImage).toMatch(/\/event-poster\/[a-z0-9-]+-2026-\d{2}-\d{2}\.webp$/);
+    const sourcePath = event.previewImage.replace(/\.webp$/, ".png");
+    const metadata = await sharp(join("asset-sources", sourcePath.slice(1))).metadata();
     expect(metadata.width).toBe(event.imageWidth);
     expect(metadata.height).toBe(event.imageHeight);
     expect(metadata.format).toBe("png");
-    expect((await request.get(event.image)).status()).toBe(200);
-    expect(event.previewImage).toBe(event.image.replace(/\.png$/, ".webp"));
+    expect((await request.get(sourcePath)).status()).toBe(404);
     const preview = await sharp(join("public", ...event.previewImage.slice(1).split("/"))).metadata();
     expect(preview.width).toBe(event.imageWidth);
     expect(preview.height).toBe(event.imageHeight);
@@ -153,6 +157,8 @@ test("Home posters stay uncropped and aligned with readable copy from phones thr
     expect(await page.locator(".philosophy-footnote").evaluate(element => parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(14);
     const gridColumns = await page.locator(".event-grid").evaluate(element => getComputedStyle(element).gridTemplateColumns.split(" ").length);
     expect(gridColumns).toBe(width <= 480 ? 1 : width <= 760 ? 2 : 3);
+    await expect(page.locator(".home-conversation-section .event-card")).toHaveCount(gridColumns);
+    await expect(page.locator(".home-conversation-section").getByRole("button", { name: "Load more events" })).toHaveCount(0);
     const images = page.locator(".event-image img");
     const positions: number[] = [];
     for (const image of await images.all()) {

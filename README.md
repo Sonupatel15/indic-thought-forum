@@ -14,7 +14,9 @@ npm ci
 npm run dev
 ```
 
-Open `http://127.0.0.1:3000`. To build and preview the **production Cloudflare Worker**:
+Open `http://127.0.0.1:3000`. The Next.js development server allows `'unsafe-eval'` in its Content Security Policy for React debugging. The production Worker and static asset policies do not allow it.
+
+To build and preview the **production Cloudflare Worker**:
 
 ```powershell
 npm run preview
@@ -22,7 +24,7 @@ npm run preview
 
 Open `http://127.0.0.1:4173`. This builds Next.js and the OpenNext adapter, then serves the result in Cloudflare's local Workers runtime. To build without starting a server, run `npm run build:cloudflare`; to preview an existing build, run `npm run preview:cloudflare`. `npm run build` alone builds Next.js but does **not** create a deployable Worker.
 
-The deployment target is **Cloudflare Workers, not Pages**. OpenNext writes `.open-next/worker.js` and `.open-next/assets`; there is no `out` static export. Routes remain pre-rendered where possible, while the Worker supports future server routes. The old `scripts/finalize-export.mjs` static-export workaround is no longer part of the build.
+The deployment target is **Cloudflare Workers, not Pages**. OpenNext writes `.open-next/worker.js` and `.open-next/assets`; there is no `out` static export. Routes remain pre-rendered where possible, while the Worker supports future server routes.
 
 OpenNext warns that native Windows support is incomplete. Use Cloudflare's Linux Workers Builds or WSL if a local adapter build encounters platform-specific errors. Do not copy Windows `node_modules` into WSL; install dependencies in the Linux checkout.
 
@@ -36,7 +38,7 @@ OpenNext warns that native Windows support is incomplete. Use Cloudflare's Linux
 - Day, month, and year calendar views, a selected-date panel, a featured gathering, and an attributed OpenStreetMap venue map
 - Curated podcasts and community-post cards, official social links, and click-to-load YouTube players
 - Filterable photo gallery with native modal focus management, arrow navigation, and Escape support
-- Separate, validated Join the Community and Contribute to the Community forms; Sankalpa pathways prefill the contribution area, and "Other" reveals a required custom interest
+- A validated Join the Community form; Sankalpa pathways prefill the interest field, and "Other" reveals a required custom interest
 - Explicit unavailable states until real form/payment services are configured
 - Pre-rendered HTML, per-page SEO metadata, canonical URLs, social cards, sitemap, robots
 - A preloaded self-hosted variable font, responsive WebP hero, local podcast thumbnails, and no third-party media connection before opt-in
@@ -52,7 +54,7 @@ The project has **no database, admin dashboard, authentication, payment processi
 
 **About** combines About Us and Philosophy at `/about/`. **Updates** combines Events, Gallery, Podcasts, community posts, and social channels at `/events/`, with section links for easy navigation. The short labels are consistent across navigation, footer, breadcrumbs, and page titles; the existing URLs are unchanged. The old `/philosophy/`, `/gallery/`, and `/media/` URLs remain static compatibility pages that render the same combined content, with canonical metadata pointing to the combined route. Navigation and the sitemap use the combined routes.
 
-Contact has separate Join the Community and Contribute to the Community forms. When no endpoint is configured, both send buttons are disabled and each form explains that entered details are not transmitted or stored. The separate membership route has been removed; all membership invitations lead to the Join form, while Sankalpa pathways preserve their selected contribution area.
+Contact has one Join the Community form. When no endpoint is configured, the send button is disabled and the form explains that entered details are not transmitted or stored. Membership invitations lead to the Join form, and Sankalpa pathways preselect the corresponding interest. The public Sankalpa tracker omits records marked Deprioritised.
 
 ## Browser and device compatibility
 
@@ -113,11 +115,11 @@ The frontend sends `POST` with `Content-Type: application/json`, without cookies
 }
 ```
 
-Contribute submissions use `type: "contact"` and add `availability`; their `message` is required. Join submissions use `type: "membership"`; `city` and `referralSource` are required, `message` is optional, and `customInterest` is sent only when `area` is `"Other"`. `phone` may be empty in either form. `website` is a honeypot. A successful response must be a 2xx status with JSON **`{ "success": true }`**. No other response is displayed as success. Rate limits, unconfirmed responses, timeouts, and failures are surfaced to the visitor, and entered information is retained for retry. Drafts are not stored in local storage.
+Join submissions use `type: "membership"`; `city` and `referralSource` are required, `phone` and `message` are optional, and `customInterest` is sent only when `area` is `"Other"`. `website` is a honeypot. A successful response must be a 2xx status with JSON **`{ "success": true }`**. No other response is displayed as success. Rate limits, unconfirmed responses, timeouts, and failures are surfaced to the visitor, and entered information is retained for retry. Drafts are not stored in local storage.
 
-When no endpoint is configured, each Contact form keeps its explicit unavailable-service status and disabled submit button. Neither form sends or stores an unconfigured submission.
+When no endpoint is configured, the Join form keeps its explicit unavailable-service status and disabled submit button. It does not send or store an unconfigured submission.
 
-**Open question:** this repository does not include or configure a form backend. Before enabling `NEXT_PUBLIC_FORMS_ENDPOINT`, the site owner must select the service and verify that it accepts both payload shapes (including city, referral source, contribution availability, and custom interest), routes them to the right team, and meets the site's validation, privacy, retention, and delivery requirements. No backend or service was added in this checkpoint.
+**Open question:** this repository does not include or configure a form backend. Before enabling `NEXT_PUBLIC_FORMS_ENDPOINT`, the site owner must verify that the service accepts the membership payload, routes it to the right team, and meets the site's validation, privacy, retention, and delivery requirements.
 
 Before enabling an endpoint, implement **server-side validation**, length limits, strict type/area allowlists, consent checks, honeypot rejection, rate limiting, spam protection, safe email delivery/storage, and appropriate retention. Client-side checks are not a security boundary. Only acknowledge success after the enquiry has been durably accepted. Configure CORS to allow the production origin and `POST`/`OPTIONS` with `Content-Type`; never embed API keys in the frontend.
 
@@ -126,6 +128,8 @@ Before enabling an endpoint, implement **server-side validation**, length limits
 Provide a verified hosted checkout or donation-page URL. The website intentionally does not collect card data, invent bank details, set provider-specific amounts, claim tax eligibility, or simulate a successful payment. Verify the provider's registration, receipt, refund, tax, and privacy requirements before publishing.
 
 ## Content and assets
+
+The About page's manuscript image is a local WebP of the public-domain [Rigveda MS2097 scan on Wikimedia Commons](https://commons.wikimedia.org/wiki/File:Rigveda_MS2097.jpg).
 
 - Shared editorial content and archive entries: `src/lib/site.ts`
 - Approved talk-led Sankalpa tracker and note history: `src/lib/sankalpas.ts`
@@ -157,7 +161,7 @@ Prepared images are already included; do not make downloads part of the producti
 
 The five confirmed Sankrant Sanu photographs are stored in `public/images/sankrant-sanu/event-photos`; all gallery references use those paths. The photo was removed from About in checkpoint 3, while its Home/Updates gallery use is retained. The owner approved removing the deleted sixth photograph's gallery record. The original gallery layouts and captions are retained. The `assets:prepare` script targets the renamed photo paths and does not manage the seven supplied PNG posters.
 
-Event cards use a local WebP `previewImage` with the same full 1587x2245 dimensions and a **256 KiB maximum**; original PNGs are preserved and loaded only when opening a poster viewer. Generate previews from the local originals with `npm run assets:posters` after adding event data. The command checks declared dimensions and fails explicitly for invalid paths or an oversized result; it makes no network requests.
+Event cards and poster viewers use a local WebP `previewImage` with the same full 1587x2245 dimensions and a **256 KiB maximum**. Original PNGs stay outside `public` under `asset-sources/images`, mirroring the WebP subfolder and basename. Generate previews with `npm run assets:posters` after adding event data and the corresponding PNG. The command checks declared dimensions and fails explicitly for invalid paths or an oversized result; it makes no network requests.
 
 Home-page numbers are labeled as **Lakshya goals**, not achieved impact metrics. Their structured data is `homeStatistics` in `src/lib/site.ts`: 500+ members, 10+ events, and 30+ Sankalpas. Sankalpa categories are contribution ideas, not claims of currently operating programs. See [the revision checkpoints](./WEBSITE_REVISION_CHECKPOINTS.md) for verified scope, asset moves, and review follow-ups.
 
@@ -190,11 +194,11 @@ YouTube's privacy-enhanced domain is **not anonymous playback or a guarantee of 
 
 ### Footer branding
 
-The header and footer share the official `public/images/itf-assets/ITF-Logo.png` emblem rendition with the real-text name/tagline from `site`; there is no tab icon. The Next.js development indicator is disabled with `devIndicators: false` in `next.config.ts`. The footer displays a 56px square, contain-fitted logo with 18-20px brand text and a 12px tagline that can wrap naturally.
+The header and footer share `public/images/itf-assets/itf-logo-footer.webp`, generated from the official `asset-sources/images/itf-assets/ITF-Logo.png` emblem. The name and tagline from `site` are real text; there is no tab icon. The Next.js development indicator is disabled with `devIndicators: false` in `next.config.ts`. The footer displays a 56px square, contain-fitted logo with 18-20px brand text and a 12px tagline that can wrap naturally.
 
 Run `npm run assets:branding` to regenerate the local `itf-logo-footer.webp` from the official source. This preserves transparency, uses lossless WebP at 168x168 for 3x-density display, checks a 32 KiB budget, and leaves the original PNG untouched. No external download is involved.
 
-Footer and Updates social links share `socialProfiles` in `src/lib/media.ts`. The five profiles include the supplied X and WhatsApp links with accessible names, new-tab notices, and `noopener noreferrer`. Merely rendering a link does not connect to either provider or join the group. The footer uses a centered 1200px container with 24px gutters and a top-aligned three-column brand/values/invitation grid. From 600px to 1023px, Brand and Values share a row and the invitation spans the next; below 600px, all columns stack and the bottom bar centers. The brand contains one row of 38px circular social links with 18px icons, aria-labels, title tooltips, accent hover/focus fills, and visible keyboard outlines. A single divider separates the grid from the copyright/navigation bar. Updates retains labeled profile cards, 17px glyphs in 25px boxes, and at least 44px-high targets. Repeated Explore/Get involved groups are removed; the closing invitation links to Contact on every viewport.
+Footer and Updates social links share `socialProfiles` in `src/lib/media.ts`. The five profiles include the supplied X and WhatsApp links with accessible names, new-tab notices, and `noopener noreferrer`. Merely rendering a link does not connect to either provider or join the group. The footer uses a centered 1200px container with 24px gutters and a top-aligned two-column brand/invitation grid. Below 600px the sections stack and the bottom bar centers. The brand contains 44px circular social links with 18px icons, accessible names, and visible hover and keyboard-focus states. A single divider separates the grid from the copyright/navigation bar. Updates retains its labeled profile cards.
 
 ### Maintaining the event calendar
 
@@ -218,8 +222,7 @@ Each event requires:
 | `displayDate` | A matching human-readable date for the original poster/archive |
 | `startTime` | Verified 24-hour `HH:mm` start time in India Standard Time |
 | `venue` | Confirmed venue/address, not an inferred location |
-| `image` | A locally hosted, authorized poster path |
-| `previewImage` | A local WebP card preview generated from `image`, preserving its aspect ratio; original PNG remains for the viewer |
+| `previewImage` | The approved public WebP path used by cards and the viewer; generated from the matching PNG under `asset-sources/images` |
 | `imageWidth`, `imageHeight` | The poster's measured intrinsic pixel dimensions; the supplied seven PNGs are 1587x2245 |
 
 The current start times are taken from the posters: 15:00 for October and November, 17:30 for April, May, June, and July, and 18:00 for February. End times and durations are not invented.
@@ -309,7 +312,7 @@ If low-end mobile performance remains a problem after deployment, prototype the 
 - No R2 bucket, D1 database, KV namespace, queue, or Durable Object is required for the current site. This cache does **not** support ISR/revalidation; content changes require rebuilding and redeploying.
 - Generated `.open-next`, `.wrangler`, local environment files, and binding declarations are ignored by Git and lint.
 
-The existing Netlify/Vercel files are legacy host templates, not part of this deployment. In particular, the old Netlify `publish = "out"` setup no longer works with this server build. Do not upload `.next`, `public`, or an old `out` directory as a substitute for deploying the OpenNext Worker.
+Do not upload `.next`, `public`, or an old `out` directory as a substitute for deploying the OpenNext Worker.
 
 ### 1. Prepare the account and configuration
 
@@ -355,19 +358,20 @@ After the initial CLI deployment, open **Workers & Pages > indic-thought-forum >
 
 | Setting | Value |
 | --- | --- |
-| Repository | `Sonupatel15/indic-thought-forum` |
+| Repository | The GitHub repository you are deploying |
 | Production branch | Your release branch (currently `main`) |
 | Root directory | Repository root |
 | Build command | `npm run build:cloudflare` |
 | Deploy command | `npm run deploy:cloudflare` |
-| Non-production / preview command, if enabled | `npm run upload:cloudflare` |
+| Preview builds | Enabled |
+| Preview command | `npx opennextjs-cloudflare populateCache remote && npx wrangler preview` |
 | Build variable `NODE_VERSION` | `24.22.3` (or a newer supported Node.js 24 LTS patch) |
 | Build variable `NPM_VERSION` | `11` |
 | Public build variables | The `NEXT_PUBLIC_*` values described above |
 
-Use the committed lockfile for installs; if configuring an explicit install step, use `npm ci`. Do not omit dev dependencies. Do not use the default bare `wrangler deploy`/`wrangler versions upload` commands: the adapter's deploy/upload commands prepare its static-assets cache first. Do not set both commands to build the app, which would build twice.
+Use the committed lockfile for installs; if configuring an explicit install step, use `npm ci`. Do not omit dev dependencies. The production deploy script prepares the OpenNext static-assets cache; the preview command explicitly prepares it before Wrangler publishes the branch Preview. Do not use the local preview script or rebuild the app in the deploy command.
 
-Workers Builds can manage its deployment token. Keep production credentials and private data out of untrusted preview branches. `upload:cloudflare` uploads a version without promoting it to production; enable version preview URLs in the dashboard if you need to open those versions. Protect preview URLs with Cloudflare Access and/or configure `X-Robots-Tag: noindex` for preview hosts before sharing them publicly. By default canonical URLs still point to `NEXT_PUBLIC_SITE_URL`.
+Workers Builds can manage its deployment token and post branch Preview URLs to GitHub PRs. If the Worker still uses the older Version URL flow, switch to Worker Previews from its Builds settings. Preview URLs on `workers.dev` are public by default; use Cloudflare Access for private reviews. Keep production credentials and live endpoints out of preview builds. Canonical URLs still point to `NEXT_PUBLIC_SITE_URL`. See the [domain and deployment guide](temp/cloudflare-domains.md) for all dashboard settings and cutover checks.
 
 ### 4. Attach the custom domain and HTTPS
 
@@ -376,7 +380,7 @@ Workers Builds can manage its deployment token. Keep production credentials and 
 3. Wait until Cloudflare's certificate is active and verify HTTPS.
 4. If both apex and `www` should work, configure the other hostname and a Cloudflare redirect rule that permanently redirects it to the canonical hostname, preserving the path and query string.
 5. Confirm `NEXT_PUBLIC_SITE_URL` matches that canonical hostname and rebuild/redeploy if it changed.
-6. This setup uses `workers.dev` for initial testing. After custom-domain verification, disable that public hostname in Wrangler (`workers_dev: false`) if you do not want a second public entry point.
+6. This setup keeps `workers.dev` enabled for the suggested Preview workflow. Use Cloudflare Access if Preview URLs should be private.
 
 Use the dashboard for the domain-specific configuration because the actual owned domain/account has not been supplied. No invented custom-domain route is enabled in the repository.
 

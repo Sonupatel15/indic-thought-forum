@@ -7,7 +7,7 @@ import { GalleryGrid } from "@/components/gallery-grid";
 import { Icon } from "@/components/icon";
 import { homeStatistics, sankalpas } from "@/lib/site";
 import { getIndiaDateKey } from "@/lib/schedule";
-import { FeaturedPodcast, SocialPosts } from "@/components/media-content";
+import { FeaturedPodcast } from "@/components/media-content";
 
 export default function Home() {
   return <>
@@ -26,7 +26,7 @@ export default function Home() {
       <div className="about-copy"><span className="eyebrow">Our Purpose</span><h2>A deeper connection.<br />A greater purpose.</h2><p className="lead">Our heritage is not just something we inherit. It is something we live.</p><p>Indic Thought Forum is a platform dedicated to promoting Bharateeya Sabhyata and its timeless values. We reconnect individuals with India&apos;s rich cultural and intellectual heritage through awareness, education, and community initiatives.</p><p>By bridging tradition and modern life, we make cultural knowledge accessible, relevant, and meaningful for today.</p><Link className="text-link" href="/about/">Discover the thought behind ITF <ArrowUpRight size={18} aria-hidden="true" /></Link></div>
     </section>
 
-    <section className="philosophy-section section"><div className="container"><SectionHeading eyebrow="The way we think" title="Good thoughts. Meaningful action." description="Guided by values. Driven by purpose. Committed to impact." href="/about/#philosophy" linkLabel="Our philosophy" /><Principles /><p className="philosophy-footnote"><span className="tiny-dot" aria-hidden="true" /><span>Because an idea finds its purpose only when it becomes action.</span></p></div></section>
+    <section className="philosophy-section section"><div className="container"><SectionHeading eyebrow="The way we think" title="Good thoughts. Meaningful action." description="Guided by values. Driven by purpose. Committed to impact." href="/about/#philosophy" linkLabel="Our philosophy" /><Principles /><p className="philosophy-footnote">Because an idea finds its purpose only when it becomes action.</p></div></section>
 
     <section className="section container" aria-label="Sankalpas and calendar"><SectionHeading eyebrow="Find your way" title="A purpose to choose. A date to connect." description="Two ways to take the next step: make a personal commitment or join the conversation." /><div className="pathway-grid">
       <article className="pathway-card"><span className="icon-box"><ListChecks size={29} aria-hidden="true" /></span><span className="eyebrow">From intention to action</span><h3>Sankalpas</h3><p>Choose a meaningful commitment that reflects your interests, your skills, and the change you want to contribute to.</p><ul>{sankalpas.slice(0, 3).map(item => <li key={item.id}>{item.category}</li>)}</ul><Link className="text-link" href="/sankalpas/">Explore all Sankalpas <ArrowUpRight size={18} aria-hidden="true" /></Link></article>
@@ -39,7 +39,7 @@ export default function Home() {
 
     <section className="container lakshya"><div><span className="eyebrow">Our shared Lakshya</span><h2>A vision we build.<br /><span>Together.</span></h2><p>Shared goals for the work ahead, not completed milestones.</p></div>{homeStatistics.map(stat => <div className="goal" key={stat.label}><strong>{stat.value}<span>+</span></strong><span>{stat.label}</span></div>)}</section>
 
-    <section className="section container home-media-section" aria-label="Podcasts and social media"><SectionHeading eyebrow="Watch. Listen. Connect." title="The conversation continues." description="Explore our podcasts and follow ITF for event announcements and community moments." href="/events/#podcasts" linkLabel="Explore our media" /><FeaturedPodcast showPreviewDetails={false} /><SocialPosts /></section>
+    <section className="section container home-media-section" aria-label="Podcasts"><SectionHeading eyebrow="Watch. Listen. Connect." title="The conversation continues." description="Explore our podcasts and follow ITF for event announcements and community moments." href="/events/#podcasts" linkLabel="Explore our media" /><FeaturedPodcast showPreviewDetails={false} /></section>
     <section className="section soft-section"><div className="container"><SectionHeading eyebrow="Moments of connection" title="A forum. A community. A family." description="Glimpses of the people and moments that bring our purpose to life." href="/events/#gallery" linkLabel="View our gallery" /><GalleryGrid preview /></div></section>
     <CommunityCTA />
     <section className="container support-strip"><span className="icon-box"><Icon name="hands" size={27} /></span><div><h2>Help a meaningful idea go further.</h2><p>Your time, your skills, or your support can make a difference.</p></div><Link href="/support/" className="text-link">Support the cause <MoveUpRight size={18} aria-hidden="true" /></Link></section>

@@ -12,7 +12,7 @@ const newProfiles = [
 ] as const;
 
 test("header and footer share a faithful lightweight official logo and real-text branding without a tab icon", async ({ page, request }) => {
-  const source = join("public", "images", "itf-assets", "ITF-Logo.png");
+  const source = join("asset-sources", "images", "itf-assets", "ITF-Logo.png");
   const preview = join("public", "images", "itf-assets", "itf-logo-footer.webp");
   const metadata = await sharp(preview).metadata();
   expect(metadata.width).toBe(168);
@@ -27,6 +27,7 @@ test("header and footer share a faithful lightweight official logo and real-text
   expect(actual.byteLength).toBe(expected.byteLength);
   expect(actual.equals(expected), "Footer logo must faithfully reproduce the resized official source.").toBe(true);
   expect((await request.get(logoUrl)).status()).toBe(200);
+  expect((await request.get("/images/itf-assets/ITF-Logo.png")).status()).toBe(404);
   await page.goto("/");
   const footer = page.locator(".site-footer");
   await footer.scrollIntoViewIfNeeded();
@@ -139,6 +140,7 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
       expect(metrics.copyOverflow).toBe(false);
       expect(metrics.badLinks).toEqual([]);
       await expect(footer.locator(".social-channel-link")).toHaveCount(5);
+      await expect(footer.locator(".footer-values")).toHaveCount(0);
       const layout = await footer.evaluate(element => {
         const box = (selector: string) => {
           const item = element.querySelector(selector);
@@ -149,7 +151,7 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
         const grid = element.querySelector(".footer-main");
         if (!grid) throw new Error("Missing footer grid");
         return {
-          brand: box(".footer-about"), values: box(".footer-values"), cta: box(".footer-note"),
+          brand: box(".footer-about"), cta: box(".footer-note"),
           grid: box(".footer-main"), bottom: box(".footer-bottom"),
           columns: getComputedStyle(grid).gridTemplateColumns.split(/\s+/).length,
           socialTops: [...element.querySelectorAll(".social-channel-link")].map(link => link.getBoundingClientRect().top),
@@ -157,23 +159,17 @@ test("footer logo, text and five social links reflow from phone to TV widths", a
           height: element.getBoundingClientRect().height,
         };
       });
-      expect(layout.columns).toBe(width >= 1024 ? 3 : width >= 600 ? 2 : 1);
+      expect(layout.columns).toBe(width >= 600 ? 2 : 1);
       expect(layout.bottom.left).toBe(layout.grid.left);
       expect(layout.bottom.right).toBe(layout.grid.right);
       expect(layout.dividers).toBe(1);
       expect(Math.max(...layout.socialTops) - Math.min(...layout.socialTops)).toBeLessThanOrEqual(1);
-      if (width >= 1024) {
-        expect(Math.abs(layout.brand.top - layout.values.top)).toBeLessThanOrEqual(1);
+      if (width >= 600) {
         expect(Math.abs(layout.brand.top - layout.cta.top)).toBeLessThanOrEqual(1);
         expect(layout.height).toBeLessThan(400);
-      } else if (width >= 600) {
-        expect(layout.brand.top).toBe(layout.values.top);
+      } else {
         expect(layout.cta.top).toBeGreaterThan(layout.brand.bottom);
         expect(layout.cta.left).toBe(layout.brand.left);
-        expect(layout.cta.right).toBe(layout.values.right);
-      } else {
-        expect(layout.values.top).toBeGreaterThan(layout.brand.bottom);
-        expect(layout.cta.top).toBeGreaterThan(layout.values.bottom);
       }
       if (route === "/events/") {
         await expect(page.locator(".social-channel-card")).toHaveCount(5);
